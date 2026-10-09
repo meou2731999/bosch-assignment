@@ -20,7 +20,8 @@
     "lint:fix": "eslint . --fix --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@formio/js": "5.6.1",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.0",
     "@tailwindcss/vite": "4.3.3",
     "@types/express": "5.0.3",
     "@types/node": "24.7.0",

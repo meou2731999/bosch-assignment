@@ -46,7 +46,7 @@ export const messages = {
   validation: "Please complete the required fields and check the values below.",
   discard: "Leave this request and discard unsaved changes?",
   errorTitle: "Unable to complete this action",
-  local: "Local prototype · Mock identity · No production data",
+  local: "Local prototype · Session authentication · Synthetic data",
   help: "Fields marked * are required to submit. Drafts may be incomplete.",
   back: "Reload request",
   updated: "Updated",

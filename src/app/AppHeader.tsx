@@ -1,4 +1,6 @@
-import { USERS, type Locale, type User } from "../../shared/model";
+import { type Locale, type AccountUser } from "../../shared/model";
+import { authCopy } from "../features/auth/copy";
+import { Button } from "../components/ui/Button";
 import { copy } from "../i18n";
 export function AppHeader({
   user,
@@ -6,16 +8,21 @@ export function AppHeader({
   busy,
   loading,
   setLocale,
-  onUserChange,
+  onLogout,
+  onManage,
+  onPassword,
 }: {
-  user: User;
+  user: AccountUser;
   locale: Locale;
   busy: boolean;
   loading: boolean;
   setLocale: (locale: Locale) => void;
-  onUserChange: (user: User) => void;
+  onLogout: () => void;
+  onManage: () => void;
+  onPassword: () => void;
 }) {
   const t = copy(locale);
+  const a = authCopy(locale);
   return (
     <header className="tw:flex tw:flex-col tw:gap-5 tw:border-b tw:border-line tw:bg-white tw:px-5 tw:py-6 tw:md:flex-row tw:md:items-center tw:md:justify-between tw:md:px-[5vw]">
       <a
@@ -33,22 +40,32 @@ export function AppHeader({
         </span>
       </a>
       <div className="tw:flex tw:gap-4 tw:[&_label]:flex tw:[&_label]:min-w-0 tw:[&_label]:flex-col tw:[&_label]:gap-1 tw:[&_label]:text-xs tw:[&_label]:text-muted tw:[&_select]:max-w-full tw:[&_select]:rounded-lg tw:[&_select]:border tw:[&_select]:border-line tw:[&_select]:bg-white tw:[&_select]:p-2 tw:[&_select]:text-sm tw:[&_select]:text-ink">
-        <label>
-          {t.identity}
-          <select
-            value={user.id}
+        <div className="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
+          <span className="tw:text-sm">{user.name}</span>
+          {user.isAdmin && (
+            <Button
+              variant="secondary"
+              disabled={busy || loading}
+              onClick={onManage}
+            >
+              {a.users}
+            </Button>
+          )}
+          <Button
+            variant="secondary"
             disabled={busy || loading}
-            onChange={(e) => {
-              onUserChange(USERS.find((u) => u.id === e.target.value)!);
-            }}
+            onClick={onPassword}
           >
-            {USERS.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name} · {t[u.role]}
-              </option>
-            ))}
-          </select>
-        </label>
+            {a.changePassword}
+          </Button>
+          <Button
+            variant="secondary"
+            disabled={busy || loading}
+            onClick={onLogout}
+          >
+            {a.logout}
+          </Button>
+        </div>
         <label>
           {t.language}
           <select

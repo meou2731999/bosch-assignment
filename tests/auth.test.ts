@@ -65,6 +65,31 @@ describe("authentication primitives", () => {
       store.password(user.id, "new-unit-password", false, 0),
     ).rejects.toMatchObject({ code: "CONFLICT" });
   });
+  it("validates edits, keeps admin flags on partial updates and rejects last-admin demotion", async () => {
+    const dir = temp();
+    const store = createUserStore(dir);
+    const admin = await store.create(account, true);
+    expect(store.edit(admin.id, { name: "Renamed admin" }).isAdmin).toBe(true);
+    expect(() => store.edit(admin.id, { isAdmin: false })).toThrow(
+      "at least one active administrator",
+    );
+    expect(() => store.edit(admin.id, { email: "alex@example.test" })).toThrow(
+      "Email already exists",
+    );
+    expect(() => store.edit(admin.id, { passwordHash: "spoofed" })).toThrow(
+      "Invalid account changes",
+    );
+    expect(() => store.edit("alex", { active: true })).toThrow(
+      "Set a password",
+    );
+    const updated = store.edit(admin.id, {
+      email: "NEW@example.test",
+      role: "reviewer",
+    });
+    expect(updated.email).toBe("new@example.test");
+    expect(updated.credentialVersion).toBe(admin.credentialVersion + 2);
+    expect(createUserStore(dir).get(admin.id).role).toBe("reviewer");
+  });
   it("expires sessions, revokes every session for one user, and removes logout tokens", () => {
     let now = 0;
     const store = createSessionStore(() => now);

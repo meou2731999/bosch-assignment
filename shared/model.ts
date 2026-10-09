@@ -8,6 +8,12 @@ export interface User {
   role: Role;
   department: string;
 }
+export interface AccountUser extends User {
+  email: string;
+  isAdmin: boolean;
+  active: boolean;
+  mustChangePassword: boolean;
+}
 export const USERS: User[] = [
   {
     id: "alex",

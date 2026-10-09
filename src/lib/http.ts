@@ -1,4 +1,8 @@
 import type { User } from "../../shared/model";
+let csrfToken = "";
+export function setCsrfToken(token: string) {
+  csrfToken = token;
+}
 export class HttpError extends Error {
   constructor(
     public code: string,
@@ -9,7 +13,7 @@ export class HttpError extends Error {
   }
 }
 export async function request(
-  user: User,
+  _user: User | null,
   path: string,
   init?: RequestInit,
 ): Promise<Response> {
@@ -18,9 +22,11 @@ export async function request(
   try {
     response = await fetch(`/api${path}`, {
       ...init,
+      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
-        "x-demo-user": user.id,
+        "x-requested-with": "RequestDesk",
+        ...(csrfToken ? { "x-csrf-token": csrfToken } : {}),
         ...init?.headers,
       },
       signal: init?.signal ? AbortSignal.any([init.signal, timeout]) : timeout,
@@ -41,12 +47,17 @@ export async function request(
         "The API returned an unexpected response. Please retry.",
       );
     }
+    if (body.code === "UNAUTHENTICATED") {
+      const hadSession = Boolean(csrfToken);
+      setCsrfToken("");
+      if (hadSession) window.dispatchEvent(new Event("session-expired"));
+    }
     throw new HttpError(body.code, body.message, body.fields);
   }
   return response;
 }
 export async function call<T>(
-  user: User,
+  user: User | null,
   path: string,
   init?: RequestInit,
 ): Promise<T> {

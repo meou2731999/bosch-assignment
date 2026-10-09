@@ -5,7 +5,6 @@ import { ActivityTimeline } from "./ActivityTimeline";
 import { useCallback, useRef, useState } from "react";
 import type { Webform } from "@formio/js";
 import {
-  USERS,
   type Attachment,
   type Locale,
   type RequestData,
@@ -124,7 +123,9 @@ export function RequestEditor({
           <span className="tw:md:ml-auto">
             {t.requestOwner}{" "}
             <strong>
-              {USERS.find((u) => u.id === record?.ownerId)?.name ?? user.name}
+              {record && record.ownerId !== user.id
+                ? record.ownerId
+                : user.name}
             </strong>
           </span>
         </div>

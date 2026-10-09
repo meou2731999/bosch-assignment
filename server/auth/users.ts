@@ -139,6 +139,38 @@ export function createUserStore(dataDir: string) {
         credentialVersion: user.credentialVersion + 1,
       });
     },
+    edit(id: string, raw: unknown) {
+      const parsed = createSchema
+        .pick({ email: true, name: true, department: true, role: true })
+        .partial()
+        .extend({
+          isAdmin: z.boolean().optional(),
+          active: z.boolean().optional(),
+        })
+        .strict()
+        .refine((value) => Object.keys(value).length > 0)
+        .safeParse(raw);
+      if (!parsed.success)
+        throw new ApiError(422, "INVALID", "Invalid account changes.");
+      const user = get(id);
+      if (
+        parsed.data.email &&
+        users.some(
+          (other) => other.id !== id && other.email === parsed.data.email,
+        )
+      )
+        throw new ApiError(409, "EMAIL_EXISTS", "Email already exists.");
+      if (parsed.data.active && !user.passwordHash)
+        throw new ApiError(
+          409,
+          "PASSWORD_REQUIRED",
+          "Set a password before enabling this user.",
+        );
+      return update(id, {
+        ...parsed.data,
+        credentialVersion: user.credentialVersion + 1,
+      });
+    },
     setActive(id: string, active: boolean) {
       const user = get(id);
       if (active && !user.passwordHash)

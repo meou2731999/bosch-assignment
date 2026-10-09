@@ -47,7 +47,7 @@ export const messages: Messages = {
   validation: "Hãy điền các trường bắt buộc và kiểm tra giá trị bên dưới.",
   discard: "Rời yêu cầu này và bỏ các thay đổi chưa lưu?",
   errorTitle: "Không thể hoàn tất thao tác",
-  local: "Prototype cục bộ · Danh tính giả lập · Không dùng dữ liệu thật",
+  local: "Prototype cục bộ · Đăng nhập bằng phiên · Dữ liệu giả lập",
   help: "Trường có dấu * bắt buộc khi gửi. Bản nháp có thể chưa hoàn tất.",
   back: "Tải lại yêu cầu",
   updated: "Cập nhật",

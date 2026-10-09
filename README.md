@@ -1,6 +1,6 @@
 # Authentication update
 
-The backend now requires session login. See [authentication setup and API](docs/authentication.md). The demo frontend login replacement is pending step 2; older demo-identity instructions below describe the prior UI.
+The backend now requires session login. See [authentication setup and API](docs/authentication.md). Sign in with a bootstrapped admin to create and manage user accounts. Each new user must change their initial password.
 
 # Request Desk - dynamic form assessment
 
@@ -11,16 +11,19 @@ A small working React prototype for the supplied Solution Engineer assignment. F
 Use Node.js **24 LTS** and npm. No Form.io account, API key, database installation or Docker is needed.
 
 ```sh
-npm ci
+npm ci --include=dev
+# Supply ADMIN_EMAIL and ADMIN_PASSWORD in the environment, then:
+npm run bootstrap:admin
 npm run dev
 ```
 
 Open **http://127.0.0.1:5173**. The API listens on **http://127.0.0.1:3001**. Keep both ports available. Stop with Ctrl+C. Vite proxies `/api` to port 3001; if changing the API port, change `vite.config.ts` as well. `.env.example` documents the optional `PORT` environment variable; this project does not automatically load `.env` files.
 
 ```sh
-npm test        # 19 service tests
+npm test        # unit and API integration tests
 npm run build  # strict TypeScript check + production bundle
-npm run check  # both
+npm run check  # lint, formatting, unit/API tests and build
+npm run test:e2e # isolated Chromium browser account flows
 npm start      # serves the built application + API on port 3001
 ```
 
@@ -30,13 +33,13 @@ Dependencies are pinned in `package-lock.json`. Tested with Node 24.19.0 and npm
 
 ## Try the demo
 
-1. Start as **Alex Nguyen / Requester**. Choose Equipment; fill in the title, equipment, quantity and business reason.
+1. Sign in as admin, reset and enable **Alex Nguyen**, then sign out and sign in as Alex. Change the initial password and sign in again. Choose Equipment; fill in the title, equipment, quantity and business reason.
 2. Select **Save draft**. An incomplete draft is allowed; any supplied numeric value must still be valid. Open a different request, then reopen the draft.
 3. Switch request type to Software access. The second conditional section appears. Values from the inactive section are discarded on save.
 4. Switch English / Vietnamese without losing the entered values.
 5. Open **Demo controls**, select **Simulate failure on next save**, and save or submit. The API returns 503; input remains visible. Retry succeeds.
 6. Submit a complete request. Status becomes Submitted, fields become read-only and an audit event is added.
-7. Switch to **Sam Patel**: Alex's requests are absent. Switch to **Morgan Lee / Reviewer**: all requests are visible. Submitted and In review requests have Approve/Reject controls; rejection requires a reason. Decisions and comments appear in Activity.
+7. After resetting/enabling Sam and Morgan from the admin screen, sign out and sign in as **Sam Patel**: Alex's requests are absent. Sign in as **Morgan Lee / Reviewer**: all requests are visible. Submitted and In review requests have Approve/Reject controls; rejection requires a reason. Decisions and comments appear in Activity.
 8. Open the seeded Analytics request to show an existing submission, In review status and history. The seeded Monitor request shows Approved.
 
 Final submission requires title (3-80 characters), business reason (10-500), request type, and the relevant section. Equipment quantity is 1-25; access duration is 1-365 days. These are explicit demo assumptions, not confirmed customer policies.

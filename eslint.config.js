@@ -12,6 +12,8 @@ export default tseslint.config(
       "dist/**",
       ".data/**",
       "coverage/**",
+      "playwright-report/**",
+      "test-results/**",
       ".scannerwork/**",
     ],
   },

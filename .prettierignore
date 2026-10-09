@@ -5,3 +5,6 @@ coverage/
 .scannerwork/
 package-lock.json
 docs/
+
+playwright-report/
+test-results/

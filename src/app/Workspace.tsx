@@ -1,7 +1,11 @@
 import { AppHeader } from "./AppHeader";
 import { RequestList } from "../features/requests/components/RequestList";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { type Locale, type RequestRecord, type User } from "../../shared/model";
+import {
+  type Locale,
+  type RequestRecord,
+  type AccountUser,
+} from "../../shared/model";
 import { api, type Definition } from "../features/requests/api";
 import { copy } from "../i18n";
 import { RequestEditor } from "../features/requests/components/RequestEditor";
@@ -11,12 +15,16 @@ export function Workspace({
   user,
   locale,
   setLocale,
-  setUser,
+  onLogout,
+  onManage,
+  onPassword,
 }: {
-  user: User;
+  user: AccountUser;
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  setUser: (user: User) => void;
+  onLogout: () => void;
+  onManage: () => void;
+  onPassword: () => void;
 }) {
   const t = copy(locale);
   const [requests, setRequests] = useState<RequestRecord[]>([]);
@@ -150,8 +158,14 @@ export function Workspace({
         busy={busy}
         loading={loading}
         setLocale={setLocale}
-        onUserChange={(next) => {
-          if (canLeave()) setUser(next);
+        onLogout={() => {
+          if (canLeave()) onLogout();
+        }}
+        onManage={() => {
+          if (canLeave()) onManage();
+        }}
+        onPassword={() => {
+          if (canLeave()) onPassword();
         }}
       />
       <div className="tw:flex tw:justify-between tw:gap-3 tw:bg-sage tw:px-5 tw:py-2 tw:text-[10px] tw:font-semibold tw:tracking-wider tw:text-muted tw:md:px-[5vw] tw:[&_span]:font-normal tw:[&_span]:tracking-normal">

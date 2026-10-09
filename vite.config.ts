@@ -5,6 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   test: {
+    include: ["tests/**/*.test.ts"],
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov"],

@@ -173,13 +173,7 @@ export function registerAuth(
     res.json(publicAccount(user));
   });
   app.patch("/api/admin/users/:id", (req, res) => {
-    const parsed = z
-      .object({ active: z.boolean() })
-      .strict()
-      .safeParse(req.body);
-    if (!parsed.success)
-      throw new ApiError(422, "INVALID", "Supply the account active status.");
-    const user = users.setActive(String(req.params.id), parsed.data.active);
+    const user = users.edit(String(req.params.id), req.body);
     sessions.revoke(user.id);
     res.json(publicAccount(user));
   });

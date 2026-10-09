@@ -1,6 +1,6 @@
 # Backend authentication (step 1)
 
-The API now requires server-issued sessions. `x-demo-user` is ignored. The existing frontend still uses demo identity and will require the login UI in step 2.
+The API now requires server-issued sessions. `x-demo-user` is ignored. The frontend restores the server session, supports login/logout and required or voluntary password changes, and gives admins a user-management screen. Session and CSRF tokens are not stored in localStorage.
 
 ## First administrator
 
@@ -19,7 +19,7 @@ Legacy Alex/Sam/Morgan IDs are preserved for existing request ownership. These a
 - `GET /api/admin/users`: public account list, admin only.
 - `POST /api/admin/users`: `{email,password,name,department,role,isAdmin?}`; role is requester or reviewer, isAdmin defaults to false. New users must change their password.
 - `POST /api/admin/users/:id/reset-password`: `{password}`; revokes all target sessions and requires a password change.
-- `PATCH /api/admin/users/:id`: `{active:boolean}`; revokes target sessions. Enabling an account without a password and disabling the last active admin are rejected.
+- `PATCH /api/admin/users/:id`: `{name?,email?,department?,role?,isAdmin?,active?}` with at least one property; revokes target sessions after edits. Enabling an account without a password and disabling the last active admin are rejected.
 
 Authenticated mutations require `X-CSRF-Token` from login/session. Accounts with a required password change can only use session, logout and change-password endpoints. Administrative access is separate from the requester/reviewer role; form-specific permissions are step 3.
 
@@ -29,6 +29,12 @@ The cookie is HttpOnly, SameSite=Strict, scoped to `/api`, with an absolute eigh
 
 `npm run check` runs Vitest unit/API tests and the TypeScript/Vite build. Tests create isolated temporary data directories. Authentication tests cover password hashing and bounds, duplicate/bootstrap races, persistence, session expiry/revocation, CSRF, impersonation rejection, forced changes, reset/disable/enable, admin boundaries, logout, restart and login throttling. Existing attachment API tests authenticate through login.
 
-Browser automation and the account UI are deliberately scheduled for step 2.
+## Browser verification (step 2)
+
+Install the Chromium test browser with `npx playwright install chromium`, then run `npm run test:e2e`. Playwright builds the actual frontend and starts an isolated API on port 3107 using a temporary data directory. It refuses to reuse an existing server, cleans up test data on shutdown, and records trace/screenshots on failure. No real `.data` records are changed.
+
+The browser scenarios cover admin create/edit, mandatory password change with confirmation errors, login persistence across reload, CSRF-protected draft save, non-admin navigation, password reset and disabled-user session revocation, re-enable, logout, expired-session handling and English/Vietnamese labels. Admin account forms support name/email/department/role and administrator status. Form-specific permissions remain step 3.
+
+User edits revoke sessions so role/account changes take effect immediately; editing your own account returns you to login. Admin screens report API failures and require confirmation before disabling a user or resetting a password. Existing request navigation still protects unsaved input before logout or changing screens.
 
 References: [Node crypto scrypt](https://nodejs.org/api/crypto.html#cryptoscryptpassword-salt-keylen-options-callback), [OWASP CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
