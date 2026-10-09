@@ -38,6 +38,7 @@ export interface RequestData {
   additionalNotes?: string;
 }
 export interface Attachment {
+  id?: string; // Absent only for legacy metadata-only attachments.
   name: string;
   size: number;
   type: string;

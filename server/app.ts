@@ -1,3 +1,5 @@
+import { createAttachmentStore } from "./attachments/store";
+import { registerAttachmentRoutes } from "./attachments/routes";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,6 +14,7 @@ export function createApp({
   production = false,
 } = {}) {
   const store = createRequestStore(dataDir);
+  const files = createAttachmentStore(dataDir);
   const app = express();
   app.disable("x-powered-by");
   app.use(express.json({ limit: "128kb" }));
@@ -30,7 +33,8 @@ export function createApp({
     next();
   });
   registerFormRoutes(app, root);
-  registerRequestRoutes(app, store);
+  registerRequestRoutes(app, store, files);
+  registerAttachmentRoutes(app, store, files);
   app.use("/api", (_req, _res, next) =>
     next(new ApiError(404, "NOT_FOUND", "API endpoint not found.")),
   );
@@ -53,6 +57,13 @@ export function createApp({
           message: error.message,
           fields: error.fields,
         });
+      } else if ((error as { type?: string })?.type === "entity.too.large") {
+        res
+          .status(413)
+          .json({
+            code: "FILE_SIZE",
+            message: "The upload or request body exceeds its size limit.",
+          });
       } else if (error instanceof SyntaxError) {
         res.status(400).json({
           code: "INVALID",

@@ -1,8 +1,13 @@
+import type { AttachmentStore } from "../attachments/store";
 import { reviewRequest } from "./review";
 import type { Express } from "express";
 import { ApiError, canRead, saveRequest } from "./service";
 import type { RequestStore } from "../storage/requests";
-export function registerRequestRoutes(app: Express, store: RequestStore) {
+export function registerRequestRoutes(
+  app: Express,
+  store: RequestStore,
+  files: AttachmentStore,
+) {
   app.post("/api/requests/:id/review", (req, res, next) => {
     try {
       if (res.locals.user.role !== "reviewer")
@@ -56,6 +61,12 @@ export function registerRequestRoutes(app: Express, store: RequestStore) {
         req.body,
         req.params.id,
         new Date().toISOString(),
+      );
+      record.attachments = files.resolve(
+        res.locals.user,
+        record.id,
+        record.attachments,
+        previous,
       );
       store.put(record);
       res.status(previous ? 200 : 201).json(record);
