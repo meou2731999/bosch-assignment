@@ -67,6 +67,8 @@ export function createAttachmentStore(dataDir: string) {
       name: string,
       bytes: Buffer,
     ): Attachment {
+      // Control characters and path separators are deliberately rejected in filenames.
+      // eslint-disable-next-line no-control-regex
       if (!name.trim() || name.length > 120 || /[\x00-\x1f\x7f/\\]/.test(name))
         throw new ApiError(422, "FILE_NAME", "Invalid file name.");
       if (

@@ -20,11 +20,10 @@ export const api = {
   list: (user: User) => call<RequestRecord[]>(user, "/requests"),
   get: (user: User, id: string) =>
     call<RequestRecord>(user, `/requests/${encodeURIComponent(id)}`),
-  form: (user: User, version?: number) =>
-    call<Definition>(
-      user,
-      `/forms/request${version ? `/versions/${version}` : ""}`,
-    ),
+  form: (user: User, version?: number) => {
+    const suffix = version ? `/versions/${version}` : "";
+    return call<Definition>(user, `/forms/request${suffix}`);
+  },
   save: (user: User, id: string, input: SaveInput, fail: boolean) =>
     call<RequestRecord>(user, `/requests/${id}`, {
       method: "PUT",

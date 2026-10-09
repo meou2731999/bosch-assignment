@@ -1,10 +1,6 @@
 export type Role = "requester" | "reviewer";
 export type Status =
-  | "draft"
-  | "submitted"
-  | "in_review"
-  | "approved"
-  | "rejected";
+  "draft" | "submitted" | "in_review" | "approved" | "rejected";
 export type Locale = "en" | "vi";
 export interface User {
   id: string;

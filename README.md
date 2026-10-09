@@ -1,3 +1,7 @@
+# Authentication update
+
+The backend now requires session login. See [authentication setup and API](docs/authentication.md). The demo frontend login replacement is pending step 2; older demo-identity instructions below describe the prior UI.
+
 # Request Desk - dynamic form assessment
 
 A small working React prototype for the supplied Solution Engineer assignment. Form.io renders trusted JSON definitions; the application owns identity context, request records, persistence and status. All users and records are synthetic.
@@ -49,19 +53,19 @@ Data is stored locally in `.data/requests.json` after the first save. On a fresh
 
 ## What is real and what is simulated?
 
-| Capability | Delivered |
-| --- | --- |
-| JSON loading + React renderer | Real API fetch; Form.io JSON is passed to `Form` through `DynamicForm` |
-| Conditional UI + validation | Two distinct panels, built-in client validation and independent API validation |
-| Identity | Mock user switcher and `x-demo-user`; anyone can impersonate a demo user |
-| Authorization behavior | API checks role/ownership; this only demonstrates policy under a simulated identity |
-| Draft, submit, reload | Real HTTP requests and local file persistence; final records are read-only |
-| Attachments | **Metadata only**: filename, type, size. No upload, download, scanning or stored file bytes |
-| Approval | Reviewer approve/reject with comments, revision checks and persisted audit; no external workflow integration |
-| Languages | English/Vietnamese application copy and form labels/options/primary validation; API diagnostics and some renderer accessibility hints remain English |
-| Audit | Server-generated actor/time/action on writes; local file, not immutable or compliance-grade |
-| Existing product integration | Demonstrated API boundary; no access to the customer's actual backend |
-| Form authoring | Two author-managed JSON fixtures; no builder, admin UI or publishing workflow |
+| Capability                    | Delivered                                                                                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| JSON loading + React renderer | Real API fetch; Form.io JSON is passed to `Form` through `DynamicForm`                                                                               |
+| Conditional UI + validation   | Two distinct panels, built-in client validation and independent API validation                                                                       |
+| Identity                      | Mock user switcher and `x-demo-user`; anyone can impersonate a demo user                                                                             |
+| Authorization behavior        | API checks role/ownership; this only demonstrates policy under a simulated identity                                                                  |
+| Draft, submit, reload         | Real HTTP requests and local file persistence; final records are read-only                                                                           |
+| Attachments                   | **Metadata only**: filename, type, size. No upload, download, scanning or stored file bytes                                                          |
+| Approval                      | Reviewer approve/reject with comments, revision checks and persisted audit; no external workflow integration                                         |
+| Languages                     | English/Vietnamese application copy and form labels/options/primary validation; API diagnostics and some renderer accessibility hints remain English |
+| Audit                         | Server-generated actor/time/action on writes; local file, not immutable or compliance-grade                                                          |
+| Existing product integration  | Demonstrated API boundary; no access to the customer's actual backend                                                                                |
+| Form authoring                | Two author-managed JSON fixtures; no builder, admin UI or publishing workflow                                                                        |
 
 ## Code map
 
@@ -87,13 +91,13 @@ React state holds the selected record, identity, language and network state. For
 
 Every `/api` endpoint except `/api/health` requires `x-demo-user: alex|sam|morgan`.
 
-| Method | Path | Result |
-| --- | --- | --- |
-| GET | `/api/forms/request` | Active `{version, definition}` |
-| GET | `/api/forms/request/versions/1` | Pinned definition (1 or 2) |
-| GET | `/api/requests` | Visible records for the actor |
-| GET | `/api/requests/:id` | Existing record; hidden/nonexistent returns 404 |
-| PUT | `/api/requests/:id` | Create/save/submit a record |
+| Method | Path                            | Result                                          |
+| ------ | ------------------------------- | ----------------------------------------------- |
+| GET    | `/api/forms/request`            | Active `{version, definition}`                  |
+| GET    | `/api/forms/request/versions/1` | Pinned definition (1 or 2)                      |
+| GET    | `/api/requests`                 | Visible records for the actor                   |
+| GET    | `/api/requests/:id`             | Existing record; hidden/nonexistent returns 404 |
+| PUT    | `/api/requests/:id`             | Create/save/submit a record                     |
 
 PUT body:
 
@@ -151,3 +155,23 @@ Application components use Tailwind CSS 4 via the Vite plugin. Utilities use the
 ## Review decisions
 
 `POST /api/requests/:id/review` accepts `{revision, decision: "approve" | "reject", comment}`. Only the reviewer may decide a Submitted or In review request. Rejection requires a trimmed, non-empty reason; approval comments are optional; comments are limited to 2,000 characters. The API owns the actor, timestamp, status and next revision. The requester can read the decision/comment in Activity. Approved and Rejected are terminal in this prototype; reopening/resubmitting is outside the requested change. Stale decisions return 409 and require reload.
+
+## Code quality and formatting
+
+Install development tools with `npm ci --include=dev` (also works when the local npm configuration omits dev dependencies).
+
+- `npm run lint`: TypeScript, React Hooks and SonarJS recommended rules, with no warnings allowed.
+- `npm run lint:fix`: apply available ESLint fixes.
+- `npm run format`: format source code and configuration with Prettier. Documents in `docs/` and generated files are excluded.
+- `npm run format:check`: verify formatting without changing files.
+- `npm run check`: lint, formatting, tests and production build.
+- `npm run test:coverage`: produce `coverage/lcov.info` for SonarQube. Coverage includes frontend source even though current tests focus on the backend.
+
+SonarJS provides local static analysis; it does not run a SonarQube server scan or establish a passed Quality Gate. The configuration in `sonar-project.properties` supports a separate scan with an installed SonarScanner CLI after generating coverage:
+
+```sh
+npm run test:coverage
+sonar-scanner -Dsonar.host.url="$SONAR_HOST_URL"
+```
+
+Set `SONAR_HOST_URL` and `SONAR_TOKEN` in the environment for your SonarQube instance. Keep credentials out of committed files. See the [SonarJS rules](https://github.com/SonarSource/SonarJS/blob/master/packages/analysis/src/jsts/rules/README.md) and [Prettier integration guide](https://prettier.io/docs/integrating-with-linters).

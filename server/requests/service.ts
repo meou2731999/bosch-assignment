@@ -44,6 +44,64 @@ export function canRead(user: User, record: RequestRecord) {
   return user.role === "reviewer" || record.ownerId === user.id;
 }
 
+function normalizeData(
+  raw: Record<string, unknown>,
+  formVersion: 1 | 2,
+): RequestData {
+  // Explicit policy: inactive section values are discarded before validation/storage.
+  const source = { ...raw };
+  for (const key of Object.keys(source)) {
+    if (source[key] === "" || source[key] === null) delete source[key];
+  }
+  if (source.requestType !== "equipment") {
+    delete source.equipment;
+    delete source.quantity;
+  }
+  if (source.requestType !== "software") {
+    delete source.application;
+    delete source.accessDays;
+  }
+  if (formVersion === 1) delete source.additionalNotes;
+  const validated = dataSchema.safeParse(source);
+  if (!validated.success) {
+    const fields = Object.fromEntries(
+      validated.error.issues.map((i) => [String(i.path[0]), i.message]),
+    );
+    throw new ApiError(
+      422,
+      "INVALID",
+      "Please check the highlighted values.",
+      fields,
+    );
+  }
+  return validated.data;
+}
+
+function validateSubmission(data: RequestData) {
+  const fields: Record<string, string> = {};
+  if (!data.requestTitle || data.requestTitle.length < 3)
+    fields.requestTitle = "Enter at least 3 characters.";
+  if (!data.requestType) fields.requestType = "Choose a request type.";
+  if (!data.reason || data.reason.length < 10)
+    fields.reason = "Enter at least 10 characters.";
+  if (data.requestType === "equipment") {
+    if (!data.equipment) fields.equipment = "Choose equipment.";
+    if (!data.quantity) fields.quantity = "Enter a quantity from 1 to 25.";
+  }
+  if (data.requestType === "software") {
+    if (!data.application) fields.application = "Choose an application.";
+    if (!data.accessDays)
+      fields.accessDays = "Enter access duration from 1 to 365 days.";
+  }
+  if (Object.keys(fields).length)
+    throw new ApiError(
+      422,
+      "INVALID",
+      "Complete the required fields before submitting.",
+      fields,
+    );
+}
+
 export function saveRequest(
   user: User,
   previous: RequestRecord | undefined,
@@ -84,57 +142,12 @@ export function saveRequest(
     );
   }
 
-  // Explicit policy: inactive section values are discarded before validation/storage.
-  const source = { ...input.data };
-  for (const key of Object.keys(source)) {
-    if (source[key] === "" || source[key] === null) delete source[key];
-  }
-  if (source.requestType !== "equipment") {
-    delete source.equipment;
-    delete source.quantity;
-  }
-  if (source.requestType !== "software") {
-    delete source.application;
-    delete source.accessDays;
-  }
-  if (input.formVersion === 1) delete source.additionalNotes;
-  const validated = dataSchema.safeParse(source);
-  if (!validated.success) {
-    const fields = Object.fromEntries(
-      validated.error.issues.map((i) => [String(i.path[0]), i.message]),
-    );
-    throw new ApiError(
-      422,
-      "INVALID",
-      "Please check the highlighted values.",
-      fields,
-    );
-  }
-  const data: RequestData = validated.data;
-  if (input.action === "submit") {
-    const fields: Record<string, string> = {};
-    if (!data.requestTitle || data.requestTitle.length < 3)
-      fields.requestTitle = "Enter at least 3 characters.";
-    if (!data.requestType) fields.requestType = "Choose a request type.";
-    if (!data.reason || data.reason.length < 10)
-      fields.reason = "Enter at least 10 characters.";
-    if (data.requestType === "equipment") {
-      if (!data.equipment) fields.equipment = "Choose equipment.";
-      if (!data.quantity) fields.quantity = "Enter a quantity from 1 to 25.";
-    }
-    if (data.requestType === "software") {
-      if (!data.application) fields.application = "Choose an application.";
-      if (!data.accessDays)
-        fields.accessDays = "Enter access duration from 1 to 365 days.";
-    }
-    if (Object.keys(fields).length)
-      throw new ApiError(
-        422,
-        "INVALID",
-        "Complete the required fields before submitting.",
-        fields,
-      );
-  }
+  const data = normalizeData(input.data, input.formVersion);
+  if (input.action === "submit") validateSubmission(data);
+  let auditAction: RequestRecord["audit"][number]["action"] = previous
+    ? "draft_saved"
+    : "created";
+  if (input.action === "submit") auditAction = "submitted";
   return {
     id,
     ownerId: user.id,
@@ -150,12 +163,7 @@ export function saveRequest(
       {
         at: now,
         actorId: user.id,
-        action:
-          input.action === "submit"
-            ? "submitted"
-            : previous
-              ? "draft_saved"
-              : "created",
+        action: auditAction,
       },
     ],
   };

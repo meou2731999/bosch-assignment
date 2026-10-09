@@ -106,6 +106,8 @@ export function RequestEditor({
       onBusy(false);
     }
   }
+  const idleStatus = dirty ? t.dirty : t.help;
+  const saveStatus = saving ? t.saving : idleStatus;
   return (
     <>
       <section
@@ -167,7 +169,7 @@ export function RequestEditor({
               className="tw:max-w-xs tw:text-xs tw:text-muted"
               role="status"
             >
-              {saving ? t.saving : dirty ? t.dirty : t.help}
+              {saveStatus}
             </span>
             <div>
               <button

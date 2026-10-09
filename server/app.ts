@@ -3,7 +3,8 @@ import { registerAttachmentRoutes } from "./attachments/routes";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { USERS } from "../shared/model";
+import { createUserStore } from "./auth/users";
+import { registerAuth } from "./auth/routes";
 import { ApiError } from "./http/errors";
 import { createRequestStore } from "./storage/requests";
 import { registerRequestRoutes } from "./requests/routes";
@@ -12,7 +13,9 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export function createApp({
   dataDir = path.join(root, ".data"),
   production = false,
+  secureCookies = false,
 } = {}) {
+  const users = createUserStore(dataDir);
   const store = createRequestStore(dataDir);
   const files = createAttachmentStore(dataDir);
   const app = express();
@@ -23,15 +26,9 @@ export function createApp({
     next();
   });
   app.get("/api/health", (_req, res) =>
-    res.json({ status: "ok", authentication: "demo-only" }),
+    res.json({ status: "ok", authentication: "session" }),
   );
-  app.use("/api", (req, res, next) => {
-    const user = USERS.find((u) => u.id === req.header("x-demo-user"));
-    if (!user)
-      return next(new ApiError(401, "UNAUTHENTICATED", "Select a demo user."));
-    res.locals.user = user;
-    next();
-  });
+  registerAuth(app, users, secureCookies);
   registerFormRoutes(app, root);
   registerRequestRoutes(app, store, files);
   registerAttachmentRoutes(app, store, files);
@@ -58,12 +55,10 @@ export function createApp({
           fields: error.fields,
         });
       } else if ((error as { type?: string })?.type === "entity.too.large") {
-        res
-          .status(413)
-          .json({
-            code: "FILE_SIZE",
-            message: "The upload or request body exceeds its size limit.",
-          });
+        res.status(413).json({
+          code: "FILE_SIZE",
+          message: "The upload or request body exceeds its size limit.",
+        });
       } else if (error instanceof SyntaxError) {
         res.status(400).json({
           code: "INVALID",

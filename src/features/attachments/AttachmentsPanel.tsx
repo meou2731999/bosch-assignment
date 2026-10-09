@@ -73,6 +73,8 @@ export function AttachmentsPanel({
       }
     }
   }
+  const emptyStatus = attachments.length ? "" : t.noFiles;
+  const uploadStatus = uploading ? t.uploading : emptyStatus;
   return (
     <section
       aria-labelledby="attachments-heading"
@@ -104,7 +106,7 @@ export function AttachmentsPanel({
         />
       )}
       <p role="status" className="tw:mt-3 tw:text-xs tw:text-muted">
-        {uploading ? t.uploading : !attachments.length ? t.noFiles : ""}
+        {uploadStatus}
       </p>
       <ul className="tw:m-0 tw:list-none tw:p-0">
         {attachments.map((file, index) => (

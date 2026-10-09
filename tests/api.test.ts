@@ -4,23 +4,50 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import type { Server } from "node:http";
 import { randomUUID } from "node:crypto";
+import { createUserStore } from "../server/auth/users";
 import { createApp } from "../server/app";
 import type { Attachment } from "../shared/model";
 import { MAX_FILE_BYTES } from "../shared/attachments";
 const dir = mkdtempSync(path.join(tmpdir(), "request-desk-test-"));
 let server: Server;
 let base: string;
+const credentials = new Map<string, { cookie: string; csrfToken: string }>();
+const password = "attachment-test-password";
+async function seedAccounts() {
+  const users = createUserStore(dir);
+  for (const user of users.all()) {
+    await users.password(user.id, password, false);
+    users.setActive(user.id, true);
+  }
+}
 async function start() {
   server = createApp({ dataDir: dir }).listen(0, "127.0.0.1");
   await new Promise<void>((resolve) => server.once("listening", resolve));
   base = `http://127.0.0.1:${(server.address() as { port: number }).port}/api`;
+  for (const id of ["alex", "sam", "morgan"]) {
+    const response = await fetch(base + "/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-requested-with": "RequestDesk",
+      },
+      body: JSON.stringify({ email: `${id}@example.test`, password }),
+    });
+    credentials.set(id, {
+      cookie: response.headers.get("set-cookie")!.split(";")[0],
+      csrfToken: (await response.json()).csrfToken,
+    });
+  }
 }
 async function stop() {
   await new Promise<void>((resolve, reject) =>
     server.close((error) => (error ? reject(error) : resolve())),
   );
 }
-beforeAll(start);
+beforeAll(async () => {
+  await seedAccounts();
+  await start();
+});
 afterAll(async () => {
   await stop();
   rmSync(dir, { recursive: true, force: true });
@@ -28,7 +55,15 @@ afterAll(async () => {
 const send = (url: string, user = "alex", init?: RequestInit) =>
   fetch(base + url, {
     ...init,
-    headers: { "x-demo-user": user, ...init?.headers },
+    headers: {
+      ...(credentials.has(user)
+        ? {
+            Cookie: credentials.get(user)!.cookie,
+            "x-csrf-token": credentials.get(user)!.csrfToken,
+          }
+        : {}),
+      ...init?.headers,
+    },
   });
 const upload = (
   id: string,

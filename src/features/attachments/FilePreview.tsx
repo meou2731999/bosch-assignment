@@ -47,6 +47,47 @@ export function FilePreview({
       if (url) URL.revokeObjectURL(url);
     };
   }, [file, user]);
+  function renderPreview() {
+    if (!content) return null;
+    if (file.type === "text/plain")
+      return (
+        <pre className="tw:max-h-[60vh] tw:overflow-auto tw:whitespace-pre-wrap tw:break-words tw:rounded-lg tw:bg-stone-50 tw:p-4 tw:text-sm">
+          {content.text}
+        </pre>
+      );
+    if (file.type.startsWith("image/"))
+      return (
+        <img
+          src={content.url}
+          alt={file.name}
+          className="tw:mx-auto tw:max-h-[65vh] tw:max-w-full tw:object-contain"
+        />
+      );
+    return (
+      <iframe
+        src={content.url}
+        title={`${t.preview}: ${file.name}`}
+        className="tw:h-[65vh] tw:w-full tw:border-0"
+      />
+    );
+  }
+  function renderContent() {
+    if (error) return <ErrorNotice error={error} locale={locale} />;
+    if (!content) return <p role="status">{t.loading}</p>;
+    return (
+      <>
+        {renderPreview()}
+        <p className="tw:mt-4 tw:text-xs tw:text-muted">{t.previewHint}</p>
+        <a
+          href={content.url}
+          download={file.name}
+          className="tw:inline-flex tw:rounded-lg tw:bg-brand tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:text-white tw:no-underline"
+        >
+          {t.download}
+        </a>
+      </>
+    );
+  }
   return createPortal(
     <dialog
       ref={dialog}
@@ -68,41 +109,7 @@ export function FilePreview({
           {t.close}
         </Button>
       </div>
-      <div className="tw:p-4">
-        {error ? (
-          <ErrorNotice error={error} locale={locale} />
-        ) : !content ? (
-          <p role="status">{t.loading}</p>
-        ) : (
-          <>
-            {file.type === "text/plain" ? (
-              <pre className="tw:max-h-[60vh] tw:overflow-auto tw:whitespace-pre-wrap tw:break-words tw:rounded-lg tw:bg-stone-50 tw:p-4 tw:text-sm">
-                {content.text}
-              </pre>
-            ) : file.type.startsWith("image/") ? (
-              <img
-                src={content.url}
-                alt={file.name}
-                className="tw:mx-auto tw:max-h-[65vh] tw:max-w-full tw:object-contain"
-              />
-            ) : (
-              <iframe
-                src={content.url}
-                title={`${t.preview}: ${file.name}`}
-                className="tw:h-[65vh] tw:w-full tw:border-0"
-              />
-            )}
-            <p className="tw:mt-4 tw:text-xs tw:text-muted">{t.previewHint}</p>
-            <a
-              href={content.url}
-              download={file.name}
-              className="tw:inline-flex tw:rounded-lg tw:bg-brand tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:text-white tw:no-underline"
-            >
-              {t.download}
-            </a>
-          </>
-        )}
-      </div>
+      <div className="tw:p-4">{renderContent()}</div>
     </dialog>,
     document.body,
   );

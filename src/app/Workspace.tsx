@@ -1,12 +1,7 @@
 import { AppHeader } from "./AppHeader";
 import { RequestList } from "../features/requests/components/RequestList";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  USERS,
-  type Locale,
-  type RequestRecord,
-  type User,
-} from "../../shared/model";
+import { type Locale, type RequestRecord, type User } from "../../shared/model";
 import { api, type Definition } from "../features/requests/api";
 import { copy } from "../i18n";
 import { RequestEditor } from "../features/requests/components/RequestEditor";
@@ -64,9 +59,10 @@ export function Workspace({
     [user],
   );
   useEffect(() => {
+    const requestGeneration = generation;
     void load(undefined, true);
     return () => {
-      generation.current++;
+      requestGeneration.current++;
     };
   }, [load]);
   useEffect(() => {
@@ -89,16 +85,63 @@ export function Workspace({
       next,
       ...current.filter((r) => r.id !== next.id),
     ]);
-    setNotice(
-      next.status === "approved"
-        ? "approvedMessage"
-        : next.status === "rejected"
-          ? "rejectedMessage"
-          : next.status === "draft"
-            ? "saved"
-            : "sent",
+    const notices = {
+      approved: "approvedMessage",
+      rejected: "rejectedMessage",
+      draft: "saved",
+      submitted: "sent",
+      in_review: "sent",
+    } as const;
+    setNotice(notices[next.status]);
+  }
+  function renderContent() {
+    if (loading)
+      return (
+        <div
+          className="tw:rounded-xl tw:border tw:border-line tw:bg-white tw:px-7 tw:py-16 tw:text-center tw:text-muted"
+          role="status"
+        >
+          {t.loading}
+        </div>
+      );
+    if (error)
+      return (
+        <div
+          className="tw:mb-5 tw:rounded-lg tw:border tw:border-red-200 tw:bg-red-50 tw:px-5 tw:py-4 tw:text-sm tw:text-red-900 tw:[&_p]:my-2 tw:[&_ul]:mb-0"
+          role="alert"
+        >
+          {error}{" "}
+          <button
+            className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:border-transparent tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:cursor-wait tw:disabled:opacity-50 tw:border-slate-300 tw:bg-white tw:text-brand tw:hover:bg-sage"
+            onClick={() => void load(record?.id, true)}
+          >
+            {t.retry}
+          </button>
+        </div>
+      );
+    if (definition && (user.role === "requester" || record))
+      return (
+        <RequestEditor
+          key={`${record?.id ?? "new"}-${record?.revision ?? 0}-${definition.version}-${generation.current}`}
+          user={user}
+          locale={locale}
+          definition={definition}
+          record={record}
+          onDirty={setDirty}
+          onBusy={setBusy}
+          onSaved={saved}
+          reload={() => navigate(record?.id)}
+        />
+      );
+    return (
+      <div className="tw:rounded-xl tw:border tw:border-line tw:bg-white tw:px-7 tw:py-16 tw:text-center tw:text-muted">
+        {t.selectHint}
+      </div>
     );
   }
+  const defaultTitle = user.role === "requester" ? t.newRequest : t.allRequests;
+  const title = record ? record.data.requestTitle || t.untitled : defaultTitle;
+
   return (
     <div className="tw:min-h-screen tw:bg-canvas tw:font-sans tw:text-[15px] tw:text-ink">
       <AppHeader
@@ -133,13 +176,7 @@ export function Workspace({
               <div className="tw:mb-3 tw:text-[10px] tw:font-bold tw:tracking-[0.16em] tw:text-muted">
                 IT SERVICES
               </div>
-              <h1>
-                {record
-                  ? record.data.requestTitle || t.untitled
-                  : user.role === "requester"
-                    ? t.newRequest
-                    : t.allRequests}
-              </h1>
+              <h1>{title}</h1>
             </div>
             {record && <Status status={record.status} locale={locale} />}
           </div>
@@ -154,43 +191,7 @@ export function Workspace({
               ✓ {t[notice]}
             </div>
           )}
-          {loading ? (
-            <div
-              className="tw:rounded-xl tw:border tw:border-line tw:bg-white tw:px-7 tw:py-16 tw:text-center tw:text-muted"
-              role="status"
-            >
-              {t.loading}
-            </div>
-          ) : error ? (
-            <div
-              className="tw:mb-5 tw:rounded-lg tw:border tw:border-red-200 tw:bg-red-50 tw:px-5 tw:py-4 tw:text-sm tw:text-red-900 tw:[&_p]:my-2 tw:[&_ul]:mb-0"
-              role="alert"
-            >
-              {error}{" "}
-              <button
-                className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:border-transparent tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:cursor-wait tw:disabled:opacity-50 tw:border-slate-300 tw:bg-white tw:text-brand tw:hover:bg-sage"
-                onClick={() => void load(record?.id, true)}
-              >
-                {t.retry}
-              </button>
-            </div>
-          ) : definition && (user.role === "requester" || record) ? (
-            <RequestEditor
-              key={`${record?.id ?? "new"}-${record?.revision ?? 0}-${definition.version}-${generation.current}`}
-              user={user}
-              locale={locale}
-              definition={definition}
-              record={record}
-              onDirty={setDirty}
-              onBusy={setBusy}
-              onSaved={saved}
-              reload={() => navigate(record?.id)}
-            />
-          ) : (
-            <div className="tw:rounded-xl tw:border tw:border-line tw:bg-white tw:px-7 tw:py-16 tw:text-center tw:text-muted">
-              {t.selectHint}
-            </div>
-          )}
+          {renderContent()}
         </main>
       </div>
       <footer className="tw:border-t tw:border-line tw:px-5 tw:py-5 tw:text-center tw:text-xs tw:text-muted">
