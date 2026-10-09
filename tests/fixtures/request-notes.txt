@@ -1,0 +1,4 @@
+Request Desk attachment verification
+
+This is synthetic test content.
+The requester and assigned reviewer should be able to open this file after saving.
