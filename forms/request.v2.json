@@ -1,0 +1,170 @@
+{
+  "display": "form",
+  "type": "form",
+  "title": "IT service request",
+  "components": [
+    {
+      "type": "textfield",
+      "key": "requestTitle",
+      "label": "Request title",
+      "input": true,
+      "placeholder": "What do you need?",
+      "validate": {
+        "required": true,
+        "minLength": 3,
+        "maxLength": 80
+      }
+    },
+    {
+      "type": "radio",
+      "key": "requestType",
+      "label": "Request type",
+      "input": true,
+      "inline": true,
+      "values": [
+        {
+          "label": "Equipment",
+          "value": "equipment"
+        },
+        {
+          "label": "Software access",
+          "value": "software"
+        }
+      ],
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "type": "panel",
+      "key": "equipmentSection",
+      "title": "Equipment details",
+      "collapsible": false,
+      "conditional": {
+        "show": true,
+        "when": "requestType",
+        "eq": "equipment"
+      },
+      "clearOnHide": true,
+      "components": [
+        {
+          "type": "select",
+          "key": "equipment",
+          "label": "Equipment",
+          "input": true,
+          "widget": "html5",
+          "placeholder": "Choose an option",
+          "data": {
+            "values": [
+              {
+                "label": "Laptop",
+                "value": "laptop"
+              },
+              {
+                "label": "Monitor",
+                "value": "monitor"
+              },
+              {
+                "label": "Headset",
+                "value": "headset"
+              }
+            ]
+          },
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "type": "number",
+          "key": "quantity",
+          "label": "Quantity",
+          "input": true,
+          "decimalLimit": 0,
+          "validate": {
+            "required": true,
+            "min": 1,
+            "max": 25
+          },
+          "description": "Between 1 and 25 items"
+        }
+      ]
+    },
+    {
+      "type": "panel",
+      "key": "softwareSection",
+      "title": "Software access details",
+      "collapsible": false,
+      "conditional": {
+        "show": true,
+        "when": "requestType",
+        "eq": "software"
+      },
+      "clearOnHide": true,
+      "components": [
+        {
+          "type": "select",
+          "key": "application",
+          "label": "Application",
+          "input": true,
+          "widget": "html5",
+          "placeholder": "Choose an option",
+          "data": {
+            "values": [
+              {
+                "label": "Design workspace",
+                "value": "design"
+              },
+              {
+                "label": "Analytics workspace",
+                "value": "analytics"
+              },
+              {
+                "label": "Project workspace",
+                "value": "project"
+              }
+            ]
+          },
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "type": "number",
+          "key": "accessDays",
+          "label": "Access duration (days)",
+          "input": true,
+          "decimalLimit": 0,
+          "validate": {
+            "required": true,
+            "min": 1,
+            "max": 365
+          },
+          "description": "Between 1 and 365 days"
+        }
+      ]
+    },
+    {
+      "type": "textarea",
+      "key": "reason",
+      "label": "Business reason",
+      "input": true,
+      "rows": 3,
+      "placeholder": "Explain how this will help your work.",
+      "validate": {
+        "required": true,
+        "minLength": 10,
+        "maxLength": 500
+      }
+    },
+    {
+      "type": "textarea",
+      "key": "additionalNotes",
+      "label": "Additional notes",
+      "input": true,
+      "rows": 2,
+      "validate": {
+        "maxLength": 500
+      }
+    }
+  ]
+}
