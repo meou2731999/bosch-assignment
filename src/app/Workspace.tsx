@@ -29,7 +29,9 @@ export function Workspace({
   const [definition, setDefinition] = useState<Definition | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState<"saved" | "sent" | "">("");
+  const [notice, setNotice] = useState<
+    "saved" | "sent" | "approvedMessage" | "rejectedMessage" | ""
+  >("");
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const generation = useRef(0);
@@ -87,7 +89,15 @@ export function Workspace({
       next,
       ...current.filter((r) => r.id !== next.id),
     ]);
-    setNotice(next.status === "draft" ? "saved" : "sent");
+    setNotice(
+      next.status === "approved"
+        ? "approvedMessage"
+        : next.status === "rejected"
+          ? "rejectedMessage"
+          : next.status === "draft"
+            ? "saved"
+            : "sent",
+    );
   }
   return (
     <div className="tw:min-h-screen tw:bg-canvas tw:font-sans tw:text-[15px] tw:text-ink">

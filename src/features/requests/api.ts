@@ -1,4 +1,9 @@
-import type { RequestRecord, SaveInput, User } from "../../../shared/model";
+import type {
+  RequestRecord,
+  ReviewInput,
+  SaveInput,
+  User,
+} from "../../../shared/model";
 import type { FormType } from "@formio/react";
 import { call } from "../../lib/http";
 export { HttpError } from "../../lib/http";
@@ -7,6 +12,11 @@ export interface Definition {
   definition: FormType;
 }
 export const api = {
+  review: (user: User, id: string, input: ReviewInput) =>
+    call<RequestRecord>(user, `/requests/${encodeURIComponent(id)}/review`, {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
   list: (user: User) => call<RequestRecord[]>(user, "/requests"),
   get: (user: User, id: string) =>
     call<RequestRecord>(user, `/requests/${encodeURIComponent(id)}`),

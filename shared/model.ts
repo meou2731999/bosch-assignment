@@ -1,5 +1,10 @@
 export type Role = "requester" | "reviewer";
-export type Status = "draft" | "submitted" | "in_review" | "approved";
+export type Status =
+  | "draft"
+  | "submitted"
+  | "in_review"
+  | "approved"
+  | "rejected";
 export type Locale = "en" | "vi";
 export interface User {
   id: string;
@@ -40,7 +45,14 @@ export interface Attachment {
 export interface AuditEvent {
   at: string;
   actorId: string;
-  action: "created" | "draft_saved" | "submitted" | "in_review" | "approved";
+  comment?: string;
+  action:
+    | "created"
+    | "draft_saved"
+    | "submitted"
+    | "in_review"
+    | "approved"
+    | "rejected";
 }
 export interface RequestRecord {
   id: string;
@@ -60,4 +72,10 @@ export interface SaveInput {
   action: "draft" | "submit";
   data: RequestData;
   attachments: Attachment[];
+}
+
+export interface ReviewInput {
+  revision: number;
+  decision: "approve" | "reject";
+  comment: string;
 }

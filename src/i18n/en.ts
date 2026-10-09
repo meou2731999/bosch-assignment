@@ -18,7 +18,7 @@ export const messages = {
     "Tell us what you need. Save your progress or send a complete request to IT Services.",
   readonly: "This request is read-only.",
   reviewHint:
-    "Reviewers can view all requests. Approval actions belong to the existing workflow.",
+    "Review submitted requests, inspect attachments, then approve or reject with a comment.",
   selectHint: "Select a request to view its details.",
   loading: "Loading…",
   retry: "Retry",
@@ -51,6 +51,18 @@ export const messages = {
   back: "Reload request",
   updated: "Updated",
   reloadHint: "Reloading replaces your local input with the saved revision.",
+  rejected: "Rejected",
+  reviewTitle: "Review decision",
+  reviewComment: "Review comment",
+  reviewHelp:
+    "A reason is required when rejecting. Comments are visible to the requester.",
+  approve: "Approve request",
+  reject: "Reject request",
+  reviewing: "Saving decision…",
+  rejectReason: "Enter a reason before rejecting this request.",
+  approvedMessage: "Request approved.",
+  rejectedMessage: "Request rejected.",
+  commentLimit: "Comments must be at most 2,000 characters.",
 } as const;
 
 export const formMessages: Record<string, string> = {};

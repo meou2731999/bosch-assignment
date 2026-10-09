@@ -19,7 +19,7 @@ export const messages: Messages = {
     "Cho biết nhu cầu của bạn. Lưu tiến độ hoặc gửi yêu cầu đầy đủ đến bộ phận IT.",
   readonly: "Yêu cầu này chỉ được xem.",
   reviewHint:
-    "Người xem xét có thể xem mọi yêu cầu. Thao tác duyệt thuộc quy trình hiện có.",
+    "Xem yêu cầu đã gửi và tệp đính kèm, sau đó duyệt hoặc từ chối kèm nhận xét.",
   selectHint: "Chọn một yêu cầu để xem chi tiết.",
   loading: "Đang tải…",
   retry: "Thử lại",
@@ -52,6 +52,17 @@ export const messages: Messages = {
   back: "Tải lại yêu cầu",
   updated: "Cập nhật",
   reloadHint: "Tải lại sẽ thay nội dung đang nhập bằng bản đã lưu.",
+  rejected: "Đã từ chối",
+  reviewTitle: "Quyết định xét duyệt",
+  reviewComment: "Nhận xét xét duyệt",
+  reviewHelp: "Bắt buộc ghi lý do khi từ chối. Người yêu cầu sẽ thấy nhận xét.",
+  approve: "Duyệt yêu cầu",
+  reject: "Từ chối yêu cầu",
+  reviewing: "Đang lưu quyết định…",
+  rejectReason: "Nhập lý do trước khi từ chối yêu cầu này.",
+  approvedMessage: "Đã duyệt yêu cầu.",
+  rejectedMessage: "Đã từ chối yêu cầu.",
+  commentLimit: "Nhận xét tối đa 2.000 ký tự.",
 };
 
 export const formMessages = {

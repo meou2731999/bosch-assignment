@@ -48,31 +48,25 @@ export function createApp({
       _next: express.NextFunction,
     ) => {
       if (error instanceof ApiError) {
-        res
-          .status(error.status)
-          .json({
-            code: error.code,
-            message: error.message,
-            fields: error.fields,
-          });
+        res.status(error.status).json({
+          code: error.code,
+          message: error.message,
+          fields: error.fields,
+        });
       } else if (error instanceof SyntaxError) {
-        res
-          .status(400)
-          .json({
-            code: "INVALID",
-            message: "The request contains invalid JSON.",
-          });
+        res.status(400).json({
+          code: "INVALID",
+          message: "The request contains invalid JSON.",
+        });
       } else {
         console.error(
           "API operation failed:",
           error instanceof Error ? error.message : "Unknown error",
         );
-        res
-          .status(500)
-          .json({
-            code: "INTERNAL",
-            message: "Unable to complete this operation. Please retry.",
-          });
+        res.status(500).json({
+          code: "INTERNAL",
+          message: "Unable to complete this operation. Please retry.",
+        });
       }
     },
   );

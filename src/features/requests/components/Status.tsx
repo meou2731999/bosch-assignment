@@ -4,6 +4,7 @@ const tones: Record<RequestStatus, string> = {
   draft: "tw:bg-slate-100 tw:text-slate-600",
   submitted: "tw:bg-blue-50 tw:text-blue-800",
   in_review: "tw:bg-amber-50 tw:text-amber-800",
+  rejected: "tw:bg-red-100 tw:text-red-800",
   approved: "tw:bg-green-100 tw:text-green-800",
 };
 export function Status({

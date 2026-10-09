@@ -23,6 +23,11 @@ export function ActivityTimeline({
             />
             <div>
               <strong>{t[event.action]}</strong>
+              {event.comment && (
+                <p className="tw:my-1 tw:whitespace-pre-wrap tw:break-words tw:rounded-lg tw:border tw:border-line tw:bg-white tw:p-3 tw:text-sm">
+                  {event.comment}
+                </p>
+              )}
               <span>
                 {USERS.find((u) => u.id === event.actorId)?.name ??
                   event.actorId}

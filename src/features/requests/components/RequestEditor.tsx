@@ -1,3 +1,4 @@
+import { ReviewPanel } from "./ReviewPanel";
 import { ActivityTimeline } from "./ActivityTimeline";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Webform } from "@formio/js";
@@ -286,6 +287,19 @@ export function RequestEditor({
           </label>
         </details>
       )}
+      {record &&
+        user.role === "reviewer" &&
+        ["submitted", "in_review"].includes(record.status) && (
+          <ReviewPanel
+            user={user}
+            record={record}
+            locale={locale}
+            onSaved={onSaved}
+            onBusy={onBusy}
+            onDirty={onDirty}
+            reload={reload}
+          />
+        )}
       {record && <ActivityTimeline events={record.audit} locale={locale} />}
     </>
   );

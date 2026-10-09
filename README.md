@@ -14,7 +14,7 @@ npm run dev
 Open **http://127.0.0.1:5173**. The API listens on **http://127.0.0.1:3001**. Keep both ports available. Stop with Ctrl+C. Vite proxies `/api` to port 3001; if changing the API port, change `vite.config.ts` as well. `.env.example` documents the optional `PORT` environment variable; this project does not automatically load `.env` files.
 
 ```sh
-npm test        # 11 service tests
+npm test        # 19 service tests
 npm run build  # strict TypeScript check + production bundle
 npm run check  # both
 npm start      # serves the built application + API on port 3001
@@ -32,7 +32,7 @@ Dependencies are pinned in `package-lock.json`. Tested with Node 24.19.0 and npm
 4. Switch English / Vietnamese without losing the entered values.
 5. Open **Demo controls**, select **Simulate failure on next save**, and save or submit. The API returns 503; input remains visible. Retry succeeds.
 6. Submit a complete request. Status becomes Submitted, fields become read-only and an audit event is added.
-7. Switch to **Sam Patel**: Alex's requests are absent. Switch to **Morgan Lee / Reviewer**: all requests are visible, with no create, save or submit action.
+7. Switch to **Sam Patel**: Alex's requests are absent. Switch to **Morgan Lee / Reviewer**: all requests are visible. Submitted and In review requests have Approve/Reject controls; rejection requires a reason. Decisions and comments appear in Activity.
 8. Open the seeded Analytics request to show an existing submission, In review status and history. The seeded Monitor request shows Approved.
 
 Final submission requires title (3-80 characters), business reason (10-500), request type, and the relevant section. Equipment quantity is 1-25; access duration is 1-365 days. These are explicit demo assumptions, not confirmed customer policies.
@@ -57,7 +57,7 @@ Data is stored locally in `.data/requests.json` after the first save. On a fresh
 | Authorization behavior | API checks role/ownership; this only demonstrates policy under a simulated identity |
 | Draft, submit, reload | Real HTTP requests and local file persistence; final records are read-only |
 | Attachments | **Metadata only**: filename, type, size. No upload, download, scanning or stored file bytes |
-| Approval | Read-only status and seeded audit events; no approval transitions or workflow integration |
+| Approval | Reviewer approve/reject with comments, revision checks and persisted audit; no external workflow integration |
 | Languages | English/Vietnamese application copy and form labels/options/primary validation; API diagnostics and some renderer accessibility hints remain English |
 | Audit | Server-generated actor/time/action on writes; local file, not immutable or compliance-grade |
 | Existing product integration | Demonstrated API boundary; no access to the customer's actual backend |
@@ -147,3 +147,7 @@ The installed `@formio/react` and `@formio/js` package metadata declares MIT lic
 ## UI styling
 
 Application components use Tailwind CSS 4 via the Vite plugin. Utilities use the `tw:` prefix to avoid collisions with the Bootstrap classes required by Form.io. `src/styles/index.css` declares tokens and vendor layers; `src/features/forms/formio.css` contains only scoped renderer adjustments. There is no application-wide legacy stylesheet. Translations live in `src/i18n/en.ts` and `src/i18n/vi.ts`, one file per language.
+
+## Review decisions
+
+`POST /api/requests/:id/review` accepts `{revision, decision: "approve" | "reject", comment}`. Only the reviewer may decide a Submitted or In review request. Rejection requires a trimmed, non-empty reason; approval comments are optional; comments are limited to 2,000 characters. The API owns the actor, timestamp, status and next revision. The requester can read the decision/comment in Activity. Approved and Rejected are terminal in this prototype; reopening/resubmitting is outside the requested change. Stale decisions return 409 and require reload.

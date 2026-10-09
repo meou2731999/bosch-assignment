@@ -1,7 +1,30 @@
+import { reviewRequest } from "./review";
 import type { Express } from "express";
 import { ApiError, canRead, saveRequest } from "./service";
 import type { RequestStore } from "../storage/requests";
 export function registerRequestRoutes(app: Express, store: RequestStore) {
+  app.post("/api/requests/:id/review", (req, res, next) => {
+    try {
+      if (res.locals.user.role !== "reviewer")
+        throw new ApiError(
+          403,
+          "FORBIDDEN",
+          "Only reviewers may make a review decision.",
+        );
+      const previous = store.get(req.params.id);
+      if (!previous) throw new ApiError(404, "NOT_FOUND", "Request not found.");
+      const record = reviewRequest(
+        res.locals.user,
+        previous,
+        req.body,
+        new Date().toISOString(),
+      );
+      store.put(record);
+      res.json(record);
+    } catch (error) {
+      next(error);
+    }
+  });
   app.get("/api/requests", (_req, res) => {
     res.json(
       store
