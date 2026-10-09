@@ -31,7 +31,7 @@ export const messages: Messages = {
   dirty: "Thay đổi chưa lưu",
   attachments: "Tệp đính kèm",
   fileHint:
-    "Demo: chỉ lưu tên và thông tin tệp. Nội dung tệp không được tải lên hay lưu trữ. Tối đa 3 tệp, mỗi tệp 5 MB: PDF, PNG, JPG hoặc TXT.",
+    "Tệp được lưu cục bộ. Tối đa 3 tệp, mỗi tệp 5 MB: PDF, PNG, JPG hoặc TXT. Lưu yêu cầu để gắn các tệp đã tải lên.",
   fileError:
     "Chọn tối đa 3 tệp PDF, PNG, JPG hoặc TXT không rỗng, mỗi tệp tối đa 5 MB, tên tối đa 120 ký tự.",
   remove: "Xóa",
@@ -63,6 +63,13 @@ export const messages: Messages = {
   approvedMessage: "Đã duyệt yêu cầu.",
   rejectedMessage: "Đã từ chối yêu cầu.",
   commentLimit: "Nhận xét tối đa 2.000 ký tự.",
+  viewFile: "Xem tệp",
+  download: "Tải xuống",
+  close: "Đóng bản xem",
+  uploading: "Đang tải tệp lên…",
+  legacyFile: "Chưa có nội dung — cần tải lại tệp này.",
+  previewHint: "Nếu trình duyệt không hiển thị bản xem, hãy tải tệp về để mở.",
+  preview: "Xem trước tệp",
 };
 
 export const formMessages = {

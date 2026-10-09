@@ -30,7 +30,7 @@ export const messages = {
   dirty: "Unsaved changes",
   attachments: "Attachments",
   fileHint:
-    "Demo: file names and metadata only. File contents are not uploaded or stored. Up to 3 files, 5 MB each: PDF, PNG, JPG or TXT.",
+    "Files are stored locally. Up to 3 files, 5 MB each: PDF, PNG, JPG or TXT. Save the request to attach uploaded files.",
   fileError:
     "Choose up to 3 non-empty PDF, PNG, JPG or TXT files, at most 5 MB each, with names up to 120 characters.",
   remove: "Remove",
@@ -63,6 +63,14 @@ export const messages = {
   approvedMessage: "Request approved.",
   rejectedMessage: "Request rejected.",
   commentLimit: "Comments must be at most 2,000 characters.",
+  viewFile: "View file",
+  download: "Download",
+  close: "Close preview",
+  uploading: "Uploading files…",
+  legacyFile: "Content unavailable — upload this file again.",
+  previewHint:
+    "If the preview is unavailable in this browser, download the file to view it.",
+  preview: "File preview",
 } as const;
 
 export const formMessages: Record<string, string> = {};
