@@ -143,3 +143,7 @@ Official references checked 9 October 2026:
 - [Renderer source](https://github.com/formio/formio.js)
 
 The installed `@formio/react` and `@formio/js` package metadata declares MIT licensing. This prototype uses the renderer packages only, not a hosted Form.io project or Enterprise server. Separate products, premium components, support and deployment rights must be verified against the selected offering before procurement. No paid capability is assumed in the demo.
+
+## UI styling
+
+Application components use Tailwind CSS 4 via the Vite plugin. Utilities use the `tw:` prefix to avoid collisions with the Bootstrap classes required by Form.io. `src/styles/index.css` declares tokens and vendor layers; `src/features/forms/formio.css` contains only scoped renderer adjustments. There is no application-wide legacy stylesheet. Translations live in `src/i18n/en.ts` and `src/i18n/vi.ts`, one file per language.

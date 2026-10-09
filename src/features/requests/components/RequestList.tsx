@@ -20,27 +20,36 @@ export function RequestList({
 }) {
   const t = copy(locale);
   return (
-    <aside className="sidebar" aria-label={t.requests}>
-      <div className="section-eyebrow">WORKSPACE</div>
-      <div className="sidebar-title">
+    <aside className="tw:min-w-0 tw:pt-1" aria-label={t.requests}>
+      <div className="tw:mb-3 tw:text-[10px] tw:font-bold tw:tracking-[0.16em] tw:text-muted">
+        WORKSPACE
+      </div>
+      <div className="tw:mb-3 tw:flex tw:items-baseline tw:justify-between tw:[&_h2]:text-base tw:[&_h2]:font-semibold tw:[&_span]:rounded-full tw:[&_span]:border tw:[&_span]:border-line tw:[&_span]:px-2 tw:[&_span]:text-xs">
         <h2>{user.role === "reviewer" ? t.allRequests : t.requests}</h2>
         <span>{requests.length}</span>
       </div>
       {user.role === "requester" && (
         <button
-          className="button button-primary new-button"
+          className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:border-transparent tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:cursor-wait tw:disabled:opacity-50 tw:bg-brand tw:text-white tw:hover:bg-brand-hover tw:mb-5 tw:w-full tw:justify-start"
           disabled={loading || busy}
           onClick={() => navigate()}
         >
           <span aria-hidden="true">＋</span> {t.newRequest}
         </button>
       )}
-      <nav className="request-list" aria-label={t.requests}>
-        {!loading && !requests.length && <p className="muted">{t.empty}</p>}
+      <nav
+        className="tw:flex tw:gap-2 tw:overflow-x-auto tw:pb-2 tw:md:flex-col"
+        aria-label={t.requests}
+      >
+        {!loading && !requests.length && (
+          <p className="tw:text-sm tw:leading-relaxed tw:text-muted">
+            {t.empty}
+          </p>
+        )}
         {requests.map((r) => (
           <button
             key={r.id}
-            className={`request-item ${r.id === selectedId ? "selected" : ""}`}
+            className={`tw:flex tw:min-w-[210px] tw:flex-col tw:gap-2 tw:rounded-lg tw:border tw:p-4 tw:text-left tw:disabled:opacity-50 tw:md:min-w-0 tw:[&_strong]:text-sm tw:[&_strong]:font-semibold tw:[&_small]:text-xs tw:[&_small]:text-muted ${r.id === selectedId ? "tw:border-green-300 tw:bg-white tw:shadow-sm" : "tw:border-transparent tw:bg-sage/40 tw:hover:bg-sage"}`}
             aria-current={r.id === selectedId ? "page" : undefined}
             disabled={busy || loading}
             onClick={() => navigate(r.id)}
@@ -56,7 +65,7 @@ export function RequestList({
           </button>
         ))}
       </nav>
-      <div className="sidebar-note">
+      <div className="tw:mt-7 tw:hidden tw:border-t tw:border-line tw:pt-5 tw:text-xs tw:leading-relaxed tw:text-muted tw:md:block tw:[&_span]:mb-2 tw:[&_span]:block tw:[&_span]:text-xl">
         <span aria-hidden="true">↳</span>{" "}
         {user.role === "reviewer" ? t.reviewHint : t.help}
       </div>

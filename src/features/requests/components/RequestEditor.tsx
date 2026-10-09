@@ -129,25 +129,32 @@ export function RequestEditor({
   const fields = error instanceof HttpError ? Object.entries(error.fields) : [];
   return (
     <>
-      <section className="surface editor" aria-label={t.newRequest}>
-        <div className="editor-meta">
+      <section
+        className="tw:overflow-hidden tw:rounded-xl tw:border tw:border-line tw:bg-white tw:shadow-sm"
+        aria-label={t.newRequest}
+      >
+        <div className="tw:flex tw:flex-wrap tw:gap-x-6 tw:gap-y-2 tw:border-b tw:border-line tw:bg-stone-50 tw:px-5 tw:py-4 tw:text-xs tw:text-muted tw:md:px-7 tw:[&_strong]:ml-1 tw:[&_strong]:font-semibold tw:[&_strong]:text-ink">
           <span>
             {t.version} <strong>{definition.version}</strong>
           </span>
           <span>
             {t.revision} <strong>{record?.revision ?? 0}</strong>
           </span>
-          <span className="owner">
+          <span className="tw:md:ml-auto">
             {t.requestOwner}{" "}
             <strong>
               {USERS.find((u) => u.id === record?.ownerId)?.name ?? user.name}
             </strong>
           </span>
         </div>
-        {readOnly && <div className="read-only-note">{t.readonly}</div>}
+        {readOnly && (
+          <div className="tw:bg-slate-100 tw:px-5 tw:py-3 tw:text-xs tw:text-slate-600 tw:md:px-7">
+            {t.readonly}
+          </div>
+        )}
         {error && (
           <div
-            className="notice error"
+            className="tw:mb-5 tw:rounded-lg tw:border tw:border-red-200 tw:bg-red-50 tw:px-5 tw:py-4 tw:text-sm tw:text-red-900 tw:[&_p]:my-2 tw:[&_ul]:mb-0"
             role="alert"
             tabIndex={-1}
             ref={errorBox}
@@ -167,14 +174,20 @@ export function RequestEditor({
               ["CONFLICT", "LOCKED", "VERSION"].includes(error.code) && (
                 <>
                   <p>{t.reloadHint}</p>
-                  <button className="button button-secondary" onClick={reload}>
+                  <button
+                    className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:border-transparent tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:cursor-wait tw:disabled:opacity-50 tw:border-slate-300 tw:bg-white tw:text-brand tw:hover:bg-sage"
+                    onClick={reload}
+                  >
                     {t.back}
                   </button>
                 </>
               )}
           </div>
         )}
-        <fieldset disabled={saving} className="form-fields">
+        <fieldset
+          disabled={saving}
+          className="tw:min-w-0 tw:border-0 tw:px-5 tw:pt-6 tw:pb-4 tw:md:px-7"
+        >
           <DynamicForm
             definition={definition.definition}
             initialData={initialData}
@@ -183,9 +196,12 @@ export function RequestEditor({
             onReady={onReady}
             onDirty={markDirty}
           />
-          <div className="attachment-area">
+          <div className="tw:mt-6 tw:border-t tw:border-line tw:pt-6 tw:[&_h2]:text-sm tw:[&_h2]:font-semibold tw:[&_input]:max-w-full tw:[&_input]:text-xs tw:[&_input]:file:mr-3 tw:[&_input]:file:rounded-md tw:[&_input]:file:border tw:[&_input]:file:border-line tw:[&_input]:file:bg-sage tw:[&_input]:file:px-3 tw:[&_input]:file:py-2">
             <h2>{t.attachments}</h2>
-            <p id="file-help" className="muted">
+            <p
+              id="file-help"
+              className="tw:text-sm tw:leading-relaxed tw:text-muted"
+            >
               {t.fileHint}
             </p>
             {!readOnly && (
@@ -201,8 +217,10 @@ export function RequestEditor({
                 }}
               />
             )}
-            {!attachments.length && <p className="no-files">{t.noFiles}</p>}
-            <ul className="attachment-list">
+            {!attachments.length && (
+              <p className="tw:mt-3 tw:text-xs tw:text-muted">{t.noFiles}</p>
+            )}
+            <ul className="tw:mt-3 tw:list-none tw:p-0 tw:text-sm tw:[&_li]:flex tw:[&_li]:items-center tw:[&_li]:justify-between tw:[&_li]:gap-3 tw:[&_li]:border-b tw:[&_li]:border-line tw:[&_li]:py-3 tw:[&_span]:break-all tw:[&_small]:text-muted">
               {attachments.map((f, index) => (
                 <li key={`${f.name}-${index}`}>
                   <span>
@@ -210,7 +228,7 @@ export function RequestEditor({
                   </span>
                   {!readOnly && (
                     <button
-                      className="text-button"
+                      className="tw:border-0 tw:bg-transparent tw:text-xs tw:text-red-800 tw:underline"
                       aria-label={`${t.remove} ${f.name}`}
                       onClick={() => {
                         setAttachments(
@@ -228,20 +246,23 @@ export function RequestEditor({
           </div>
         </fieldset>
         {!readOnly && (
-          <div className="form-actions">
-            <span className="save-indicator" role="status">
+          <div className="tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-4 tw:border-t tw:border-line tw:px-5 tw:py-5 tw:md:px-7 tw:[&>div]:flex tw:[&>div]:flex-wrap tw:[&>div]:gap-2">
+            <span
+              className="tw:max-w-xs tw:text-xs tw:text-muted"
+              role="status"
+            >
               {saving ? t.saving : dirty ? t.dirty : t.help}
             </span>
             <div>
               <button
-                className="button button-secondary"
+                className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:border-transparent tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:cursor-wait tw:disabled:opacity-50 tw:border-slate-300 tw:bg-white tw:text-brand tw:hover:bg-sage"
                 disabled={!ready || saving}
                 onClick={() => void save("draft")}
               >
                 {t.saveDraft}
               </button>
               <button
-                className="button button-primary"
+                className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:border-transparent tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:cursor-wait tw:disabled:opacity-50 tw:bg-brand tw:text-white tw:hover:bg-brand-hover"
                 disabled={!ready || saving}
                 onClick={() => void save("submit")}
               >
@@ -252,7 +273,7 @@ export function RequestEditor({
         )}
       </section>
       {!readOnly && (
-        <details className="demo-controls">
+        <details className="tw:mx-1 tw:mt-4 tw:mb-7 tw:text-xs tw:text-muted tw:[&_label]:block tw:[&_label]:pt-3 tw:[&_input]:mr-1 tw:[&_input]:accent-brand">
           <summary>{t.demoTools}</summary>
           <label>
             <input

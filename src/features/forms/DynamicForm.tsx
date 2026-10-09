@@ -49,6 +49,7 @@ export function DynamicForm({
   }, [locale]);
   return (
     <Form
+      className="formio-surface"
       src={definition}
       submission={submission}
       options={options}
