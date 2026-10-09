@@ -52,7 +52,7 @@ Draft save skips required-field completeness but the API still checks field type
 
 ## Proposed customer integration (not implemented)
 
-Reuse the existing product shell/session and replace `src/api.ts` calls with the product API contract. The API derives the actor from the verified session and reuses existing authorization policies. Persist `{formId, formVersion, revision, ownerId, status, data, attachmentIds, timestamps}` in existing entities. Store published definitions as immutable configuration records with an active version pointer. Use the product's existing file service and workflow capability; no new Form.io server is assumed.
+Reuse the existing product shell/session and replace `src/features/requests/api.ts` calls with the product API contract. The API derives the actor from the verified session and reuses existing authorization policies. Persist `{formId, formVersion, revision, ownerId, status, data, attachmentIds, timestamps}` in existing entities. Store published definitions as immutable configuration records with an active version pointer. Use the product's existing file service and workflow capability; no new Form.io server is assumed.
 
 Submission should validate ownership, schema compatibility and domain rules before saving. Persist the status change and audit in the existing database transaction. Use the platform's existing reliable workflow dispatch mechanism so a retried client call cannot trigger duplicate approvals. If that capability is absent, discover and estimate it explicitly rather than hiding it in the frontend estimate.
 

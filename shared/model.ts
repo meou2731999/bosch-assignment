@@ -1,24 +1,47 @@
-export type Role = 'requester' | 'reviewer';
-export type Status = 'draft' | 'submitted' | 'in_review' | 'approved';
-export type Locale = 'en' | 'vi';
-export interface User { id: string; name: string; role: Role; department: string }
+export type Role = "requester" | "reviewer";
+export type Status = "draft" | "submitted" | "in_review" | "approved";
+export type Locale = "en" | "vi";
+export interface User {
+  id: string;
+  name: string;
+  role: Role;
+  department: string;
+}
 export const USERS: User[] = [
-  { id: 'alex', name: 'Alex Nguyen', role: 'requester', department: 'Operations' },
-  { id: 'sam', name: 'Sam Patel', role: 'requester', department: 'Sales' },
-  { id: 'morgan', name: 'Morgan Lee', role: 'reviewer', department: 'IT Services' },
+  {
+    id: "alex",
+    name: "Alex Nguyen",
+    role: "requester",
+    department: "Operations",
+  },
+  { id: "sam", name: "Sam Patel", role: "requester", department: "Sales" },
+  {
+    id: "morgan",
+    name: "Morgan Lee",
+    role: "reviewer",
+    department: "IT Services",
+  },
 ];
 export interface RequestData {
   requestTitle?: string;
-  requestType?: 'equipment' | 'software';
+  requestType?: "equipment" | "software";
   reason?: string;
-  equipment?: 'laptop' | 'monitor' | 'headset';
+  equipment?: "laptop" | "monitor" | "headset";
   quantity?: number;
-  application?: 'design' | 'analytics' | 'project';
+  application?: "design" | "analytics" | "project";
   accessDays?: number;
   additionalNotes?: string;
 }
-export interface Attachment { name: string; size: number; type: string }
-export interface AuditEvent { at: string; actorId: string; action: 'created' | 'draft_saved' | 'submitted' | 'in_review' | 'approved' }
+export interface Attachment {
+  name: string;
+  size: number;
+  type: string;
+}
+export interface AuditEvent {
+  at: string;
+  actorId: string;
+  action: "created" | "draft_saved" | "submitted" | "in_review" | "approved";
+}
 export interface RequestRecord {
   id: string;
   ownerId: string;
@@ -34,7 +57,7 @@ export interface RequestRecord {
 export interface SaveInput {
   revision: number;
   formVersion: 1 | 2;
-  action: 'draft' | 'submit';
+  action: "draft" | "submit";
   data: RequestData;
   attachments: Attachment[];
 }

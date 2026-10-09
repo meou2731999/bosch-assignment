@@ -66,14 +66,14 @@ Data is stored locally in `.data/requests.json` after the first save. On a fresh
 ## Code map
 
 ```text
-src/App.tsx         Application shell, list and request editor
-src/DynamicForm.tsx Form.io lifecycle, locale and renderer boundary
-src/api.ts         HTTP adapter and error parsing
-src/i18n.ts        English/Vietnamese presentation strings
+src/app/Workspace.tsx         Application shell, list and request editor
+src/features/forms/DynamicForm.tsx Form.io lifecycle, locale and renderer boundary
+src/features/requests/api.ts         HTTP adapter and error parsing
+src/i18n/        English/Vietnamese presentation strings
 shared/model.ts    Request, user, attachment and API contract types
 forms/             Versioned Form.io definitions and active pointer
 server/index.ts    HTTP routes, fixture loading and local persistence
-server/service.ts  Validation, authorization and status/revision rules
+server/requests/service.ts  Validation, authorization and status/revision rules
 server/seed.ts     Synthetic existing submissions
 tests/             Service tests covering business/security boundaries
 docs/              Proposal, architecture, decisions, delivery, risks and UAT
