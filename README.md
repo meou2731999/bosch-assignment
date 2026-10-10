@@ -1,176 +1,80 @@
-# Authentication update
-
-The backend now requires session login. See [authentication setup and API](docs/authentication.md). Sign in with a bootstrapped admin to create and manage user accounts and form types. See [form store and permissions](docs/forms-and-permissions.md). New users need per-form grants before creating or reviewing requests. Each new user must change their initial password.
-
 # Request Desk - dynamic form assessment
 
-A small working React prototype for the supplied Solution Engineer assignment. Form.io renders trusted JSON definitions; the application owns identity context, request records, persistence and status. All users and records are synthetic.
+A React/Express implementation with session login, admin account and form management, per-form permissions, JSON-driven requests, real local attachments, review decisions and versioned draft history. All accounts and data are synthetic. The seven implementation stages are complete; customer integration and business acceptance are separate work.
 
 ## Run locally
 
-Use Node.js **24 LTS** and npm. No Form.io account, API key, database installation or Docker is needed.
+Use Node.js **24** and npm; no hosted Form.io account, API key, database or Docker is required.
 
 ```sh
 npm ci --include=dev
-# Supply ADMIN_EMAIL and ADMIN_PASSWORD in the environment, then:
+# Supply ADMIN_EMAIL and ADMIN_PASSWORD in the environment:
 npm run bootstrap:admin
 npm run dev
 ```
 
-Open **http://127.0.0.1:5173**. The API listens on **http://127.0.0.1:3001**. Keep both ports available. Stop with Ctrl+C. Vite proxies `/api` to port 3001; if changing the API port, change `vite.config.ts` as well. `.env.example` documents the optional `PORT` environment variable; this project does not automatically load `.env` files.
+Open **http://127.0.0.1:5173**; the API uses **http://127.0.0.1:3001**. Bootstrap refuses to replace an existing active administrator. See [authentication](docs/authentication.md) for account/password/session details. `.env.example` documents settings; the app does not load `.env` automatically. Set the same `DATA_DIR` for bootstrap and server when overriding `.data`.
+
+New accounts must change their initial password and sign in again. New accounts, including admins, have no form grants. Admin status permits account/form management and reading requests; create and review rights require explicit per-form grants. Legacy Alex/Sam/Morgan accounts start disabled until reset and enabled by an admin.
 
 ```sh
-npm test        # unit and API integration tests
-npm run build  # strict TypeScript check + production bundle
-npm run check  # lint, formatting, unit/API tests and build
-npm run test:e2e # isolated Chromium browser account flows
-npm start      # serves the built application + API on port 3001
+npm run check                 # lint, format, 77 unit/API tests, typecheck/build
+npx playwright install chromium
+npm run test:e2e:headed       # 11 visible Chromium scenarios, isolated data
+npm run test:e2e              # same scenarios headless, used by CI
+npm start                    # built app + API, after npm run build
 ```
 
-Stop the dev API before `npm start`, because both use port 3001. Run `npm run build` before `npm start`. The production build command produces a runnable bundle; the application's authentication remains a local demo.
+Stop the development API before `npm start`; both use port 3001. Browser tests use port 3107 and disposable temporary accounts/data, never your `.data`. The locked toolchain is currently verified on Node 24.19.0/npm 12.0.2 on macOS; CI targets Node 24 on Ubuntu 24.04.
 
-Dependencies are pinned in `package-lock.json`. Tested with Node 24.19.0 and npm 12.0.2 on macOS. Runtime: React 19.1.1, `@formio/react` 6.2.1, `@formio/js` 5.6.1, Express 5.1.0. Tooling: Vite 7.3.7, Vitest 5.0.3. `npm audit` reported zero known vulnerabilities in the locked tree on 9 October 2026; this is a point-in-time check, not a security certification.
+## Try the complete journey
 
-## Try the demo
+1. Sign in as admin, create a form type under **Manage forms**, enable **Use custom fields**, configure fields, preview, save and publish.
+2. Create a requester and reviewer under **Manage users**. Grant **Create requests** to the requester and **Review requests** to the reviewer for this type. Each signs in and changes their initial password.
+3. As requester, select the type, fill values and upload an optional PDF/PNG/JPG/TXT file (three files maximum, 5 MB each). Save an incomplete draft and reopen it. Supplied values must be valid even when required fields are omitted.
+4. Publish a newer schema as admin. **New request** loads the new definition without a frontend build or document reload. Existing requests retain their pinned version.
+5. On the saved draft, use **Refresh versions → Preview upgrade**. Inspect schema/data changes, correct every invalid value and required field, and choose **Validate preview changes**. Confirmation is blocked until the target schema validates. Cancel leaves the original draft unchanged.
+6. Confirm the upgrade. Save later changes or select a previous saved revision and preview/confirm an exact restore of its data, schema version and files. Restoring creates a new revision and retains audit/history.
+7. Submit the complete draft. Inputs become read-only. As reviewer, open the request, inspect files and approve or reject with a reason. Final decisions are immutable.
+8. Publish another version and reopen the submitted request: its data and historical schema remain unchanged.
 
-1. Sign in as admin, reset and enable **Alex Nguyen**, grant Alex **Create requests** for the IT form, then sign out and sign in as Alex. Change the initial password and sign in again. Choose Equipment; fill in the title, equipment, quantity and business reason.
-2. Select **Save draft**. An incomplete draft is allowed; any supplied numeric value must still be valid. Open a different request, then reopen the draft.
-3. Switch request type to Software access. The second conditional section appears. Values from the inactive section are discarded on save.
-4. Switch English / Vietnamese without losing the entered values.
-5. Open **Demo controls**, select **Simulate failure on next save**, and save or submit. The API returns 503; input remains visible. Retry succeeds.
-6. Submit a complete request. Status becomes Submitted, fields become read-only and an audit event is added.
-7. After resetting/enabling Sam and Morgan from the admin screen, sign out and sign in as **Sam Patel**: Alex's requests are absent. Sign in as **Morgan Lee / Reviewer**: all requests are visible. Submitted and In review requests have Approve/Reject controls; rejection requires a reason. Decisions and comments appear in Activity.
-8. Open the seeded Analytics request to show an existing submission, In review status and history. The seeded Monitor request shows Approved.
+English/Vietnamese switching preserves live data. Unsaved navigation asks before discarding input. **Demo controls** can simulate one failed save; retry retains input. Revision conflicts require explicit reload rather than silent overwrite.
 
-Final submission requires title (3-80 characters), business reason (10-500), request type, and the relevant section. Equipment quantity is 1-25; access duration is 1-365 days. These are explicit demo assumptions, not confirmed customer policies.
+## Delivered behavior and boundaries
 
-### Change a form without rebuilding the frontend
+| Area           | Current behavior                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Authentication | Server-issued HttpOnly session cookie, scrypt passwords, CSRF checks, forced changes, reset/revocation and process-local login throttling; no SSO |
+| Authorization  | Server-enforced owner and per-form create/view/review grants; self-review prohibited                                                              |
+| Authoring      | Restricted field editor, preview, immutable publication and active version per form                                                               |
+| Rendering      | Form.io for legacy/basic schemas; React structured renderer for multi-select, objects, repeat/table and scoped conditions                         |
+| Rules          | Nested AND/OR with root/row/parent scopes; shared custom-field visibility and validation; legacy rules keep their existing validator              |
+| Requests       | Real HTTP saves, optimistic revisions, pinned schemas, drafts/submission/review audit                                                             |
+| Files          | Real local bytes, policy/signature checks, authorized preview/download; no antivirus/quarantine or cloud retention                                |
+| History        | Atomic request/snapshot/audit writes, strict confirmed upgrades, exact historical restore                                                         |
+| CI             | GitHub Actions configuration for checks/headless Chromium and evidence artifacts; hosted execution awaits a GitHub remote                         |
+| Acceptance     | Local automated evidence; customer UAT, candidate review and production acceptance remain pending                                                 |
 
-Open **Manage forms** as admin, create or edit a form type from the existing IT templates, save its draft and publish. The API persists each published JSON snapshot in `.data/forms.json`. New requests load the active version; saved requests retain their original version. Manage grants through **Manage users → Form permissions**. Enable **Use custom fields** to add/edit/reorder inputs, choose data types and validation, preview, save and publish. Fields and rules are loaded from JSON; existing requests keep their old schema. See [form store and API details](docs/forms-and-permissions.md).
+The single-process JSON/file store, in-memory sessions/rate limits and local audit are demo infrastructure. Replace them with the existing product's database, session, approved file service and reliable workflow dispatch for production. The app binds to loopback by default. No production readiness, accessibility conformance or SonarQube server Quality Gate is claimed.
 
-## What is real and what is simulated?
+## Contracts and code map
 
-| Capability                    | Delivered                                                                                                                                            |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| JSON loading + React renderer | Real API fetch; Form.io JSON is passed to `Form` through `DynamicForm`                                                                               |
-| Conditional UI + validation   | Two distinct panels, built-in client validation and independent API validation                                                                       |
-| Identity                      | Mock user switcher and `x-demo-user`; anyone can impersonate a demo user                                                                             |
-| Authorization behavior        | API checks role/ownership; this only demonstrates policy under a simulated identity                                                                  |
-| Draft, submit, reload         | Real HTTP requests and local file persistence; final records are read-only                                                                           |
-| Attachments                   | **Metadata only**: filename, type, size. No upload, download, scanning or stored file bytes                                                          |
-| Approval                      | Reviewer approve/reject with comments, revision checks and persisted audit; no external workflow integration                                         |
-| Languages                     | English/Vietnamese application copy and form labels/options/primary validation; API diagnostics and some renderer accessibility hints remain English |
-| Audit                         | Server-generated actor/time/action on writes; local file, not immutable or compliance-grade                                                          |
-| Existing product integration  | Demonstrated API boundary; no access to the customer's actual backend                                                                                |
-| Form authoring                | Two author-managed JSON fixtures; no builder, admin UI or publishing workflow                                                                        |
+All `/api` endpoints except health and login require a verified session. Mutations require `X-Requested-With: RequestDesk` and `X-CSRF-Token`; `x-demo-user` is ignored. The API derives owner/status/audit and rejects forged values. Request PUT includes `{revision,formId,formVersion,action,data,attachments}`. Existing ordinary saves cannot change the pinned version. See [forms and permissions](docs/forms-and-permissions.md) and [upgrade/restore protocol](docs/draft-upgrades.md).
 
-## Code map
+- `src/app/`: shell, selected request and async load/navigation state.
+- `src/features/forms/`: authoring, `DynamicForm` and structured inputs.
+- `src/features/requests/`: save/review/file/history UI and HTTP adapters.
+- `shared/`: contracts, field parsing, validation and scoped visibility.
+- `server/`: auth, form publication, request policy, snapshots and local files.
+- `tests/`, `e2e/`: isolated unit/API and real production-bundle Chromium tests.
+- `.github/workflows/check.yml`: runnable CI checks and report retention.
 
-```text
-src/app/Workspace.tsx         Application shell, list and request editor
-src/features/forms/DynamicForm.tsx Form.io lifecycle, locale and renderer boundary
-src/features/requests/api.ts         HTTP adapter and error parsing
-src/i18n/        English/Vietnamese presentation strings
-shared/model.ts    Request, user, attachment and API contract types
-forms/             Versioned Form.io definitions and active pointer
-server/index.ts    HTTP routes, fixture loading and local persistence
-server/requests/service.ts  Validation, authorization and status/revision rules
-server/seed.ts     Synthetic existing submissions
-tests/             Service tests covering business/security boundaries
-docs/              Proposal, architecture, decisions, delivery, risks and UAT
-```
+Renderer state stays behind `FormHandle`; React owns product/network state. `DynamicForm` selects the compatible rendering path. Changing engines still requires schema/behavior mapping and regression tests. Published definitions and existing request contracts are preserved. ESLint enforces at most 200 lines in every authored JS/TS file.
 
-React state holds the selected record, identity, language and network state. Form.io holds live field state. A ref reads the renderer data on save; we do not duplicate every keystroke into a global store. Changing records remounts the renderer; changing language preserves data. A dirty guard protects navigation/reload. Pending saves disable actions and inputs. Failed saves retain input; validation feedback and API errors are visible. Old asynchronous loads cannot replace a newer selection.
+## Evidence and handoff
 
-`DynamicForm` is a small integration boundary, not an engine-independent schema translator. The schema, rules and field types remain coupled to Form.io. Replacing the renderer later would still need mapping and regression testing.
+Start with [final handoff](docs/handoff.md), [verification record](docs/verification.md), [browser instructions](docs/browser-tests.md) and [schema-only release evidence](docs/release-independent-schema.md). The HTML browser report contains bundle hashes and a schema-change JSON attachment. Generated reports/screenshots are ignored and replaced on the next run.
 
-## API contract
+The current [proposal](docs/proposal.md) and `docs/solution-proposal.pdf`, [architecture](docs/architecture.md), [decisions](docs/decisions.md), [delivery estimate](docs/delivery.md), [risks](docs/risks.md), [UAT plan](docs/uat.md) and [demo script](docs/demo-script.md) distinguish implemented local behavior from proposed customer integration.
 
-Every `/api` endpoint except `/api/health` requires `x-demo-user: alex|sam|morgan`.
-
-| Method | Path                            | Result                                          |
-| ------ | ------------------------------- | ----------------------------------------------- |
-| GET    | `/api/forms/request`            | Active `{version, definition}`                  |
-| GET    | `/api/forms/request/versions/1` | Pinned definition (1 or 2)                      |
-| GET    | `/api/requests`                 | Visible records for the actor                   |
-| GET    | `/api/requests/:id`             | Existing record; hidden/nonexistent returns 404 |
-| PUT    | `/api/requests/:id`             | Create/save/submit a record                     |
-
-PUT body:
-
-```json
-{
-  "revision": 0,
-  "formVersion": 1,
-  "action": "submit",
-  "data": {
-    "requestTitle": "Monitor for reporting",
-    "requestType": "equipment",
-    "equipment": "monitor",
-    "quantity": 1,
-    "reason": "A second screen helps with monthly reporting."
-  },
-  "attachments": []
-}
-```
-
-The server sets owner, status, timestamps, audit and next revision. Errors are `{code, message, fields}` with 401/403/404/409/422/503/500 as appropriate. JSON bodies are limited to 128 KB. The schema fixtures are trusted developer input; there is no endpoint for uploading arbitrary schemas.
-
-An existing request must use its current revision and original formVersion. IDs remain stable when retrying in the same editor, avoiding duplicate rows. After a timeout with an unknown outcome, a retry may return 409; reload to reconcile. This is optimistic concurrency, not a complete idempotent workflow/event-delivery solution.
-
-## Boundaries before production
-
-This local app binds to loopback and must not be exposed as an authenticated service. Replace the mock header with the existing product's verified session, move file persistence to the existing database, integrate approved file storage/scanning, and connect the existing workflow. Add scoped permissions, controlled form publication, operational logs, rollback and retention rules. The suggested work is estimated in `docs/delivery.md`.
-
-The Form.io bundle is large: the measured production JS is approximately 2.09 MB minified / 610 KB gzip. Vite emits a size warning. Route-level lazy loading and a representative cold-load performance budget belong in product integration; a single-screen prototype does not need a custom tree-shaken form engine.
-
-## Submission documents
-
-- `docs/solution-proposal.pdf` and editable content in `docs/proposal.md`
-- `docs/architecture.md` and `docs/architecture.svg`
-- `docs/decisions.md`, `docs/delivery.md`, `docs/risks.md`
-- `docs/uat.md`, `docs/verification.md`, `docs/demo-script.md`
-
-## AI disclosure and sources
-
-OpenAI Codex was used to draft the implementation, tests, diagrams and supporting documents and to execute local checks. The assistant reviewed the generated code against the assignment and verified selected flows via tests and browser interaction. **Independent candidate review and rehearsal have not yet been recorded.** The candidate should review and modify the solution, confirm the disclosure and explain the trade-offs before submitting it. No employer code, real customer data or credentials are included.
-
-Official references checked 9 October 2026:
-
-- [React wrapper and integration](https://github.com/formio/react)
-- [Form renderer](https://help.form.io/dev/form-development/form-renderer)
-- [Form JSON](https://help.form.io/form-building/form-json)
-- [Authentication and authorization](https://help.form.io/dev/authentication-and-authorization)
-- [Renderer source](https://github.com/formio/formio.js)
-
-The installed `@formio/react` and `@formio/js` package metadata declares MIT licensing. This prototype uses the renderer packages only, not a hosted Form.io project or Enterprise server. Separate products, premium components, support and deployment rights must be verified against the selected offering before procurement. No paid capability is assumed in the demo.
-
-## UI styling
-
-Application components use Tailwind CSS 4 via the Vite plugin. Utilities use the `tw:` prefix to avoid collisions with the Bootstrap classes required by Form.io. `src/styles/index.css` declares tokens and vendor layers; `src/features/forms/formio.css` contains only scoped renderer adjustments. There is no application-wide legacy stylesheet. Translations live in `src/i18n/en.ts` and `src/i18n/vi.ts`, one file per language.
-
-## Review decisions
-
-`POST /api/requests/:id/review` accepts `{revision, decision: "approve" | "reject", comment}`. Only the reviewer may decide a Submitted or In review request. Rejection requires a trimmed, non-empty reason; approval comments are optional; comments are limited to 2,000 characters. The API owns the actor, timestamp, status and next revision. The requester can read the decision/comment in Activity. Approved and Rejected are terminal in this prototype; reopening/resubmitting is outside the requested change. Stale decisions return 409 and require reload.
-
-## Code quality and formatting
-
-Install development tools with `npm ci --include=dev` (also works when the local npm configuration omits dev dependencies).
-
-- `npm run lint`: TypeScript, React Hooks and SonarJS recommended rules, with no warnings allowed. Authored code files are limited to 200 lines, including comments and blank lines; JSON form definitions and documentation are excluded.
-- `npm run lint:fix`: apply available ESLint fixes.
-- `npm run format`: format source code and configuration with Prettier. Documents in `docs/` and generated files are excluded.
-- `npm run format:check`: verify formatting without changing files.
-- `npm run check`: lint, formatting, tests and production build.
-- `npm run test:coverage`: produce `coverage/lcov.info` for SonarQube. Coverage includes frontend source even though current tests focus on the backend.
-
-SonarJS provides local static analysis; it does not run a SonarQube server scan or establish a passed Quality Gate. The configuration in `sonar-project.properties` supports a separate scan with an installed SonarScanner CLI after generating coverage:
-
-```sh
-npm run test:coverage
-sonar-scanner -Dsonar.host.url="$SONAR_HOST_URL"
-```
-
-Set `SONAR_HOST_URL` and `SONAR_TOKEN` in the environment for your SonarQube instance. Keep credentials out of committed files. See the [SonarJS rules](https://github.com/SonarSource/SonarJS/blob/master/packages/analysis/src/jsts/rules/README.md) and [Prettier integration guide](https://prettier.io/docs/integrating-with-linters).
-
-See [browser verification through step 4](docs/browser-tests.md) for coverage and artifacts. Run `npm run test:e2e:headed` to watch Chromium execute the full browser suite.
+OpenAI Codex drafted code, tests and documentation and executed the recorded checks. Independent candidate review/rehearsal and business sign-off have not been recorded. Before submission, review the implementation, rerun the demonstration and explain the decisions in your own words. No employer code, real customer data or credentials are included.

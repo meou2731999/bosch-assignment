@@ -1,47 +1,39 @@
-# Verification record
+# Verification record - final local implementation
 
-Executed by the assistant on 9 October 2026. These are local engineering checks, not customer acceptance or independent candidate review.
+Executed by the assistant on **11 October 2026**, on macOS with Node 24.19.0/npm 12.0.2. These are local engineering checks, separate from hosted CI, customer acceptance and independent candidate review.
 
-## Automated and build checks
+## Automated checks
 
-- `npm test`: **11 / 11 service tests passed** with Vitest 5.0.3.
-- `npm run build`: strict TypeScript check and Vite production build **passed**.
-- `npm run check`: combined test and build **passed** after the final application changes.
-- `npm audit`: **0 known vulnerabilities** in the locked dependency tree at the time of the check.
-- Built-mode server smoke: homepage, health endpoint and active-form endpoint returned **200** using an alternate local test port.
-
-The build emits a bundle-size warning: approximately 2.09 MB minified JS / 610 KB gzip, plus 282 KB CSS / 42 KB gzip. The warning is disclosed rather than suppressed.
-
-## Browser observations
-
-| Check | Observed result |
+| Check | Result |
 | --- | --- |
-| Empty final submit | Visible title/type/reason validation errors and focused error summary |
-| Equipment condition | Equipment selector and quantity appear |
-| Software condition | Application and duration appear after switching; equipment panel disappears |
-| Draft save | API-backed Draft status, revision 1 and activity event appear |
-| Locale switch | EN/VI labels/options change while entered values remain |
-| Injected API failure | 503 message appears; entered software values remain visible |
-| Retry final submit | Submitted status, revision 2 and read-only fields appear |
-| Sam's list | Only Sam's own seeded request appears |
-| Reviewer | Can open Alex's seeded request; no save/submit action |
-| Existing submission | Pinned v1 schema renders saved analytics application and 90-day duration |
-| Runtime v2 activation | Additional notes appears on a new request without frontend rebuild; old record stays v1 |
-| Mobile width | At a 390 px viewport, document clientWidth and scrollWidth were both 390; basic layout inspected |
+| `npm run check` | Lint/SonarJS, formatting, 77 unit/API tests, strict TypeScript and production Vite build pass |
+| `npm run test:e2e:headed` | 11/11 Chromium scenarios pass against the real production bundle and isolated API |
+| `CI=true npm run test:e2e` | The same 11/11 scenarios pass headless with CI focused-test protection |
+| Workflow validation | GitHub Actions workflow checked with actionlint 1.7.12 |
+| PDF | Current four-page proposal rendered and visually inspected |
+| `git diff --check` | No whitespace errors |
 
-`forms/active.json` was restored to version 1 after verification. The browser checks were interactive, not a committed automated end-to-end suite. Render updates are asynchronous; wait for the relevant field or saved status before the next demo action.
+Tests cover sessions/passwords/CSRF, per-form grants, immutable published definitions, safe recursive parsing, shared custom validation/visibility, legacy compatibility, real file bytes/access, snapshots/restarts, failed atomic writes, strict upgrades, exact restoration and stale revisions/publications. Browser evidence covers account/admin/request/review journeys, seven basic inputs, collections/scoped conditions, failures/retries/locales and strict upgrade/restore.
 
-## Direct HTTP observations
+The integrated step-7 scenario proves a new supported JSON key renders and persists in an existing requester document, a v1 draft stays pinned until explicit upgrade, and the v2 submission remains unchanged through approval. SHA-256 manifests and served-asset hashes match before/after configuration changes. See [bounded schema-only evidence](release-independent-schema.md) and its HTML JSON attachment.
 
-- Saved request was `submitted`, revision 2; persisted data contained software fields and **no stale equipment/quantity fields**.
-- Reading Alex's record as Sam returned **404**.
-- Access without a recognized demo identity returned **401**.
-- Creating a request as the reviewer returned **403**.
+## Build warnings and limits
 
-## Document checks
+The production bundle includes Form.io and is approximately 2.21 MB minified / 644 KB gzip, plus 295 KB CSS / 44 KB gzip. Vite reports a chunk-size warning and CSS optimization reports two Bootstrap `@charset` warnings; neither is hidden or treated as a passing performance budget. No dependency audit or SonarQube server Quality Gate was run as part of this stage.
 
-The proposal contains eight pages. All eight were rendered and visually inspected for clipping, overlap, table alignment and legibility. The editable architecture SVG and Mermaid source are included.
+Only Chromium is automated. Complete accessibility/screen-reader, Safari/Firefox, target-device performance/load, product SSO/database/workflow, malware scanning/quarantine/retention, distributed persistence and customer UAT/sign-off remain unverified. Some technical diagnostics remain English. Local tests do not certify production readiness.
 
-## Remaining verification
+## Reproduce and retain evidence
 
-Full keyboard/screen-reader and cross-browser testing; real file upload/scan/download; actual product authentication; workflow integration/retry behavior; concurrent multi-process persistence; load/performance testing; end-to-end customer UAT and business sign-off. Some renderer hints and API error text remain English. These are explicit limits, not passing checks.
+```sh
+npm ci --include=dev
+npm run check
+npx playwright install chromium
+npm run test:e2e:headed
+CI=true npm run test:e2e
+npx playwright show-report --host 127.0.0.1
+```
+
+See [browser instructions](browser-tests.md) for screenshots/traces and the release-independent JSON report attachment. Generated reports are ignored and overwritten on the next browser run; retain a copy for a specific review/build. `.github/workflows/check.yml` uploads browser artifacts for 14 days when run on GitHub. This checkout has no remote and no hosted run evidence; local headless execution is recorded separately.
+
+The proposal PDF and editable source now describe implemented sessions, real files, authoring, review and draft history. Older 9 October mock-header/metadata-only documentation is superseded. Candidate review/rehearsal and business acceptance have not been recorded.

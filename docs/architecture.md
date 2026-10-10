@@ -1,69 +1,41 @@
 # Architecture and integration
 
-## Working prototype
+Current local implementation, 11 October 2026. Customer infrastructure integration remains proposed.
 
 ```mermaid
 flowchart LR
-  U[Requester or reviewer] --> A[React Request Desk]
-  A --> D[DynamicForm integration]
-  D --> F[Form.io React wrapper and renderer]
-  A -->|GET schema and records; PUT request| API[Local Express API]
-  API -->|read version| J[Versioned JSON fixtures]
-  API --> V[Authorization and validation service]
-  V --> S[Local JSON request store]
-  API -. simulated identity .-> M[x-demo-user header]
+  A[Admin] --> UI[React Request Desk]
+  U[Requester / reviewer] --> UI
+  UI --> D[DynamicForm / FormHandle]
+  D --> F[Form.io legacy / basic]
+  D --> R[React structured fields]
+  R --> V[Shared visibility / validation]
+  UI --> API[Express session / CSRF / permissions]
+  API --> V
+  API --> FS[Immutable published forms + active pointer]
+  API --> RS[Requests + snapshots + audit]
+  API --> B[Authorized local file bytes]
 ```
 
-Form.io generates the fields, applies the two panel conditions and checks client constraints. React handles the surrounding product experience. No Form.io-hosted project is used. The browser receives JSON from our API and passes the object into the wrapper's `src` prop. When loading a record, it fetches the record first, then that record's form version and passes its data as `submission`.
+React owns selected records, catalog, locale, navigation and network state. Renderer state stays behind `FormHandle`. `DynamicForm` keeps Form.io for legacy/basic definitions and selects the React renderer for array/object fields or custom visibility. Custom rules are declarative and use shared frontend/backend functions; arbitrary author JavaScript is rejected. Legacy Form.io conditions retain their existing independent API validation profile.
 
-## Load and submit sequence
+## Request and publication sequence
 
-```mermaid
-sequenceDiagram
-  actor User
-  participant React
-  participant Renderer as Form.io renderer
-  participant API as Product API (local mock)
-  participant Store as Request store
-  User->>React: Open a saved request
-  React->>API: GET /requests/:id
-  API->>API: Check actor can read
-  API-->>React: Record with formVersion and revision
-  React->>API: GET /forms/request/versions/:version
-  API-->>React: JSON definition
-  React->>Renderer: Definition + submission + readOnly + locale
-  User->>Renderer: Edit visible fields
-  User->>React: Submit
-  React->>Renderer: Validate final submission
-  alt Invalid
-    Renderer-->>User: Field errors; no API write
-  else Valid
-    React->>API: PUT id, revision, version, data, action
-    API->>API: Check ownership, role, status, version, revision
-    API->>API: Drop inactive values; validate business data
-    API->>Store: Save record + audit
-    Store-->>API: Write completed
-    API-->>React: Updated record
-    React-->>User: Submitted + read-only + activity
-  end
-```
+1. Login returns a server session cookie and CSRF token. Every read/write checks current account/grants.
+2. New requests fetch the active published schema for the selected type. Existing requests fetch their pinned form ID/version.
+3. Draft saves check types/bounds but allow missing required values. Submit checks completeness, ownership, status, revision and version. Hidden/unknown values are removed according to the applicable validator.
+4. The store atomically replaces one request JSON file containing the record, draft snapshots and audit. Files have their own metadata/byte store; this is not a transaction across independent stores.
+5. Reviewer decisions require the review grant and another owner's submitted/in-review request. The API records the decision and locks final states.
+6. Publishing a saved admin draft creates an immutable version and moves the active pointer. It does not mutate any saved request.
 
-Draft save skips required-field completeness but the API still checks field types, bounds, actor, version and revision. The demo file write is completed before success is returned. It does not simulate a distributed workflow transaction.
+## Confirmed draft transitions
 
-## Proposed customer integration (not implemented)
+Upgrade preview projects supported visible fields into the target schema, preserves invalid supplied values for correction and reports schema/data differences. The user edits the candidate and validates it; the API independently recomputes it. Confirmation binds revision, latest version and candidate contents through a SHA-256 fingerprint. Invalid or incomplete candidates cannot upgrade. Snapshots preserve the original draft; restore uses exact historical data/files/version and creates a new revision. See [protocol and persistence](draft-upgrades.md).
 
-Reuse the existing product shell/session and replace `src/features/requests/api.ts` calls with the product API contract. The API derives the actor from the verified session and reuses existing authorization policies. Persist `{formId, formVersion, revision, ownerId, status, data, attachmentIds, timestamps}` in existing entities. Store published definitions as immutable configuration records with an active version pointer. Use the product's existing file service and workflow capability; no new Form.io server is assumed.
+New supported field configuration is loaded from JSON without a frontend release. The [evidence test](release-independent-schema.md) verifies an unchanged built and served bundle plus unchanged requester document while publishing and using a new key. A new renderer input/operator, domain integration or external workflow still requires code and regression testing.
 
-Submission should validate ownership, schema compatibility and domain rules before saving. Persist the status change and audit in the existing database transaction. Use the platform's existing reliable workflow dispatch mechanism so a retried client call cannot trigger duplicate approvals. If that capability is absent, discover and estimate it explicitly rather than hiding it in the frontend estimate.
+## Customer integration
 
-Use the existing application's session/CSRF conventions. Do not carry the demo header into production. Return scoped records from the API; hiding a button is not authorization. Logging must omit form payloads and file contents. Operational metrics: schema-load and submission error rates, submission latency, workflow handoff failures and failed file scans.
+Reuse the existing product session/SSO and scoped policies; replace local stores with the existing database, use approved scanning/object storage and reliable workflow dispatch. Persist request status/audit transactionally and make dispatch idempotent. Never trust client actor/status or rely only on hidden buttons. Keep immutable published versions, migration review and operational rollback/retention ownership.
 
-## Form configuration lifecycle
-
-Proposed: author -> preview with sample data -> automated checks -> business/security review -> publish a new immutable version -> activate for new requests. Continue serving older versions. Roll back the active pointer for new requests; do not silently reinterpret saved submissions. New stored fields require backend contract support. Restrict publishable component types and external URLs; disallow unreviewed JavaScript rules. The current two local fixtures model version selection only.
-
-## Accessibility and scale
-
-Use associated labels, native buttons, visible focus, text status labels, error summary focus and live save feedback. Check keyboard order and screen-reader announcements in customer UAT; no WCAG conformance is claimed. The current language integration leaves some third-party hints and API diagnostics in English.
-
-A full renderer is deliberately included for the assessment. Measure cold load on target devices and lazy-load the form route during integration. Use the existing database, pagination and object storage for actual workload; the demo file store is single-process only. Do not add infrastructure without customer load requirements.
+Local sessions/rate limits are process-local. JSON persistence is single-process; no horizontal scaling or cross-store transaction is claimed. Measure target-device performance and accessibility separately. The Form.io dependency remains coupled to legacy/basic schema behavior; the adapter does not eliminate migration effort.

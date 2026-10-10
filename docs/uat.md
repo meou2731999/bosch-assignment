@@ -17,17 +17,22 @@ Entry: agreed field/role/status rules, stable versioned build, deployed sandbox 
 | U03 | Submit empty form and out-of-range numbers | Relevant client errors; final write rejected; API also rejects bypassed invalid payload | Implemented |
 | U04 | Save incomplete draft; navigate away and reopen | Same record, values, version and Draft status | Implemented |
 | U05 | Submit complete draft twice or retry stale revision | First succeeds; later edit rejected; no duplicate record | Implemented (no workflow dispatch) |
-| U06 | Alex creates request; Sam tries to read/update; Morgan views | Sam cannot access; Morgan reads but cannot write | Implemented under mock identity |
+| U06 | Alex creates request; Sam tries to read/update; Morgan views | Sam cannot access; Morgan reads but cannot write | Implemented with sessions and per-form grants |
 | U07 | Open seeded In review / Approved requests | Correct owner, saved data, status and history; no editing | Implemented; status seeded |
 | U08 | Inject next-save failure, then retry | Error shown, input preserved, success only after API acknowledgement | Implemented |
 | U09 | Switch EN/VI with partially entered data | Translated labels/options and preserved values | Implemented; some technical messages remain English |
-| U10 | Select invalid/oversized files, then valid metadata | Reject outside policy; valid metadata survives save/reload; clearly marked simulation | Metadata only |
+| U10 | Select invalid/oversized files, then upload a valid TXT | Reject outside policy; valid bytes survive save/reload and authorized preview/download | Local upload/download implemented; scanning pending |
 | U11 | Activate v2; create new request; open saved v1 request | New optional field on v2; historical request uses v1; no frontend rebuild | Implemented |
 | U12 | Keyboard through inputs/actions, trigger validation, narrow screen | Visible focus, usable order, errors announced, no page overflow | Basic implementation; customer accessibility verification required |
 | U13 | Two sessions edit one draft; save both | Second save gets conflict; reload avoids silent overwrite | API logic implemented |
 | U14 | Upload/scan/download a real file as another user | Quarantine until approved; authorized download only; retention respected | Pending product integration |
 | U15 | Submit with real identity; existing workflow approves | Single workflow start, status updates and auditable transition | Pending product integration |
-| U16 | Change form policy, roll back active version | New requests use rollback version; existing records remain readable | Version pointer modeled; controlled publishing pending |
+| U16 | Change form policy, roll back active version | New requests use rollback version; existing records remain readable | Immutable publication implemented; active-pointer rollback UI is not exposed |
+
+| U17 | Add supported custom fields/nesting/conditions, publish without frontend build | New requests load JSON; existing requests retain their version | Browser-tested with bundle hashes |
+| U18 | Preview upgrade with invalid values/new required fields; cancel then correct/confirm | Invalid data retained for correction; no upgrade until fully valid; cancel preserves original | Unit/API and browser-tested |
+| U19 | Restore saved revision including removed attachment | Exact historical data/files/version with a new revision/audit | Unit/API and browser-tested |
+| U20 | Publish, grant, save, upgrade, submit and approve one custom request | Scoped actors, same frontend assets, pinned v2 data and final audit | Integrated browser scenario |
 
 Evidence per run: scenario ID, build/version, role/account, input, expected/actual result, screenshot or request/response reference, defect ID, tester and date. Never include real sensitive data in evidence.
 
