@@ -172,3 +172,5 @@ sonar-scanner -Dsonar.host.url="$SONAR_HOST_URL"
 ```
 
 Set `SONAR_HOST_URL` and `SONAR_TOKEN` in the environment for your SonarQube instance. Keep credentials out of committed files. See the [SonarJS rules](https://github.com/SonarSource/SonarJS/blob/master/packages/analysis/src/jsts/rules/README.md) and [Prettier integration guide](https://prettier.io/docs/integrating-with-linters).
+
+See [browser verification through step 4](docs/browser-tests.md) for coverage and artifacts. Run `npm run test:e2e:headed` to watch Chromium execute the full browser suite.
