@@ -36,6 +36,14 @@ test("admin creates and edits account; user changes password; reset and disable 
   await edit.getByLabel("Department", { exact: true }).fill("Operations");
   await edit.getByRole("button", { name: "Save user" }).click();
   await expect(row).toContainText("Updated Browser User");
+  await row.getByRole("button", { name: "Form permissions" }).click();
+  const grants = page.getByRole("region", {
+    name: "Form permissions",
+    exact: true,
+  });
+  await grants.getByLabel("Create requests", { exact: true }).check();
+  await grants.getByRole("button", { name: "Save permissions" }).click();
+  await expect(grants).toHaveCount(0);
   const context = await browser.newContext();
   const userPage = await context.newPage();
   await login(userPage, "browser@example.test", "browser-initial-password");
