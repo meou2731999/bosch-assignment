@@ -14,7 +14,11 @@ export function fieldDefinition(
       input: true,
       type: componentType(field),
       ...(field.input === "date" ? { inputType: "date" } : {}),
-      ...(field.input === "select"
+      ...(field.fields
+        ? { components: fieldDefinition(title, field.fields).components }
+        : {}),
+      ...(field.input === "multiselect" ? { multiple: true } : {}),
+      ...(field.input === "select" || field.input === "multiselect"
         ? {
             widget: "html5",
             dataSrc: "values",
@@ -45,6 +49,10 @@ function componentType(field: BasicField) {
       number: "number",
       checkbox: "checkbox",
       select: "select",
+      multiselect: "select",
+      object: "container",
+      repeat: "editgrid",
+      table: "datagrid",
     } as const
   )[field.input];
 }

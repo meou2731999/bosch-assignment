@@ -1,25 +1,44 @@
+import { isVisible, type FieldScope } from "./field-conditions";
+import { validateComplex } from "./field-values";
 import { z } from "zod";
 import type { BasicField } from "./fields";
 export function validateFields(
   fields: BasicField[],
   raw: Record<string, unknown>,
   submit: boolean,
+  scope: FieldScope = { root: raw, row: raw, parent: raw },
+  prefix = "",
 ) {
   const data: Record<string, unknown> = {};
   const errors: Record<string, string> = {};
   for (const field of fields) {
+    if (!isVisible(field.visibility, scope)) continue;
+    const path = prefix + field.key;
     const value = Object.hasOwn(raw, field.key) ? raw[field.key] : undefined;
-    if (value === undefined || value === null || value === "") {
-      if (submit && field.required)
-        errors[field.key] = "This field is required.";
-      continue;
-    }
-    const error = validateValue(field, value, submit);
-    if (error) errors[field.key] = error;
-    else data[field.key] = value;
+    const checked = checkField(field, value, submit, scope, path);
+    Object.assign(errors, checked.errors);
+    if (checked.value !== undefined) data[field.key] = checked.value;
   }
   return { data, errors };
 }
+function checkField(
+  field: BasicField,
+  value: unknown,
+  submit: boolean,
+  scope: FieldScope,
+  path: string,
+): { value?: unknown; errors: Record<string, string> } {
+  if (value === undefined || value === null || value === "")
+    return {
+      errors:
+        submit && field.required ? { [path]: "This field is required." } : {},
+    };
+  if (["array", "object"].includes(field.dataType))
+    return validateComplex(field, value, submit, scope, path);
+  const error = validateValue(field, value, submit);
+  return error ? { errors: { [path]: error } } : { value, errors: {} };
+}
+
 function validateValue(
   field: BasicField,
   value: unknown,
