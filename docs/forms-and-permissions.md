@@ -1,4 +1,4 @@
-# Form store and per-form permissions (steps 3–4)
+# Form store and per-form permissions (steps 3–5)
 
 The API stores form types, authoring drafts, published JSON definitions and audit events in `.data/forms.json`. This remains a single-process local JSON store with atomic file replacement. Draft saves and publication require the current draft revision; publishing creates a new immutable version and advances the active pointer. Returned objects are detached from store state.
 
@@ -52,9 +52,38 @@ The optional `fields` array contains `{key,label,input,dataType,required,minLeng
 
 The frontend and API share `validateFields`. Drafts may omit required values, but supplied values must satisfy their configured type and validation. Submission requires all required fields; unknown payload properties are discarded. Empty string/null values are treated as absent. Strings are preserved, with whitespace-only required strings rejected at submission. The API uses the published field configuration, never fields supplied by a requester. Legacy published schemas without fields continue to use their existing template validation profile. Published snapshots and existing request data are unchanged.
 
-Advanced fields and custom conditional visibility are step 5; user-confirmed upgrades of old drafts are step 6. Publishing never migrates existing requests.
+Advanced fields and custom conditional visibility are documented below in step 5; user-confirmed upgrades of old drafts remain step 6. Publishing never migrates existing requests.
 
 `npm run check` runs lint, formatting, unit/API tests and build. `npm run test:e2e` covers the existing account flows plus form creation/publication, scoped grants, catalog visibility, draft save, old-version preservation and permission revocation using Chromium and temporary data. Tests cover authorization by form, role-independent grants, admin read boundaries, self-review rejection, unlinked/linked attachments, schema access, stale revisions, persistence and migration backups.
 
 
 The field-builder Chromium scenario creates, edits, reorders, removes and previews fields, publishes v1, saves a request, then changes validation and adds an email field in v2. The requester loads v2 in the same browser document (a DOM marker proves there was no reload), validates and submits, then reopens and submits the v1 draft. This demonstrates form changes without a new frontend release. `test-results/field-editor-preview.png` captures the editor/preview. Unit/API tests additionally cover all basic data types, malformed/unsafe schemas, direct API validation bypass attempts, JSON restart persistence and immutable historical versions.
+
+## Step 5: structured fields and visibility
+
+Custom fields now additionally support `multiselect` (array of unique configured strings), `object` (nested key/value object), `repeat` (array of objects rendered as groups) and `table` (array of objects rendered as table rows). Container fields require a non-empty `fields` array; keys are unique within each sibling scope. Required objects must be present and their visible children must validate. Required collections must contain at least one item on submit. `minLength`/`maxLength` constrain collection size as well as string length; collections default to a maximum of 100 items and cannot configure a greater maximum. Drafts may omit required fields but supplied collections still respect configured bounds. Unknown properties are removed recursively. Errors identify paths such as `details.people.0.note`.
+
+A field's optional `visibility` is a declarative expression:
+
+```json
+{
+  "op": "and",
+  "conditions": [
+    { "op": "eq", "scope": "row", "key": "needs", "value": true },
+    { "op": "eq", "scope": "parent", "key": "enabled", "value": true },
+    {
+      "op": "or",
+      "conditions": [
+        { "op": "contains", "scope": "root", "key": "tags", "value": "urgent" },
+        { "op": "eq", "scope": "root", "key": "requestTitle", "value": "Override" }
+      ]
+    }
+  ]
+}
+```
+
+`and`/`or` require non-empty child expressions. Leaves support strict typed `eq`, `neq`, and array membership `contains`. `row` means the current containing object or repeated/table row; `parent` means the immediate containing object outside that row/object; `root` means the request data. At top level all three scopes refer to root. References use direct keys, never executable code or dotted paths. Conditions evaluate against the current input snapshot before validation; hidden fields and entire hidden containers are omitted from the saved payload and skip required/type checks. Locally hidden input is retained while editing, so toggling a condition restores it; saving removes hidden values. Conditions depending on hidden fields can therefore change after save/reload because those input values are absent.
+
+The admin editor recursively adds/edits/removes/reorders children, configures typed leaf conditions and nested AND/OR groups, and previews the same renderer as requests. Switching operators within a group preserves children. The persisted `fields` configuration remains authoritative for custom validation/visibility. Publication also generates nested Form.io component JSON (`container`, `editgrid`, `datagrid`, multi-select); this JSON alone does not implement custom scoped visibility. The adapter uses a React renderer for custom schemas containing structured fields or visibility, sharing `isVisible` and `validateFields` with the API. Flat basic schemas and legacy templates retain their existing Form.io rendering path. This avoids evaluating author-provided JavaScript and does not change previously published definitions, request data or pinned versions.
+
+Recursive parsing is bounded before descent: field JSON permits at most 24 structural levels / 6000 visited values, condition JSON at most 16 levels / 1000 visited values, with up to 50 fields per sibling list and 20 children per condition group. Unsafe keys, malformed nested types, unsupported properties and excessive bounds/depth are rejected before publication. This stage introduces no draft upgrades, migration confirmation or restore workflow (step 6).
