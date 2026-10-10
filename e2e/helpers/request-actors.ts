@@ -6,6 +6,7 @@ export async function actor(
   browser: Browser,
   baseURL: string | undefined,
   role: "requester" | "reviewer",
+  formId = "request",
 ) {
   const session = await (await admin.request.get("/api/auth/session")).json();
   const headers = {
@@ -36,7 +37,7 @@ export async function actor(
           data: {
             revision: 0,
             formPermissions: {
-              request: role === "reviewer" ? ["review"] : ["create"],
+              [formId]: role === "reviewer" ? ["review"] : ["create"],
             },
           },
         },

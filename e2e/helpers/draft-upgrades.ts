@@ -1,6 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 import { login } from "./field-builder";
 import { oldFields, newFields } from "../../tests/fixtures/draft-upgrades";
+import type { BasicField } from "../../shared/fields";
 import type { FormRecord } from "../../shared/forms";
 export async function upgradeForm(page: Page, name: string) {
   await login(page, "admin@example.test", "e2e-admin-password");
@@ -30,10 +31,10 @@ export async function upgradeForm(page: Page, name: string) {
   );
   expect(published.status()).toBe(200);
   form = await published.json();
-  async function publishNext() {
+  async function publishNext(fields: BasicField[] = newFields) {
     const response = await page.request.put(
       `/api/admin/forms/${form.id}/draft`,
-      { headers, data: { ...form.draft, fields: newFields } },
+      { headers, data: { ...form.draft, fields } },
     );
     expect(response.status()).toBe(200);
     form = await response.json();
