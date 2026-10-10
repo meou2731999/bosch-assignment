@@ -29,6 +29,11 @@ const en = {
   checkbox: "Checkbox",
   date: "Date",
   select: "Single select",
+  multiselect: "Multi-select",
+  object: "Nested object",
+  repeat: "Repeating group",
+  table: "Table",
+  array: "Array",
   string: "String",
   boolean: "Boolean",
 };
@@ -61,6 +66,11 @@ const vi: typeof en = {
   checkbox: "Checkbox",
   date: "Ngày",
   select: "Chọn một",
+  multiselect: "Chọn nhiều",
+  object: "Đối tượng lồng",
+  repeat: "Nhóm lặp",
+  table: "Bảng",
+  array: "Mảng",
   string: "Chuỗi",
   boolean: "Boolean",
 };

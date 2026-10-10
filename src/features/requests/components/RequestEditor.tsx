@@ -74,6 +74,7 @@ export function RequestEditor({
           className="tw:min-w-0 tw:border-0 tw:px-5 tw:pt-6 tw:pb-4 tw:md:px-7"
         >
           <DynamicForm
+            fields={definition.fields}
             definition={definition.definition}
             initialData={initialData}
             readOnly={readOnly}

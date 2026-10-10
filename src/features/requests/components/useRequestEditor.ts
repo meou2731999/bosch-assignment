@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import type { Webform } from "@formio/js";
+import type { FormHandle } from "../../forms/FormHandle";
 import type {
   Attachment,
   Locale,
@@ -44,9 +44,9 @@ export function useRequestEditor({
   const [dirty, setDirty] = useState(false);
   const [fail, setFail] = useState(false);
   const [error, setError] = useState<HttpError | Error | null>(null);
-  const form = useRef<Webform | null>(null);
+  const form = useRef<FormHandle | null>(null);
   const [uploading, setUploading] = useState(false);
-  const onReady = useCallback((instance: Webform) => {
+  const onReady = useCallback((instance: FormHandle) => {
     form.current = instance;
     setReady(true);
   }, []);

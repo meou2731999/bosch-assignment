@@ -93,6 +93,7 @@ export function FieldsEditor({
           <DynamicForm
             key={JSON.stringify(preview)}
             definition={preview}
+            fields={fields}
             initialData={emptyData}
             locale={locale}
             readOnly={false}

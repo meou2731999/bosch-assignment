@@ -35,7 +35,7 @@ export function FieldValidationEditor({
         />
         {t.required}
       </label>
-      {field.dataType !== "boolean" &&
+      {["string", "number", "array"].includes(field.dataType) &&
         bounds.map((key) => (
           <label key={key}>
             {t[key]}
@@ -68,7 +68,7 @@ export function FieldValidationEditor({
           {t.integer}
         </label>
       )}
-      {field.input === "select" && (
+      {(field.input === "select" || field.input === "multiselect") && (
         <label>
           {t.options}
           <textarea

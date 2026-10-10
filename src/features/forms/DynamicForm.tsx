@@ -1,13 +1,35 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Form, type FormType } from "@formio/react";
 import type { FormDefinition } from "../../../shared/forms";
+import type { BasicField } from "../../../shared/fields";
+import type { FormHandle } from "./FormHandle";
+import { StructuredForm } from "./StructuredForm";
 import type { Webform } from "@formio/js";
 import type { Locale, RequestData } from "../../../shared/model";
 import { ErrorNotice } from "../../components/ui/ErrorNotice";
 import { formTranslations } from "../../i18n";
 
 // All renderer-specific integration stays here. Schema/data remain Form.io-shaped.
-export function DynamicForm({
+export function DynamicForm(props: DynamicFormProps) {
+  if (
+    props.fields?.some(
+      (field) =>
+        field.visibility || ["array", "object"].includes(field.dataType),
+    )
+  )
+    return <StructuredForm {...props} fields={props.fields} />;
+  return <FormioForm {...props} />;
+}
+type DynamicFormProps = {
+  definition: FormType | FormDefinition;
+  initialData: RequestData;
+  readOnly: boolean;
+  locale: Locale;
+  fields?: BasicField[];
+  onReady: (instance: FormHandle) => void;
+  onDirty: () => void;
+};
+function FormioForm({
   definition,
   initialData,
   readOnly,
@@ -19,7 +41,7 @@ export function DynamicForm({
   initialData: RequestData;
   readOnly: boolean;
   locale: Locale;
-  onReady: (instance: Webform) => void;
+  onReady: (instance: FormHandle) => void;
   onDirty: () => void;
 }) {
   const instance = useRef<Webform | null>(null);

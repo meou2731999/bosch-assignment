@@ -7,6 +7,8 @@ import type { Locale } from "../../../../shared/model";
 import { Button } from "../../../components/ui/Button";
 import { inputClass } from "../../auth/AuthScreen";
 import { fieldCopy } from "./copy";
+import { FieldsEditor } from "./FieldsEditor";
+import { ConditionEditor } from "./ConditionEditor";
 import { FieldValidationEditor } from "./FieldValidationEditor";
 export function FieldEditor({
   field,
@@ -33,7 +35,21 @@ export function FieldEditor({
       input,
       dataType: inputDataType(input),
       required: field.required,
-      ...(input === "select"
+      visibility: field.visibility,
+      ...(["object", "repeat", "table"].includes(input)
+        ? {
+            fields: [
+              {
+                key: "name",
+                label: "Name",
+                input: "text" as const,
+                dataType: "string" as const,
+                required: false,
+              },
+            ],
+          }
+        : {}),
+      ...(input === "select" || input === "multiselect"
         ? { options: [{ label: "Option", value: "option" }] }
         : {}),
     });
@@ -83,6 +99,10 @@ export function FieldEditor({
               "checkbox",
               "date",
               "select",
+              "multiselect",
+              "object",
+              "repeat",
+              "table",
             ] as const
           ).map((input) => (
             <option key={input} value={input}>
@@ -103,11 +123,13 @@ export function FieldEditor({
             )
           }
         >
-          {(["string", "number", "boolean"] as const).map((type) => (
-            <option key={type} value={type}>
-              {t[type]}
-            </option>
-          ))}
+          {(["string", "number", "boolean", "object", "array"] as const).map(
+            (type) => (
+              <option key={type} value={type}>
+                {t[type]}
+              </option>
+            ),
+          )}
         </select>
       </label>
       <FieldValidationEditor
@@ -116,6 +138,18 @@ export function FieldEditor({
         locale={locale}
         onChange={onChange}
       />
+      <ConditionEditor
+        locale={locale}
+        condition={field.visibility}
+        onChange={(visibility) => onChange({ ...field, visibility })}
+      />
+      {field.fields && (
+        <FieldsEditor
+          fields={field.fields}
+          locale={locale}
+          onChange={(fields) => onChange({ ...field, fields })}
+        />
+      )}
       <div className="tw:flex tw:flex-wrap tw:gap-2">
         <Button
           variant="secondary"
