@@ -2,6 +2,9 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
   testMatch: "**/*.spec.ts",
+  forbidOnly: Boolean(process.env.CI),
+  globalTimeout: 10 * 60 * 1000,
+  reporter: [["list"], ["html", { open: "never" }]],
   workers: 1,
   fullyParallel: false,
   use: {
