@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { DraftHistory } from "../history/DraftHistory";
 import { DemoControls } from "./DemoControls";
 import { RequestActions } from "./RequestActions";
 import { RequestMetadata } from "./RequestMetadata";
@@ -20,8 +22,10 @@ export function RequestEditor({
   reload,
 }: RequestEditorProps) {
   const t = copy(locale);
+  const [historyBusy, setHistoryBusy] = useState(false);
   const {
     readOnly,
+    dirty,
     id,
     initialData,
     attachments,
@@ -70,7 +74,7 @@ export function RequestEditor({
           </div>
         )}
         <fieldset
-          disabled={saving || uploading}
+          disabled={saving || uploading || historyBusy}
           className="tw:min-w-0 tw:border-0 tw:px-5 tw:pt-6 tw:pb-4 tw:md:px-7"
         >
           <DynamicForm
@@ -100,8 +104,8 @@ export function RequestEditor({
           <RequestActions
             locale={locale}
             saveStatus={saveStatus}
-            ready={ready}
-            saving={saving}
+            ready={ready && !historyBusy}
+            saving={saving || historyBusy}
             uploading={uploading}
             save={save}
           />
@@ -111,7 +115,7 @@ export function RequestEditor({
         <DemoControls
           locale={locale}
           fail={fail}
-          saving={saving}
+          saving={saving || historyBusy}
           onChange={setFail}
         />
       )}
@@ -129,6 +133,21 @@ export function RequestEditor({
             reload={reload}
           />
         )}
+      {record && !readOnly && (
+        <DraftHistory
+          record={record}
+          user={user}
+          locale={locale}
+          disabled={!ready || saving || uploading}
+          dirty={dirty}
+          onBusy={(value) => {
+            setHistoryBusy(value);
+            onBusy(value);
+          }}
+          onSaved={onSaved}
+          reload={reload}
+        />
+      )}
       {record && <ActivityTimeline events={record.audit} locale={locale} />}
     </>
   );

@@ -1,3 +1,4 @@
+import { historyCopy } from "../history/copy";
 import { USERS, type AuditEvent, type Locale } from "../../../../shared/model";
 import { copy } from "../../../i18n";
 export function ActivityTimeline({
@@ -8,6 +9,7 @@ export function ActivityTimeline({
   locale: Locale;
 }) {
   const t = copy(locale);
+  const h = historyCopy(locale);
   return (
     <section
       className="tw:mt-8 tw:[&_h2]:mb-4 tw:[&_h2]:text-sm tw:[&_h2]:font-semibold tw:[&_ol]:m-0 tw:[&_ol]:list-none tw:[&_ol]:p-0 tw:[&_li]:mb-5 tw:[&_li]:flex tw:[&_li]:flex-wrap tw:[&_li]:items-baseline tw:[&_li]:gap-3 tw:[&_li]:text-xs tw:[&_li>div]:flex tw:[&_li>div]:min-w-0 tw:[&_li>div]:flex-1 tw:[&_li>div]:flex-col tw:[&_li>div]:gap-1 tw:[&_time]:text-xs tw:[&_time]:text-muted"
@@ -23,6 +25,21 @@ export function ActivityTimeline({
             />
             <div>
               <strong>{t[event.action]}</strong>
+              {event.fromVersion !== undefined && (
+                <span>
+                  {h.auditVersion}: {event.fromVersion} → {event.toVersion}
+                </span>
+              )}
+              {event.snapshotRevision !== undefined && (
+                <span>
+                  {h.auditSnapshot}: {event.snapshotRevision}
+                </span>
+              )}
+              {event.changes?.map((change) => (
+                <span key={change.path}>
+                  {change.path}: {h[change.kind]}
+                </span>
+              ))}
               {event.comment && (
                 <p className="tw:my-1 tw:whitespace-pre-wrap tw:break-words tw:rounded-lg tw:border tw:border-line tw:bg-white tw:p-3 tw:text-sm">
                   {event.comment}

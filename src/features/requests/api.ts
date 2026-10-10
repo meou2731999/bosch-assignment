@@ -1,3 +1,4 @@
+import type { FormDefinition } from "../../../shared/forms";
 import type { BasicField } from "../../../shared/fields";
 import type {
   RequestRecord,
@@ -12,7 +13,7 @@ export interface Definition {
   formId: string;
   name: string;
   version: number;
-  definition: FormType;
+  definition: FormType | FormDefinition;
   fields?: BasicField[];
 }
 export const api = {

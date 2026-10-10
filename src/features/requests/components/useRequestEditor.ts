@@ -18,7 +18,7 @@ export type RequestEditorProps = {
   record: RequestRecord | null;
   onDirty: (dirty: boolean) => void;
   onBusy: (busy: boolean) => void;
-  onSaved: (record: RequestRecord) => void;
+  onSaved: (record: RequestRecord, definition?: Definition) => void;
   reload: () => void;
 };
 export function useRequestEditor({
@@ -122,6 +122,7 @@ export function useRequestEditor({
   const saveStatus = saving ? t.saving : idleStatus;
   return {
     readOnly,
+    dirty,
     id,
     initialData,
     attachments,

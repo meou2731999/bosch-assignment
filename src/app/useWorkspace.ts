@@ -74,7 +74,8 @@ export function useWorkspace(user: AccountUser, locale: Locale) {
   function navigate(id?: string) {
     if (!busy && canLeave()) void load(id);
   }
-  function saved(next: RequestRecord) {
+  function saved(next: RequestRecord, nextDefinition?: Definition) {
+    if (nextDefinition) setDefinition(nextDefinition);
     setRecord(next);
     setDirty(false);
     setRequests((current) => [
