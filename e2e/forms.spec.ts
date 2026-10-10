@@ -129,14 +129,18 @@ test("admin publishes form types, grants scoped creation and preserves old draft
   await userPage.reload();
   await expect(types.locator("option")).toHaveText(["Procurement updated"]);
   await expect(
-    userPage.getByText("Form version", { exact: false }),
+    userPage
+      .getByRole("region", { name: "New request", exact: true })
+      .getByText("Form version", { exact: false }),
   ).toContainText("2");
   await userPage
     .getByRole("button")
     .filter({ hasText: "Untitled request" })
     .click();
   await expect(
-    userPage.getByText("Form version", { exact: false }),
+    userPage
+      .getByRole("region", { name: "New request", exact: true })
+      .getByText("Form version", { exact: false }),
   ).toContainText("1");
   await page.getByRole("button", { name: "Manage users", exact: true }).click();
   await user

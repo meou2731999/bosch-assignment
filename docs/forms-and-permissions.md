@@ -1,4 +1,4 @@
-# Form store and per-form permissions (steps 3–5)
+# Form store and per-form permissions (steps 3–6)
 
 The API stores form types, authoring drafts, published JSON definitions and audit events in `.data/forms.json`. This remains a single-process local JSON store with atomic file replacement. Draft saves and publication require the current draft revision; publishing creates a new immutable version and advances the active pointer. Returned objects are detached from store state.
 
@@ -32,7 +32,7 @@ Permission replacement uses a separate `permissionRevision` to reject stale writ
 - Admin-only `POST /api/admin/forms/:id/publish`: `{revision}`. Publication increments the draft revision as well as creating a version.
 - Admin-only `PUT /api/admin/users/:id/form-permissions`: `{revision,formPermissions:{[formId]:["create","view","review"]}}`; replaces all grants, returns the updated public account.
 
-Request save payloads now require `formId` and a positive integer `formVersion`. New requests must match the active published version; existing drafts must keep their original type and version. Metadata changes become visible to new requests without rebuilding the frontend; saved requests continue to load their pinned version. New-request UI selects among types with create permission.
+Request save payloads now require `formId` and a positive integer `formVersion`. New requests must match the active published version; ordinary saves of existing drafts must keep their current type and pinned version. Explicit draft upgrade/restore endpoints are documented in [draft upgrades](draft-upgrades.md). Metadata changes become visible to new requests without rebuilding the frontend; saved requests continue to load their pinned version. New-request UI selects among types with create permission.
 
 Binary uploads require `X-Form-Id` when the request has not been saved. Saved requests derive their form ID from the record; a conflicting supplied header is rejected. Download URLs are unchanged.
 
@@ -52,7 +52,7 @@ The optional `fields` array contains `{key,label,input,dataType,required,minLeng
 
 The frontend and API share `validateFields`. Drafts may omit required values, but supplied values must satisfy their configured type and validation. Submission requires all required fields; unknown payload properties are discarded. Empty string/null values are treated as absent. Strings are preserved, with whitespace-only required strings rejected at submission. The API uses the published field configuration, never fields supplied by a requester. Legacy published schemas without fields continue to use their existing template validation profile. Published snapshots and existing request data are unchanged.
 
-Advanced fields and custom conditional visibility are documented below in step 5; user-confirmed upgrades of old drafts remain step 6. Publishing never migrates existing requests.
+Advanced fields and custom conditional visibility are documented below in step 5; user-confirmed upgrades of old drafts are documented in [step 6](draft-upgrades.md). Publishing never migrates existing requests.
 
 `npm run check` runs lint, formatting, unit/API tests and build. `npm run test:e2e` covers the existing account flows plus form creation/publication, scoped grants, catalog visibility, draft save, old-version preservation and permission revocation using Chromium and temporary data. Tests cover authorization by form, role-independent grants, admin read boundaries, self-review rejection, unlinked/linked attachments, schema access, stale revisions, persistence and migration backups.
 
@@ -86,4 +86,4 @@ A field's optional `visibility` is a declarative expression:
 
 The admin editor recursively adds/edits/removes/reorders children, configures typed leaf conditions and nested AND/OR groups, and previews the same renderer as requests. Switching operators within a group preserves children. The persisted `fields` configuration remains authoritative for custom validation/visibility. Publication also generates nested Form.io component JSON (`container`, `editgrid`, `datagrid`, multi-select); this JSON alone does not implement custom scoped visibility. The adapter uses a React renderer for custom schemas containing structured fields or visibility, sharing `isVisible` and `validateFields` with the API. Flat basic schemas and legacy templates retain their existing Form.io rendering path. This avoids evaluating author-provided JavaScript and does not change previously published definitions, request data or pinned versions.
 
-Recursive parsing is bounded before descent: field JSON permits at most 24 structural levels / 6000 visited values, condition JSON at most 16 levels / 1000 visited values, with up to 50 fields per sibling list and 20 children per condition group. Unsafe keys, malformed nested types, unsupported properties and excessive bounds/depth are rejected before publication. This stage introduces no draft upgrades, migration confirmation or restore workflow (step 6).
+Recursive parsing is bounded before descent: field JSON permits at most 24 structural levels / 6000 visited values, condition JSON at most 16 levels / 1000 visited values, with up to 50 fields per sibling list and 20 children per condition group. Unsafe keys, malformed nested types, unsupported properties and excessive bounds/depth are rejected before publication. Draft upgrades, migration confirmation and restore are documented separately in [step 6](draft-upgrades.md).
