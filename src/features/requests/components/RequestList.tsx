@@ -63,7 +63,7 @@ export function RequestList({
             onClick={() => navigate(r.id)}
           >
             <Status status={r.status} locale={locale} />
-            <strong>{r.data.requestTitle || t.untitled}</strong>
+            <strong>{String(r.data.requestTitle || t.untitled)}</strong>
             <small>
               {new Date(r.updatedAt).toLocaleDateString(
                 locale === "vi" ? "vi-VN" : "en-GB",

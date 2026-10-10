@@ -6,16 +6,7 @@ import { AttachmentsPanel } from "../../attachments/AttachmentsPanel";
 import { ErrorNotice } from "../../../components/ui/ErrorNotice";
 import { ReviewPanel } from "./ReviewPanel";
 import { ActivityTimeline } from "./ActivityTimeline";
-import { useCallback, useRef, useState } from "react";
-import type { Webform } from "@formio/js";
-import {
-  type Attachment,
-  type Locale,
-  type RequestData,
-  type RequestRecord,
-  type User,
-} from "../../../../shared/model";
-import { api, HttpError, type Definition } from "../api";
+import { useRequestEditor, type RequestEditorProps } from "./useRequestEditor";
 import { copy } from "../../../i18n";
 import { DynamicForm } from "../../forms/DynamicForm";
 export function RequestEditor({
@@ -27,92 +18,35 @@ export function RequestEditor({
   onBusy,
   onSaved,
   reload,
-}: {
-  user: User;
-  locale: Locale;
-  definition: Definition;
-  record: RequestRecord | null;
-  onDirty: (dirty: boolean) => void;
-  onBusy: (busy: boolean) => void;
-  onSaved: (record: RequestRecord) => void;
-  reload: () => void;
-}) {
+}: RequestEditorProps) {
   const t = copy(locale);
-  const readOnly =
-    !hasFormPermission(user, definition.formId, "create") ||
-    (!!record && (record.ownerId !== user.id || record.status !== "draft"));
-  const [id] = useState(() => record?.id ?? crypto.randomUUID());
-  const [initialData] = useState(() => record?.data ?? {});
-  const [attachments, setAttachments] = useState<Attachment[]>(
-    record?.attachments ?? [],
-  );
-  const [ready, setReady] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [dirty, setDirty] = useState(false);
-  const [fail, setFail] = useState(false);
-  const [error, setError] = useState<HttpError | Error | null>(null);
-  const form = useRef<Webform | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const onReady = useCallback((instance: Webform) => {
-    form.current = instance;
-    setReady(true);
-  }, []);
-  const markDirty = useCallback(() => {
-    setDirty(true);
-    onDirty(true);
-  }, [onDirty]);
-  const onUploading = useCallback(
-    (value: boolean) => {
-      setUploading(value);
-      onBusy(value);
-      if (value) markDirty();
-    },
-    [onBusy, markDirty],
-  );
-
-  async function save(action: "draft" | "submit") {
-    if (!form.current || saving || uploading || readOnly) return;
-    setError(null);
-    setSaving(true);
-    onBusy(true);
-    try {
-      let data = (form.current.submission as { data: RequestData }).data;
-      if (action === "submit") {
-        try {
-          // Raw JSON uses Form.io's local validation path; our API owns persistence.
-          const submission = await form.current.submit(false, {
-            state: "submitted",
-          });
-          data = (submission as { data: RequestData }).data;
-        } catch {
-          throw new HttpError("CLIENT_VALIDATION", t.validation);
-        }
-      }
-      const simulateFailure = fail;
-      setFail(false);
-      const next = await api.save(
-        user,
-        id,
-        {
-          revision: record?.revision ?? 0,
-          formId: definition.formId,
-          formVersion: definition.version,
-          action,
-          data,
-          attachments,
-        },
-        simulateFailure,
-      );
-      onSaved(next);
-    } catch (e) {
-      setError(e as Error);
-    } finally {
-      setSaving(false);
-      onBusy(false);
-    }
-  }
-  const idleStatus = dirty ? t.dirty : t.help;
-  const saveStatus = saving ? t.saving : idleStatus;
+  const {
+    readOnly,
+    id,
+    initialData,
+    attachments,
+    setAttachments,
+    ready,
+    saving,
+    fail,
+    setFail,
+    error,
+    uploading,
+    onReady,
+    markDirty,
+    onUploading,
+    save,
+    saveStatus,
+  } = useRequestEditor({
+    user,
+    locale,
+    definition,
+    record,
+    onDirty,
+    onBusy,
+    onSaved,
+    reload,
+  });
   return (
     <>
       <section

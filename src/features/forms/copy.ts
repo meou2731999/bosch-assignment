@@ -26,7 +26,7 @@ const en = {
   grantSave: "Save permissions",
   grantSaved: "Permissions saved. Existing sessions for this user have ended.",
   templateHint:
-    "This step uses the existing IT templates. Field editing will be available in the next step.",
+    "Use an IT template or configure custom fields, preview and publish a new JSON version.",
   empty: "No form types.",
   cancel: "Cancel",
   confirm: "Publish this draft as a new immutable version for new requests?",
@@ -59,7 +59,7 @@ const vi: typeof en = {
   grantSave: "Lưu quyền",
   grantSaved: "Đã lưu quyền. Các phiên đăng nhập của người dùng đã kết thúc.",
   templateHint:
-    "Bước này dùng mẫu IT hiện có. Chỉnh sửa từng trường sẽ có ở bước tiếp theo.",
+    "Dùng mẫu IT hoặc cấu hình trường tùy chỉnh, xem trước và xuất bản phiên bản JSON mới.",
   empty: "Chưa có loại biểu mẫu.",
   cancel: "Hủy",
   confirm: "Xuất bản bản nháp thành phiên bản mới bất biến cho yêu cầu mới?",

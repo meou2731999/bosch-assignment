@@ -1,3 +1,4 @@
+import type { BasicField } from "../../../shared/fields";
 import type {
   RequestRecord,
   ReviewInput,
@@ -12,6 +13,7 @@ export interface Definition {
   name: string;
   version: number;
   definition: FormType;
+  fields?: BasicField[];
 }
 export const api = {
   review: (user: User, id: string, input: ReviewInput) =>

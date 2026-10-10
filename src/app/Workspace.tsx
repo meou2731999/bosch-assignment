@@ -97,7 +97,9 @@ export function Workspace({
   }
   const canCreate = forms.some((form) => form.permissions.includes("create"));
   const defaultTitle = canCreate ? t.newRequest : t.allRequests;
-  const title = record ? record.data.requestTitle || t.untitled : defaultTitle;
+  const title = record
+    ? String(record.data.requestTitle || t.untitled)
+    : defaultTitle;
 
   return (
     <div className="tw:min-h-screen tw:bg-canvas tw:font-sans tw:text-[15px] tw:text-ink">
@@ -151,12 +153,9 @@ export function Workspace({
             {user.role === "reviewer" ? t.reviewHint : t.introduction}
           </p>
           {notice && !dirty && (
-            <div
-              className="tw:mb-5 tw:rounded-lg tw:border tw:border-green-200 tw:bg-green-50 tw:px-5 tw:py-4 tw:text-sm tw:text-green-900"
-              role="status"
-            >
+            <output className="tw:mb-5 tw:rounded-lg tw:border tw:border-green-200 tw:bg-green-50 tw:px-5 tw:py-4 tw:text-sm tw:text-green-900">
               ✓ {t[notice]}
-            </div>
+            </output>
           )}
           {!record && canCreate && (
             <label className="tw:mb-5 tw:block tw:text-sm">

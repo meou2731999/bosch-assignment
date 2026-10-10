@@ -1,9 +1,9 @@
-import { useEffect, useState, type FormEvent } from "react";
-import type { FormRecord, FormTemplate } from "../../../shared/forms";
+import { useEffect, useState } from "react";
+import type { FormRecord, FormDraft } from "../../../shared/forms";
 import type { Locale } from "../../../shared/model";
 import { Button } from "../../components/ui/Button";
 import { ErrorNotice } from "../../components/ui/ErrorNotice";
-import { inputClass } from "../auth/AuthScreen";
+import { FormDraftEditor } from "./FormDraftEditor";
 import { formsApi } from "../forms/api";
 import { formCopy } from "../forms/copy";
 export function FormsPanel({ locale }: { locale: Locale }) {
@@ -49,15 +49,7 @@ export function FormsPanel({ locale }: { locale: Locale }) {
       setBusy(false);
     }
   }
-  function save(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const draft = {
-      revision: editing === "new" ? 0 : (editing as FormRecord).draft.revision,
-      name: String(data.get("name")),
-      description: String(data.get("description")),
-      template: String(data.get("template")) as FormTemplate,
-    };
+  function save(draft: FormDraft) {
     void act(
       () =>
         editing === "new"
@@ -129,55 +121,14 @@ export function FormsPanel({ locale }: { locale: Locale }) {
         </ul>
       )}
       {editing && (
-        <section
-          className="tw:mt-6 tw:max-w-xl tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-6"
-          aria-label={existing ? t.edit : t.create}
-        >
-          <h2>{existing ? t.edit : t.create}</h2>
-          <form key={existing?.id ?? "new"} onSubmit={save}>
-            <fieldset
-              disabled={busy}
-              className="tw:space-y-4 tw:border-0 tw:p-0 tw:[&_label]:block"
-            >
-              <label>
-                {t.name}
-                <input
-                  className={inputClass}
-                  name="name"
-                  required
-                  maxLength={120}
-                  defaultValue={existing?.draft.name}
-                />
-              </label>
-              <label>
-                {t.description}
-                <textarea
-                  className={inputClass}
-                  name="description"
-                  maxLength={1000}
-                  defaultValue={existing?.draft.description}
-                />
-              </label>
-              <label>
-                {t.template}
-                <select
-                  className={inputClass}
-                  name="template"
-                  defaultValue={existing?.draft.template ?? "request-v2"}
-                >
-                  <option value="request-v1">{t.v1}</option>
-                  <option value="request-v2">{t.v2}</option>
-                </select>
-              </label>
-              <div className="tw:flex tw:gap-3">
-                <Button type="submit">{t.save}</Button>
-                <Button variant="secondary" onClick={() => setEditing(null)}>
-                  {t.cancel}
-                </Button>
-              </div>
-            </fieldset>
-          </form>
-        </section>
+        <FormDraftEditor
+          key={existing?.id ?? "new"}
+          existing={existing}
+          locale={locale}
+          busy={busy}
+          onSave={save}
+          onCancel={() => setEditing(null)}
+        />
       )}
     </main>
   );
