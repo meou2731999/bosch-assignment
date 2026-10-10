@@ -42,6 +42,7 @@ export const USERS: User[] = [
   },
 ];
 export interface RequestData {
+  [key: string]: unknown;
   requestTitle?: string;
   requestType?: "equipment" | "software";
   reason?: string;

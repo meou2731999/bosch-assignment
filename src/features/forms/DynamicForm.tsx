@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Form, type FormType } from "@formio/react";
+import type { FormDefinition } from "../../../shared/forms";
+import type { ComponentProps } from "react";
 import type { Webform } from "@formio/js";
 import type { Locale, RequestData } from "../../../shared/model";
 import { formTranslations } from "../../i18n";
@@ -13,7 +15,7 @@ export function DynamicForm({
   onReady,
   onDirty,
 }: {
-  definition: FormType;
+  definition: FormType | FormDefinition;
   initialData: RequestData;
   readOnly: boolean;
   locale: Locale;
@@ -50,8 +52,8 @@ export function DynamicForm({
   return (
     <Form
       className="formio-surface"
-      src={definition}
-      submission={submission}
+      src={definition as FormType}
+      submission={submission as ComponentProps<typeof Form>["submission"]}
       options={options}
       onFormReady={ready}
       onChange={(_value, _flags, modified) => {

@@ -1,3 +1,5 @@
+import { fieldsSchema } from "../../shared/fields";
+import { fieldDefinition } from "../../shared/field-definition";
 import { mkdirSync, readFileSync, writeFileSync, renameSync } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
@@ -15,6 +17,7 @@ const draftSchema = z
     name: z.string().trim().min(1).max(120),
     description: z.string().trim().max(1000),
     template: z.enum(["request-v1", "request-v2"]),
+    fields: fieldsSchema.optional(),
   })
   .strict();
 export function createFormStore(dataDir: string, root: string) {
@@ -146,7 +149,9 @@ export function createFormStore(dataDir: string, root: string) {
       const version =
         Math.max(0, ...form.versions.map((item) => item.version)) + 1;
       const at = new Date().toISOString();
-      const definition = loadTemplate(form.draft.template);
+      const definition = form.draft.fields
+        ? fieldDefinition(form.draft.name, form.draft.fields)
+        : loadTemplate(form.draft.template);
       definition.title = form.draft.name;
       form.versions.push({
         formId: id,
@@ -155,6 +160,9 @@ export function createFormStore(dataDir: string, root: string) {
         description: form.draft.description,
         definition,
         validationProfile: form.draft.template,
+        ...(form.draft.fields
+          ? { fields: structuredClone(form.draft.fields) }
+          : {}),
         publishedAt: at,
         publishedBy: actorId,
       });

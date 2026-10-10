@@ -1,3 +1,4 @@
+import type { BasicField } from "./fields";
 import type { User } from "./model";
 export type FormPermission = "create" | "view" | "review";
 export type FormPermissions = Record<string, FormPermission[]>;
@@ -15,6 +16,7 @@ export interface PublishedForm {
   description: string;
   definition: FormDefinition;
   validationProfile: FormTemplate;
+  fields?: BasicField[];
   publishedAt: string;
   publishedBy: string;
 }
@@ -23,6 +25,7 @@ export interface FormDraft {
   name: string;
   description: string;
   template: FormTemplate;
+  fields?: BasicField[];
 }
 export interface FormRecord {
   id: string;
