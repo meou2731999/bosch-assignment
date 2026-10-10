@@ -1,3 +1,4 @@
+import { formCopy } from "../features/forms/copy";
 import { type Locale, type AccountUser } from "../../shared/model";
 import { authCopy } from "../features/auth/copy";
 import { Button } from "../components/ui/Button";
@@ -10,6 +11,7 @@ export function AppHeader({
   setLocale,
   onLogout,
   onManage,
+  onForms,
   onPassword,
 }: {
   user: AccountUser;
@@ -19,6 +21,7 @@ export function AppHeader({
   setLocale: (locale: Locale) => void;
   onLogout: () => void;
   onManage: () => void;
+  onForms: () => void;
   onPassword: () => void;
 }) {
   const t = copy(locale);
@@ -49,6 +52,15 @@ export function AppHeader({
               onClick={onManage}
             >
               {a.users}
+            </Button>
+          )}
+          {user.isAdmin && (
+            <Button
+              variant="secondary"
+              disabled={busy || loading}
+              onClick={onForms}
+            >
+              {formCopy(locale).manage}
             </Button>
           )}
           <Button

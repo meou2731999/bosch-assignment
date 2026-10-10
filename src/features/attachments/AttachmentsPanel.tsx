@@ -10,6 +10,7 @@ import { FilePreview } from "./FilePreview";
 export function AttachmentsPanel({
   user,
   requestId,
+  formId,
   locale,
   attachments,
   readOnly,
@@ -18,6 +19,7 @@ export function AttachmentsPanel({
 }: {
   user: User;
   requestId: string;
+  formId: string;
   locale: Locale;
   attachments: Attachment[];
   readOnly: boolean;
@@ -56,6 +58,7 @@ export function AttachmentsPanel({
         const uploaded = await attachmentApi.upload(
           user,
           requestId,
+          formId,
           file,
           abort.signal,
         );

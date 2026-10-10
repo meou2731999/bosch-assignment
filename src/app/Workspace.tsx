@@ -1,12 +1,11 @@
+import { useWorkspace } from "./useWorkspace";
+import { formCopy } from "../features/forms/copy";
+
 import { AppHeader } from "./AppHeader";
 import { RequestList } from "../features/requests/components/RequestList";
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  type Locale,
-  type RequestRecord,
-  type AccountUser,
-} from "../../shared/model";
-import { api, type Definition } from "../features/requests/api";
+
+import { type Locale, type AccountUser } from "../../shared/model";
+
 import { copy } from "../i18n";
 import { RequestEditor } from "../features/requests/components/RequestEditor";
 import { Status } from "../features/requests/components/Status";
@@ -17,6 +16,7 @@ export function Workspace({
   setLocale,
   onLogout,
   onManage,
+  onForms,
   onPassword,
 }: {
   user: AccountUser;
@@ -24,84 +24,29 @@ export function Workspace({
   setLocale: (locale: Locale) => void;
   onLogout: () => void;
   onManage: () => void;
+  onForms: () => void;
   onPassword: () => void;
 }) {
   const t = copy(locale);
-  const [requests, setRequests] = useState<RequestRecord[]>([]);
-  const [record, setRecord] = useState<RequestRecord | null>(null);
-  const [definition, setDefinition] = useState<Definition | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState<
-    "saved" | "sent" | "approvedMessage" | "rejectedMessage" | ""
-  >("");
-  const [dirty, setDirty] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const generation = useRef(0);
-  const load = useCallback(
-    async (id?: string, refreshList = false) => {
-      const token = ++generation.current;
-      setLoading(true);
-      setError("");
-      setNotice("");
-      setDirty(false);
-      try {
-        const [list, next] = await Promise.all([
-          refreshList ? api.list(user) : Promise.resolve(null),
-          id ? api.get(user, id) : Promise.resolve(null),
-        ]);
-        const form = await api.form(user, next?.formVersion);
-        if (generation.current !== token) return;
-        if (list) setRequests(list);
-        setRecord(next);
-        setDefinition(form);
-      } catch (e) {
-        if (generation.current === token) {
-          setError((e as Error).message);
-          setDefinition(null);
-        }
-      } finally {
-        if (generation.current === token) setLoading(false);
-      }
-    },
-    [user],
-  );
-  useEffect(() => {
-    const requestGeneration = generation;
-    void load(undefined, true);
-    return () => {
-      requestGeneration.current++;
-    };
-  }, [load]);
-  useEffect(() => {
-    const protect = (e: BeforeUnloadEvent) => {
-      if (dirty) e.preventDefault();
-    };
-    window.addEventListener("beforeunload", protect);
-    return () => window.removeEventListener("beforeunload", protect);
-  }, [dirty]);
-  function canLeave() {
-    return !dirty || window.confirm(t.discard);
-  }
-  function navigate(id?: string) {
-    if (!busy && canLeave()) void load(id);
-  }
-  function saved(next: RequestRecord) {
-    setRecord(next);
-    setDirty(false);
-    setRequests((current) => [
-      next,
-      ...current.filter((r) => r.id !== next.id),
-    ]);
-    const notices = {
-      approved: "approvedMessage",
-      rejected: "rejectedMessage",
-      draft: "saved",
-      submitted: "sent",
-      in_review: "sent",
-    } as const;
-    setNotice(notices[next.status]);
-  }
+  const f = formCopy(locale);
+  const {
+    forms,
+    requests,
+    record,
+    definition,
+    loading,
+    error,
+    notice,
+    dirty,
+    busy,
+    generation,
+    load,
+    setDirty,
+    setBusy,
+    canLeave,
+    navigate,
+    saved,
+  } = useWorkspace(user, locale);
   function renderContent() {
     if (loading)
       return (
@@ -127,10 +72,10 @@ export function Workspace({
           </button>
         </div>
       );
-    if (definition && (user.role === "requester" || record))
+    if (definition)
       return (
         <RequestEditor
-          key={`${record?.id ?? "new"}-${record?.revision ?? 0}-${definition.version}-${generation.current}`}
+          key={`${record?.id ?? "new"}-${record?.revision ?? 0}-${definition.formId}-${definition.version}-${generation.current}`}
           user={user}
           locale={locale}
           definition={definition}
@@ -143,11 +88,15 @@ export function Workspace({
       );
     return (
       <div className="tw:rounded-xl tw:border tw:border-line tw:bg-white tw:px-7 tw:py-16 tw:text-center tw:text-muted">
-        {t.selectHint}
+        {forms.some((form) => form.permissions.includes("create")) ||
+        requests.length
+          ? t.selectHint
+          : f.noCreate}
       </div>
     );
   }
-  const defaultTitle = user.role === "requester" ? t.newRequest : t.allRequests;
+  const canCreate = forms.some((form) => form.permissions.includes("create"));
+  const defaultTitle = canCreate ? t.newRequest : t.allRequests;
   const title = record ? record.data.requestTitle || t.untitled : defaultTitle;
 
   return (
@@ -164,6 +113,9 @@ export function Workspace({
         onManage={() => {
           if (canLeave()) onManage();
         }}
+        onForms={() => {
+          if (canLeave()) onForms();
+        }}
         onPassword={() => {
           if (canLeave()) onPassword();
         }}
@@ -177,6 +129,7 @@ export function Workspace({
       <div className="tw:mx-auto tw:grid tw:min-h-[75vh] tw:max-w-[1380px] tw:gap-7 tw:px-4 tw:py-8 tw:md:grid-cols-[230px_minmax(0,1fr)] tw:md:gap-10 tw:md:px-[5vw] tw:md:py-10">
         <RequestList
           user={user}
+          canCreate={canCreate}
           locale={locale}
           requests={requests}
           selectedId={record?.id}
@@ -204,6 +157,29 @@ export function Workspace({
             >
               ✓ {t[notice]}
             </div>
+          )}
+          {!record && canCreate && (
+            <label className="tw:mb-5 tw:block tw:text-sm">
+              {f.select}
+              <select
+                aria-label={f.select}
+                className="tw:ml-3 tw:rounded-lg tw:border tw:border-line tw:bg-white tw:p-2"
+                value={definition?.formId ?? ""}
+                disabled={busy || loading}
+                onChange={(event) => {
+                  if (canLeave())
+                    void load(undefined, false, event.target.value);
+                }}
+              >
+                {forms
+                  .filter((form) => form.permissions.includes("create"))
+                  .map((form) => (
+                    <option key={form.id} value={form.id}>
+                      {form.name}
+                    </option>
+                  ))}
+              </select>
+            </label>
           )}
           {renderContent()}
         </main>

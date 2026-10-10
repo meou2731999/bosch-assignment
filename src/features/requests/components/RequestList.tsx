@@ -1,8 +1,10 @@
+import { hasFormPermission } from "../../../../shared/forms";
 import type { Locale, RequestRecord, User } from "../../../../shared/model";
 import { copy } from "../../../i18n";
 import { Status } from "./Status";
 export function RequestList({
   user,
+  canCreate,
   locale,
   requests,
   selectedId,
@@ -11,6 +13,7 @@ export function RequestList({
   navigate,
 }: {
   user: User;
+  canCreate: boolean;
   locale: Locale;
   requests: RequestRecord[];
   selectedId?: string;
@@ -19,16 +22,21 @@ export function RequestList({
   navigate: (id?: string) => void;
 }) {
   const t = copy(locale);
+  const seesAll =
+    Boolean(user.isAdmin) ||
+    Object.keys(user.formPermissions).some((formId) =>
+      hasFormPermission(user, formId, "view"),
+    );
   return (
     <aside className="tw:min-w-0 tw:pt-1" aria-label={t.requests}>
       <div className="tw:mb-3 tw:text-[10px] tw:font-bold tw:tracking-[0.16em] tw:text-muted">
         WORKSPACE
       </div>
       <div className="tw:mb-3 tw:flex tw:items-baseline tw:justify-between tw:[&_h2]:text-base tw:[&_h2]:font-semibold tw:[&_span]:rounded-full tw:[&_span]:border tw:[&_span]:border-line tw:[&_span]:px-2 tw:[&_span]:text-xs">
-        <h2>{user.role === "reviewer" ? t.allRequests : t.requests}</h2>
+        <h2>{seesAll ? t.allRequests : t.requests}</h2>
         <span>{requests.length}</span>
       </div>
-      {user.role === "requester" && (
+      {canCreate && (
         <button
           className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:border-transparent tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:cursor-wait tw:disabled:opacity-50 tw:bg-brand tw:text-white tw:hover:bg-brand-hover tw:mb-5 tw:w-full tw:justify-start"
           disabled={loading || busy}
@@ -66,8 +74,7 @@ export function RequestList({
         ))}
       </nav>
       <div className="tw:mt-7 tw:hidden tw:border-t tw:border-line tw:pt-5 tw:text-xs tw:leading-relaxed tw:text-muted tw:md:block tw:[&_span]:mb-2 tw:[&_span]:block tw:[&_span]:text-xl">
-        <span aria-hidden="true">↳</span>{" "}
-        {user.role === "reviewer" ? t.reviewHint : t.help}
+        <span aria-hidden="true">↳</span> {seesAll ? t.selectHint : t.help}
       </div>
     </aside>
   );

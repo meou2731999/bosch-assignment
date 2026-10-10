@@ -1,10 +1,16 @@
+import { UsersTable } from "./UsersTable";
+import { UserEditor } from "./UserEditor";
+import { ResetPasswordPanel } from "./ResetPasswordPanel";
+import type { FormRecord } from "../../../shared/forms";
+import { formsApi } from "../forms/api";
+import { FormPermissionsPanel } from "./FormPermissionsPanel";
 import { useEffect, useState, type FormEvent } from "react";
 import type { AccountUser, Locale } from "../../../shared/model";
 import { Button } from "../../components/ui/Button";
 import { ErrorNotice } from "../../components/ui/ErrorNotice";
 import { adminApi } from "../auth/api";
 import { authCopy } from "../auth/copy";
-import { inputClass } from "../auth/AuthScreen";
+
 export function UsersPanel({
   locale,
   onSelfChanged,
@@ -15,6 +21,8 @@ export function UsersPanel({
   userId: string;
 }) {
   const t = authCopy(locale);
+  const [forms, setForms] = useState<FormRecord[]>([]);
+  const [granting, setGranting] = useState<AccountUser | null>(null);
   const [users, setUsers] = useState<AccountUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -24,10 +32,12 @@ export function UsersPanel({
   const [resetting, setResetting] = useState<AccountUser | null>(null);
   useEffect(() => {
     let live = true;
-    adminApi
-      .list()
-      .then((next) => {
-        if (live) setUsers(next);
+    Promise.all([adminApi.list(), formsApi.all()])
+      .then(([next, types]) => {
+        if (live) {
+          setUsers(next);
+          setForms(types);
+        }
       })
       .catch((error) => {
         if (live) setError(error);
@@ -51,6 +61,7 @@ export function UsersPanel({
       ]);
       setEditing(null);
       setResetting(null);
+      setGranting(null);
       setNotice(message);
       if (next.id === userId) await onSelfChanged();
     } catch (error) {
@@ -81,7 +92,7 @@ export function UsersPanel({
       t.saved,
     );
   }
-  const existing = editing && editing !== "new" ? editing : undefined;
+
   return (
     <main id="main" className="tw:mx-auto tw:max-w-6xl tw:p-5 tw:md:p-10">
       <div className="tw:mb-6 tw:flex tw:items-center tw:justify-between">
@@ -89,6 +100,7 @@ export function UsersPanel({
         <Button
           disabled={busy || loading}
           onClick={() => {
+            setGranting(null);
             setEditing("new");
             setResetting(null);
             setError(null);
@@ -103,219 +115,48 @@ export function UsersPanel({
       {loading ? (
         <p role="status">{t.working}</p>
       ) : (
-        <div className="tw:overflow-x-auto tw:rounded-xl tw:border tw:border-line tw:bg-white">
-          <table className="tw:w-full tw:text-left tw:text-sm tw:[&_td]:border-t tw:[&_td]:border-line tw:[&_td]:p-4 tw:[&_th]:p-4">
-            <caption className="tw:sr-only">{t.users}</caption>
-            <thead>
-              <tr>
-                <th>{t.name}</th>
-                <th>{t.email}</th>
-                <th>{t.role}</th>
-                <th>{t.status}</th>
-                <th>{t.actions}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>
-                    {user.name}
-                    <small className="tw:block tw:text-muted">
-                      {user.department}
-                    </small>
-                  </td>
-                  <td>{user.email}</td>
-                  <td>
-                    {t[user.role]}
-                    {user.isAdmin && ` · ${t.admin}`}
-                  </td>
-                  <td>{user.active ? t.active : t.disabled}</td>
-                  <td>
-                    <div className="tw:flex tw:flex-wrap tw:gap-2">
-                      <Button
-                        variant="secondary"
-                        disabled={busy}
-                        onClick={() => {
-                          setEditing(user);
-                          setResetting(null);
-                          setError(null);
-                          setNotice("");
-                        }}
-                      >
-                        {t.edit}
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        disabled={busy}
-                        onClick={() => {
-                          setResetting(user);
-                          setEditing(null);
-                          setError(null);
-                          setNotice("");
-                        }}
-                      >
-                        {t.reset}
-                      </Button>
-                      <Button
-                        variant={user.active ? "danger" : "secondary"}
-                        disabled={busy}
-                        onClick={() => {
-                          if (!user.active || window.confirm(t.confirmDisable))
-                            void act(
-                              () =>
-                                adminApi.edit(user.id, {
-                                  active: !user.active,
-                                }),
-                              t.saved,
-                            );
-                        }}
-                      >
-                        {user.active ? t.disable : t.enable}
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <UsersTable
+          users={users}
+          locale={locale}
+          busy={busy}
+          onSelect={(mode, user) => {
+            setGranting(mode === "permissions" ? user : null);
+            setEditing(mode === "edit" ? user : null);
+            setResetting(mode === "reset" ? user : null);
+            setError(null);
+            setNotice("");
+          }}
+          act={act}
+        />
+      )}
+      {granting && (
+        <FormPermissionsPanel
+          key={granting.id}
+          user={granting}
+          forms={forms}
+          locale={locale}
+          busy={busy}
+          onSave={act}
+          onCancel={() => setGranting(null)}
+        />
       )}
       {editing && (
-        <section
-          className="tw:mt-6 tw:max-w-xl tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-6"
-          aria-label={existing ? t.edit : t.create}
-        >
-          <h2>{existing ? t.edit : t.create}</h2>
-          <form
-            key={typeof editing === "string" ? editing : editing.id}
-            onSubmit={save}
-          >
-            <fieldset
-              disabled={busy}
-              className="tw:space-y-4 tw:border-0 tw:p-0 tw:[&_label]:block tw:[&_input]:mt-1"
-            >
-              <label>
-                {t.name}
-                <input
-                  className={inputClass}
-                  name="name"
-                  required
-                  maxLength={120}
-                  defaultValue={existing?.name}
-                />
-              </label>
-              <label>
-                {t.email}
-                <input
-                  className={inputClass}
-                  type="email"
-                  name="email"
-                  required
-                  maxLength={254}
-                  defaultValue={existing?.email}
-                  autoComplete="off"
-                />
-              </label>
-              <label>
-                {t.department}
-                <input
-                  className={inputClass}
-                  name="department"
-                  required
-                  maxLength={120}
-                  defaultValue={existing?.department}
-                />
-              </label>
-              <label>
-                {t.role}
-                <select
-                  className={inputClass}
-                  name="role"
-                  defaultValue={existing?.role ?? "requester"}
-                >
-                  <option value="requester">{t.requester}</option>
-                  <option value="reviewer">{t.reviewer}</option>
-                </select>
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="isAdmin"
-                  defaultChecked={existing?.isAdmin}
-                />{" "}
-                {t.admin}
-              </label>
-              {!existing && (
-                <label>
-                  {t.initialPassword}
-                  <input
-                    className={inputClass}
-                    name="password"
-                    type="password"
-                    required
-                    minLength={12}
-                    maxLength={256}
-                    autoComplete="new-password"
-                  />
-                </label>
-              )}
-              <div className="tw:flex tw:gap-3">
-                <Button type="submit">{busy ? t.working : t.save}</Button>
-                <Button variant="secondary" onClick={() => setEditing(null)}>
-                  {t.cancel}
-                </Button>
-              </div>
-            </fieldset>
-          </form>
-        </section>
+        <UserEditor
+          editing={editing}
+          locale={locale}
+          busy={busy}
+          save={save}
+          onCancel={() => setEditing(null)}
+        />
       )}
       {resetting && (
-        <section
-          aria-label={t.reset}
-          className="tw:mt-6 tw:max-w-xl tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-6"
-        >
-          <h2>
-            {t.reset}: {resetting.name}
-          </h2>
-          <p>{t.resetHint}</p>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              const password = String(
-                new FormData(event.currentTarget).get("password"),
-              );
-              if (window.confirm(t.confirmReset))
-                void act(
-                  () => adminApi.reset(resetting.id, password),
-                  t.resetDone,
-                );
-            }}
-          >
-            <fieldset
-              disabled={busy}
-              className="tw:space-y-4 tw:border-0 tw:p-0"
-            >
-              <label>
-                {t.initialPassword}
-                <input
-                  className={inputClass}
-                  name="password"
-                  type="password"
-                  required
-                  minLength={12}
-                  maxLength={256}
-                  autoComplete="new-password"
-                />
-              </label>
-              <div className="tw:flex tw:gap-3">
-                <Button type="submit">{busy ? t.working : t.reset}</Button>
-                <Button variant="secondary" onClick={() => setResetting(null)}>
-                  {t.cancel}
-                </Button>
-              </div>
-            </fieldset>
-          </form>
-        </section>
+        <ResetPasswordPanel
+          resetting={resetting}
+          locale={locale}
+          busy={busy}
+          act={act}
+          onCancel={() => setResetting(null)}
+        />
       )}
     </main>
   );

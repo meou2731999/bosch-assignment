@@ -1,3 +1,4 @@
+import { FormsPanel } from "../features/admin/FormsPanel";
 import { useEffect, useState } from "react";
 import type { AccountUser, Locale } from "../../shared/model";
 import { Workspace } from "./Workspace";
@@ -13,7 +14,7 @@ export function App() {
   const [user, setUser] = useState<AccountUser | null>(null);
   const [locale, setLocale] = useState<Locale>("en");
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<"requests" | "users" | "password">(
+  const [view, setView] = useState<"requests" | "users" | "forms" | "password">(
     "requests",
   );
   const [notice, setNotice] = useState<"changed" | "expired" | "">("");
@@ -125,7 +126,7 @@ export function App() {
         />
       </>
     );
-  else if (view === "users" && user.isAdmin)
+  else if ((view === "users" || view === "forms") && user.isAdmin)
     content = (
       <>
         <AppHeader
@@ -136,6 +137,7 @@ export function App() {
           setLocale={setLocale}
           onLogout={() => void logout()}
           onManage={() => setView("users")}
+          onForms={() => setView("forms")}
           onPassword={() => setView("password")}
         />
         <div className="tw:px-5 tw:pt-5">
@@ -143,13 +145,17 @@ export function App() {
             {t.workspace}
           </Button>
         </div>
-        <UsersPanel
-          locale={locale}
-          userId={user.id}
-          onSelfChanged={async () => {
-            setUser(await authApi.session());
-          }}
-        />
+        {view === "forms" ? (
+          <FormsPanel locale={locale} />
+        ) : (
+          <UsersPanel
+            locale={locale}
+            userId={user.id}
+            onSelfChanged={async () => {
+              setUser(await authApi.session());
+            }}
+          />
+        )}
       </>
     );
   else
@@ -161,6 +167,7 @@ export function App() {
         setLocale={setLocale}
         onLogout={() => void logout()}
         onManage={() => setView("users")}
+        onForms={() => setView("forms")}
         onPassword={() => setView("password")}
       />
     );

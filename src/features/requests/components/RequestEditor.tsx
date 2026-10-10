@@ -1,3 +1,7 @@
+import { DemoControls } from "./DemoControls";
+import { RequestActions } from "./RequestActions";
+import { RequestMetadata } from "./RequestMetadata";
+import { hasFormPermission } from "../../../../shared/forms";
 import { AttachmentsPanel } from "../../attachments/AttachmentsPanel";
 import { ErrorNotice } from "../../../components/ui/ErrorNotice";
 import { ReviewPanel } from "./ReviewPanel";
@@ -35,7 +39,8 @@ export function RequestEditor({
 }) {
   const t = copy(locale);
   const readOnly =
-    user.role !== "requester" || (!!record && record.status !== "draft");
+    !hasFormPermission(user, definition.formId, "create") ||
+    (!!record && (record.ownerId !== user.id || record.status !== "draft"));
   const [id] = useState(() => record?.id ?? crypto.randomUUID());
   const [initialData] = useState(() => record?.data ?? {});
   const [attachments, setAttachments] = useState<Attachment[]>(
@@ -90,6 +95,7 @@ export function RequestEditor({
         id,
         {
           revision: record?.revision ?? 0,
+          formId: definition.formId,
           formVersion: definition.version,
           action,
           data,
@@ -113,22 +119,12 @@ export function RequestEditor({
         className="tw:overflow-hidden tw:rounded-xl tw:border tw:border-line tw:bg-white tw:shadow-sm"
         aria-label={t.newRequest}
       >
-        <div className="tw:flex tw:flex-wrap tw:gap-x-6 tw:gap-y-2 tw:border-b tw:border-line tw:bg-stone-50 tw:px-5 tw:py-4 tw:text-xs tw:text-muted tw:md:px-7 tw:[&_strong]:ml-1 tw:[&_strong]:font-semibold tw:[&_strong]:text-ink">
-          <span>
-            {t.version} <strong>{definition.version}</strong>
-          </span>
-          <span>
-            {t.revision} <strong>{record?.revision ?? 0}</strong>
-          </span>
-          <span className="tw:md:ml-auto">
-            {t.requestOwner}{" "}
-            <strong>
-              {record && record.ownerId !== user.id
-                ? record.ownerId
-                : user.name}
-            </strong>
-          </span>
-        </div>
+        <RequestMetadata
+          locale={locale}
+          user={user}
+          record={record}
+          definition={definition}
+        />
         {readOnly && (
           <div className="tw:bg-slate-100 tw:px-5 tw:py-3 tw:text-xs tw:text-slate-600 tw:md:px-7">
             {t.readonly}
@@ -154,6 +150,7 @@ export function RequestEditor({
           <AttachmentsPanel
             user={user}
             requestId={id}
+            formId={definition.formId}
             locale={locale}
             attachments={attachments}
             readOnly={readOnly}
@@ -165,48 +162,27 @@ export function RequestEditor({
           />
         </fieldset>
         {!readOnly && (
-          <div className="tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-4 tw:border-t tw:border-line tw:px-5 tw:py-5 tw:md:px-7 tw:[&>div]:flex tw:[&>div]:flex-wrap tw:[&>div]:gap-2">
-            <span
-              className="tw:max-w-xs tw:text-xs tw:text-muted"
-              role="status"
-            >
-              {saveStatus}
-            </span>
-            <div>
-              <button
-                className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:border-transparent tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:cursor-wait tw:disabled:opacity-50 tw:border-slate-300 tw:bg-white tw:text-brand tw:hover:bg-sage"
-                disabled={!ready || saving || uploading}
-                onClick={() => void save("draft")}
-              >
-                {t.saveDraft}
-              </button>
-              <button
-                className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:border-transparent tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:cursor-wait tw:disabled:opacity-50 tw:bg-brand tw:text-white tw:hover:bg-brand-hover"
-                disabled={!ready || saving || uploading}
-                onClick={() => void save("submit")}
-              >
-                {t.submit} <span aria-hidden="true">↗</span>
-              </button>
-            </div>
-          </div>
+          <RequestActions
+            locale={locale}
+            saveStatus={saveStatus}
+            ready={ready}
+            saving={saving}
+            uploading={uploading}
+            save={save}
+          />
         )}
       </section>
       {!readOnly && (
-        <details className="tw:mx-1 tw:mt-4 tw:mb-7 tw:text-xs tw:text-muted tw:[&_label]:block tw:[&_label]:pt-3 tw:[&_input]:mr-1 tw:[&_input]:accent-brand">
-          <summary>{t.demoTools}</summary>
-          <label>
-            <input
-              type="checkbox"
-              checked={fail}
-              disabled={saving}
-              onChange={(e) => setFail(e.target.checked)}
-            />{" "}
-            {t.fail}
-          </label>
-        </details>
+        <DemoControls
+          locale={locale}
+          fail={fail}
+          saving={saving}
+          onChange={setFail}
+        />
       )}
       {record &&
-        user.role === "reviewer" &&
+        hasFormPermission(user, record.formId, "review") &&
+        record.ownerId !== user.id &&
         ["submitted", "in_review"].includes(record.status) && (
           <ReviewPanel
             user={user}
