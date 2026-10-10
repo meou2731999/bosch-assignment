@@ -1,3 +1,4 @@
+import { hasFormPermission } from "../../shared/forms";
 import { z } from "zod";
 import type { RequestRecord, User } from "../../shared/model";
 import { ApiError } from "../http/errors";
@@ -14,11 +15,14 @@ export function reviewRequest(
   raw: unknown,
   now: string,
 ): RequestRecord {
-  if (user.role !== "reviewer")
+  if (
+    !hasFormPermission(user, record.formId, "review") ||
+    user.id === record.ownerId
+  )
     throw new ApiError(
       403,
       "FORBIDDEN",
-      "Only reviewers may make a review decision.",
+      "Only reviewers with form permission may review another user’s request.",
     );
   const result = reviewSchema.safeParse(raw);
   if (!result.success)

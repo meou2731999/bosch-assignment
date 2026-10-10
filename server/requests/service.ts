@@ -1,3 +1,8 @@
+import {
+  canAccessForm,
+  hasFormPermission,
+  type PublishedForm,
+} from "../../shared/forms";
 import { z } from "zod";
 import type { RequestData, RequestRecord, User } from "../../shared/model";
 
@@ -16,7 +21,8 @@ const dataSchema = z.object({
 });
 const saveSchema = z.object({
   revision: z.number().int().min(0),
-  formVersion: z.union([z.literal(1), z.literal(2)]),
+  formId: z.string().min(1).max(80),
+  formVersion: z.number().int().positive(),
   action: z.enum(["draft", "submit"]),
   data: z.record(z.string(), z.unknown()),
   attachments: z
@@ -41,12 +47,17 @@ const saveSchema = z.object({
 });
 
 export function canRead(user: User, record: RequestRecord) {
-  return user.role === "reviewer" || record.ownerId === user.id;
+  return (
+    Boolean(user.isAdmin) ||
+    (canAccessForm(user, record.formId) &&
+      (hasFormPermission(user, record.formId, "view") ||
+        record.ownerId === user.id))
+  );
 }
 
 function normalizeData(
   raw: Record<string, unknown>,
-  formVersion: 1 | 2,
+  profile: PublishedForm["validationProfile"],
 ): RequestData {
   // Explicit policy: inactive section values are discarded before validation/storage.
   const source = { ...raw };
@@ -61,7 +72,7 @@ function normalizeData(
     delete source.application;
     delete source.accessDays;
   }
-  if (formVersion === 1) delete source.additionalNotes;
+  if (profile === "request-v1") delete source.additionalNotes;
   const validated = dataSchema.safeParse(source);
   if (!validated.success) {
     const fields = Object.fromEntries(
@@ -108,8 +119,12 @@ export function saveRequest(
   raw: unknown,
   id: string,
   now: string,
+  form: Pick<PublishedForm, "formId" | "version" | "validationProfile">,
 ): RequestRecord {
-  if (user.role !== "requester" || (previous && previous.ownerId !== user.id)) {
+  if (
+    !hasFormPermission(user, form.formId, "create") ||
+    (previous && previous.ownerId !== user.id)
+  ) {
     throw new ApiError(403, "FORBIDDEN", "You cannot change this request.");
   }
   if (previous && previous.status !== "draft") {
@@ -134,7 +149,17 @@ export function saveRequest(
       "A newer revision exists. Reload the request before editing.",
     );
   }
-  if (previous && input.formVersion !== previous.formVersion) {
+  if (input.formId !== form.formId || input.formVersion !== form.version)
+    throw new ApiError(
+      409,
+      "VERSION",
+      "The selected form version is unavailable.",
+    );
+  if (
+    previous &&
+    (input.formId !== previous.formId ||
+      input.formVersion !== previous.formVersion)
+  ) {
     throw new ApiError(
       409,
       "VERSION",
@@ -142,7 +167,7 @@ export function saveRequest(
     );
   }
 
-  const data = normalizeData(input.data, input.formVersion);
+  const data = normalizeData(input.data, form.validationProfile);
   if (input.action === "submit") validateSubmission(data);
   let auditAction: RequestRecord["audit"][number]["action"] = previous
     ? "draft_saved"
@@ -151,6 +176,7 @@ export function saveRequest(
   return {
     id,
     ownerId: user.id,
+    formId: input.formId,
     formVersion: input.formVersion,
     revision: (previous?.revision ?? 0) + 1,
     status: input.action === "submit" ? "submitted" : "draft",

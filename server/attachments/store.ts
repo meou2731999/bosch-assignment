@@ -9,6 +9,7 @@ interface StoredFile extends Attachment {
   id: string;
   ownerId: string;
   requestId: string;
+  formId: string;
 }
 function detectType(name: string, bytes: Buffer): string {
   const ext = path.extname(name).toLowerCase();
@@ -47,9 +48,10 @@ export function createAttachmentStore(dataDir: string) {
     if (!/^[a-f0-9-]{36}$/.test(id))
       throw new ApiError(404, "NOT_FOUND", "File not found.");
     try {
-      return JSON.parse(
+      const file: StoredFile = JSON.parse(
         readFileSync(path.join(directory, `${id}.json`), "utf8"),
       );
+      return { ...file, formId: file.formId ?? "request" };
     } catch (e) {
       if ((e as NodeJS.ErrnoException).code === "ENOENT")
         throw new ApiError(404, "NOT_FOUND", "File not found.");
@@ -66,6 +68,7 @@ export function createAttachmentStore(dataDir: string) {
       requestId: string,
       name: string,
       bytes: Buffer,
+      formId: string,
     ): Attachment {
       // Control characters and path separators are deliberately rejected in filenames.
       // eslint-disable-next-line no-control-regex
@@ -84,6 +87,7 @@ export function createAttachmentStore(dataDir: string) {
       const file: StoredFile = {
         id: randomUUID(),
         requestId,
+        formId,
         ownerId: user.id,
         name,
         size: bytes.length,
@@ -116,6 +120,7 @@ export function createAttachmentStore(dataDir: string) {
       user: User,
       requestId: string,
       attachments: Attachment[],
+      formId: string,
       previous?: RequestRecord,
     ): Attachment[] {
       const seen = new Set<string>();
@@ -138,7 +143,11 @@ export function createAttachmentStore(dataDir: string) {
           return legacy;
         }
         const file = get(attachment.id);
-        if (file.ownerId !== user.id || file.requestId !== requestId)
+        if (
+          file.ownerId !== user.id ||
+          file.requestId !== requestId ||
+          file.formId !== formId
+        )
           throw new ApiError(
             403,
             "FORBIDDEN",

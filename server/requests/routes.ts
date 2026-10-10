@@ -1,3 +1,5 @@
+import type { FormStore } from "../forms/store";
+import { hasFormPermission } from "../../shared/forms";
 import type { AttachmentStore } from "../attachments/store";
 import { reviewRequest } from "./review";
 import type { Express } from "express";
@@ -7,15 +9,10 @@ export function registerRequestRoutes(
   app: Express,
   store: RequestStore,
   files: AttachmentStore,
+  forms: FormStore,
 ) {
   app.post("/api/requests/:id/review", (req, res, next) => {
     try {
-      if (res.locals.user.role !== "reviewer")
-        throw new ApiError(
-          403,
-          "FORBIDDEN",
-          "Only reviewers may make a review decision.",
-        );
       const previous = store.get(req.params.id);
       if (!previous) throw new ApiError(404, "NOT_FOUND", "Request not found.");
       const record = reviewRequest(
@@ -55,17 +52,36 @@ export function registerRequestRoutes(
           "The demo API is temporarily unavailable. Your form has not been saved.",
         );
       const previous = store.get(req.params.id);
+      const formId = req.body?.formId;
+      if (
+        typeof formId !== "string" ||
+        !hasFormPermission(res.locals.user, formId, "create")
+      )
+        throw new ApiError(
+          403,
+          "FORBIDDEN",
+          "You cannot create requests for this form.",
+        );
+      if (previous && previous.formId !== formId)
+        throw new ApiError(
+          409,
+          "VERSION",
+          "A request must keep its original form type.",
+        );
+      const form = forms.published(formId, previous?.formVersion);
       const record = saveRequest(
         res.locals.user,
         previous,
         req.body,
         req.params.id,
         new Date().toISOString(),
+        form,
       );
       record.attachments = files.resolve(
         res.locals.user,
         record.id,
         record.attachments,
+        record.formId,
         previous,
       );
       store.put(record);

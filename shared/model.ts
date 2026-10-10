@@ -1,3 +1,4 @@
+import type { FormPermissions } from "./forms";
 export type Role = "requester" | "reviewer";
 export type Status =
   "draft" | "submitted" | "in_review" | "approved" | "rejected";
@@ -7,12 +8,15 @@ export interface User {
   name: string;
   role: Role;
   department: string;
+  isAdmin?: boolean;
+  formPermissions: FormPermissions;
 }
 export interface AccountUser extends User {
   email: string;
   isAdmin: boolean;
   active: boolean;
   mustChangePassword: boolean;
+  permissionRevision: number;
 }
 export const USERS: User[] = [
   {
@@ -20,13 +24,21 @@ export const USERS: User[] = [
     name: "Alex Nguyen",
     role: "requester",
     department: "Operations",
+    formPermissions: { request: ["create"] },
   },
-  { id: "sam", name: "Sam Patel", role: "requester", department: "Sales" },
+  {
+    id: "sam",
+    name: "Sam Patel",
+    role: "requester",
+    department: "Sales",
+    formPermissions: { request: ["create"] },
+  },
   {
     id: "morgan",
     name: "Morgan Lee",
     role: "reviewer",
     department: "IT Services",
+    formPermissions: { request: ["view", "review"] },
   },
 ];
 export interface RequestData {
@@ -60,7 +72,8 @@ export interface AuditEvent {
 export interface RequestRecord {
   id: string;
   ownerId: string;
-  formVersion: 1 | 2;
+  formId: string;
+  formVersion: number;
   revision: number;
   status: Status;
   data: RequestData;
@@ -71,7 +84,8 @@ export interface RequestRecord {
 }
 export interface SaveInput {
   revision: number;
-  formVersion: 1 | 2;
+  formId: string;
+  formVersion: number;
   action: "draft" | "submit";
   data: RequestData;
   attachments: Attachment[];

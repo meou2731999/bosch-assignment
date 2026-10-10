@@ -5,6 +5,7 @@ export function seedRequests(): RequestRecord[] {
     {
       id: "demo-analytics",
       ownerId: "alex",
+      formId: "request",
       formVersion: 1,
       revision: 1,
       status: "in_review",
@@ -35,6 +36,7 @@ export function seedRequests(): RequestRecord[] {
     {
       id: "demo-monitor",
       ownerId: "sam",
+      formId: "request",
       formVersion: 1,
       revision: 1,
       status: "approved",
