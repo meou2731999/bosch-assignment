@@ -6,19 +6,24 @@ import {
   existsSync,
 } from "node:fs";
 import path from "node:path";
+import {
+  publicRecord,
+  withSnapshots,
+  type StoredRequest,
+} from "./request-snapshots";
 import type { RequestRecord } from "../../shared/model";
 import { seedRequests } from "../seed";
 export function createRequestStore(dataDir: string) {
   const file = path.join(dataDir, "requests.json");
   mkdirSync(dataDir, { recursive: true });
-  let records: RequestRecord[];
+  let records: StoredRequest[];
   try {
     records = JSON.parse(readFileSync(file, "utf8"));
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     records = seedRequests();
   }
-  function persist(next: RequestRecord[]) {
+  function persist(next: StoredRequest[]) {
     writeFileSync(`${file}.tmp`, JSON.stringify(next, null, 2));
     renameSync(`${file}.tmp`, file);
     records = next;
@@ -39,10 +44,21 @@ export function createRequestStore(dataDir: string) {
     );
   }
   return {
-    all: () => records,
-    get: (id: string) => records.find((r) => r.id === id),
+    all: () => records.map(publicRecord),
+    get: (id: string) => {
+      const record = records.find((r) => r.id === id);
+      return record ? publicRecord(record) : undefined;
+    },
+    snapshots: (id: string) =>
+      structuredClone(records.find((r) => r.id === id)?.snapshots ?? []),
     put: (record: RequestRecord) =>
-      persist([...records.filter((r) => r.id !== record.id), record]),
+      persist([
+        ...records.filter((r) => r.id !== record.id),
+        withSnapshots(
+          record,
+          records.find((r) => r.id === record.id),
+        ),
+      ]),
   };
 }
 export type RequestStore = ReturnType<typeof createRequestStore>;

@@ -39,6 +39,8 @@ export const messages: Messages = {
   history: "Lịch sử",
   created: "Tạo bản nháp",
   draft_saved: "Lưu bản nháp",
+  draft_upgraded: "Nâng cấp bản nháp",
+  draft_restored: "Khôi phục bản nháp",
   requestOwner: "Người yêu cầu",
   version: "Phiên bản biểu mẫu",
   revision: "Lần lưu",

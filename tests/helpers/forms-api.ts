@@ -148,6 +148,7 @@ export function formsFixture() {
     rmSync(dir, { recursive: true, force: true });
   });
   return {
+    dir,
     send,
     login,
     createForm,

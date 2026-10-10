@@ -62,9 +62,15 @@ export interface AuditEvent {
   at: string;
   actorId: string;
   comment?: string;
+  fromVersion?: number;
+  toVersion?: number;
+  snapshotRevision?: number;
+  changes?: { path: string; kind: "added" | "removed" | "changed" }[];
   action:
     | "created"
     | "draft_saved"
+    | "draft_upgraded"
+    | "draft_restored"
     | "submitted"
     | "in_review"
     | "approved"

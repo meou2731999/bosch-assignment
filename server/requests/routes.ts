@@ -1,3 +1,4 @@
+import { registerDraftRoutes } from "./draft-routes";
 import type { FormStore } from "../forms/store";
 import { hasFormPermission } from "../../shared/forms";
 import type { AttachmentStore } from "../attachments/store";
@@ -11,6 +12,7 @@ export function registerRequestRoutes(
   files: AttachmentStore,
   forms: FormStore,
 ) {
+  registerDraftRoutes(app, store, forms, files);
   app.post("/api/requests/:id/review", (req, res, next) => {
     try {
       const previous = store.get(req.params.id);

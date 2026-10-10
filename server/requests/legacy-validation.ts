@@ -12,7 +12,7 @@ const dataSchema = z.object({
   accessDays: z.number().int().min(1).max(365).optional(),
   additionalNotes: z.string().trim().max(500).optional(),
 });
-export function normalizeData(
+export function legacyCandidate(
   raw: Record<string, unknown>,
   profile: PublishedForm["validationProfile"],
 ): RequestData {
@@ -30,6 +30,17 @@ export function normalizeData(
     delete source.accessDays;
   }
   if (profile === "request-v1") delete source.additionalNotes;
+  return Object.fromEntries(
+    Object.entries(source).filter(([key]) =>
+      Object.hasOwn(dataSchema.shape, key),
+    ),
+  );
+}
+export function normalizeData(
+  raw: Record<string, unknown>,
+  profile: PublishedForm["validationProfile"],
+): RequestData {
+  const source = legacyCandidate(raw, profile);
   const validated = dataSchema.safeParse(source);
   if (!validated.success) {
     const fields = Object.fromEntries(

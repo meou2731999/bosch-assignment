@@ -38,6 +38,8 @@ export const messages = {
   history: "Activity",
   created: "Draft created",
   draft_saved: "Draft saved",
+  draft_upgraded: "Draft upgraded",
+  draft_restored: "Draft restored",
   requestOwner: "Requested by",
   version: "Form version",
   revision: "Revision",
