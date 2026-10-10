@@ -1,11 +1,11 @@
-# Form store and per-form permissions (step 3)
+# Form store and per-form permissions (steps 3–4)
 
 The API stores form types, authoring drafts, published JSON definitions and audit events in `.data/forms.json`. This remains a single-process local JSON store with atomic file replacement. Draft saves and publication require the current draft revision; publishing creates a new immutable version and advances the active pointer. Returned objects are detached from store state.
 
 ## Admin workflow
 
 1. Sign in as admin and open **Manage forms**.
-2. Create a type with a name, description and starting template, then save its draft.
+2. Create a type with a name, description and starting template, then save its draft. For custom fields, enable **Use custom fields**, add/configure fields and preview before saving.
 3. Publish the saved draft. Draft-only types do not appear in the requester catalog.
 4. Open **Manage users** → **Form permissions** for the desired user.
 5. Check Create requests, View all requests and/or Review requests for each type, then save.
@@ -27,8 +27,8 @@ Permission replacement uses a separate `permissionRevision` to reject stale writ
 - `GET /api/forms/:id`: active published definition, including formId/version/name/description/definition/validationProfile/publication metadata.
 - `GET /api/forms/:id/versions/:version`: the immutable historical definition, with the same access policy.
 - Admin-only `GET /api/admin/forms` and `GET /api/admin/forms/:id`: include draft, versions and audit.
-- Admin-only `POST /api/admin/forms`: `{revision:0,name,description,template}`.
-- Admin-only `PUT /api/admin/forms/:id/draft`: `{revision,name,description,template}`.
+- Admin-only `POST /api/admin/forms`: `{revision:0,name,description,template,fields?}`.
+- Admin-only `PUT /api/admin/forms/:id/draft`: `{revision,name,description,template,fields?}`.
 - Admin-only `POST /api/admin/forms/:id/publish`: `{revision}`. Publication increments the draft revision as well as creating a version.
 - Admin-only `PUT /api/admin/users/:id/form-permissions`: `{revision,formPermissions:{[formId]:["create","view","review"]}}`; replaces all grants, returns the updated public account.
 
@@ -46,6 +46,15 @@ Existing accounts lacking per-form permissions are migrated once from their old 
 
 ## Step boundary and verification
 
-This step supports the two existing trusted IT templates (`request-v1`, `request-v2`) for published definitions. Validation follows the stored template profile, independent of a new form's version number. The API rejects arbitrary definition properties. Field authoring and schema-driven validation are step 4; advanced fields/conditions are step 5; user-confirmed upgrades of old drafts are step 6. Publishing here never migrates existing requests.
+Step 4 adds flat custom fields to drafts and publishes both their configuration and generated Form.io JSON. Supported inputs: text, textarea, email, number, checkbox, date (YYYY-MM-DD), and single select. Input and data types must be compatible: number → number, checkbox → boolean, all others → string. Changing the type in the editor resets incompatible validation settings. Required, min/max length, numeric min/max, integer-only and configured select options are supported. Dates must exist in the calendar and email addresses must be valid. Required checkboxes must be checked on submission.
+
+The optional `fields` array contains `{key,label,input,dataType,required,minLength?,maxLength?,min?,max?,integer?,options?:[{label,value}]}`. Field keys must be unique identifiers (1–64 characters), excluding prototype keys. The API accepts 1–50 fields and up to 100 options per select. Empty custom schemas, duplicate option values, incompatible validators, reversed bounds and arbitrary/executable properties are rejected. Custom fields replace the starting template for that draft; they do not edit legacy conditional sections. Omitting fields selects the legacy template mode.
+
+The frontend and API share `validateFields`. Drafts may omit required values, but supplied values must satisfy their configured type and validation. Submission requires all required fields; unknown payload properties are discarded. Empty string/null values are treated as absent. Strings are preserved, with whitespace-only required strings rejected at submission. The API uses the published field configuration, never fields supplied by a requester. Legacy published schemas without fields continue to use their existing template validation profile. Published snapshots and existing request data are unchanged.
+
+Advanced fields and custom conditional visibility are step 5; user-confirmed upgrades of old drafts are step 6. Publishing never migrates existing requests.
 
 `npm run check` runs lint, formatting, unit/API tests and build. `npm run test:e2e` covers the existing account flows plus form creation/publication, scoped grants, catalog visibility, draft save, old-version preservation and permission revocation using Chromium and temporary data. Tests cover authorization by form, role-independent grants, admin read boundaries, self-review rejection, unlinked/linked attachments, schema access, stale revisions, persistence and migration backups.
+
+
+The field-builder Chromium scenario creates, edits, reorders, removes and previews fields, publishes v1, saves a request, then changes validation and adds an email field in v2. The requester loads v2 in the same browser document (a DOM marker proves there was no reload), validates and submits, then reopens and submits the v1 draft. This demonstrates form changes without a new frontend release. `test-results/field-editor-preview.png` captures the editor/preview. Unit/API tests additionally cover all basic data types, malformed/unsafe schemas, direct API validation bypass attempts, JSON restart persistence and immutable historical versions.

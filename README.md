@@ -46,7 +46,7 @@ Final submission requires title (3-80 characters), business reason (10-500), req
 
 ### Change a form without rebuilding the frontend
 
-Open **Manage forms** as admin, create or edit a form type from the existing IT templates, save its draft and publish. The API persists each published JSON snapshot in `.data/forms.json`. New requests load the active version; saved requests retain their original version. Manage grants through **Manage users → Form permissions**. Editing individual inputs and dynamic validation will be added in step 4. See [form store and API details](docs/forms-and-permissions.md).
+Open **Manage forms** as admin, create or edit a form type from the existing IT templates, save its draft and publish. The API persists each published JSON snapshot in `.data/forms.json`. New requests load the active version; saved requests retain their original version. Manage grants through **Manage users → Form permissions**. Enable **Use custom fields** to add/edit/reorder inputs, choose data types and validation, preview, save and publish. Fields and rules are loaded from JSON; existing requests keep their old schema. See [form store and API details](docs/forms-and-permissions.md).
 
 ## What is real and what is simulated?
 
