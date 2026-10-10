@@ -50,9 +50,7 @@ export function Workspace({
   function renderContent() {
     if (loading)
       return (
-        <output
-          className="tw:rounded-xl tw:border tw:border-line tw:bg-white tw:px-7 tw:py-16 tw:text-center tw:text-muted"
-        >
+        <output className="tw:rounded-xl tw:border tw:border-line tw:bg-white tw:px-7 tw:py-16 tw:text-center tw:text-muted">
           {t.loading}
         </output>
       );
