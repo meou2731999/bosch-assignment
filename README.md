@@ -1,6 +1,6 @@
 # Authentication update
 
-The backend now requires session login. See [authentication setup and API](docs/authentication.md). Sign in with a bootstrapped admin to create and manage user accounts. Each new user must change their initial password.
+The backend now requires session login. See [authentication setup and API](docs/authentication.md). Sign in with a bootstrapped admin to create and manage user accounts and form types. See [form store and permissions](docs/forms-and-permissions.md). New users need per-form grants before creating or reviewing requests. Each new user must change their initial password.
 
 # Request Desk - dynamic form assessment
 
@@ -33,7 +33,7 @@ Dependencies are pinned in `package-lock.json`. Tested with Node 24.19.0 and npm
 
 ## Try the demo
 
-1. Sign in as admin, reset and enable **Alex Nguyen**, then sign out and sign in as Alex. Change the initial password and sign in again. Choose Equipment; fill in the title, equipment, quantity and business reason.
+1. Sign in as admin, reset and enable **Alex Nguyen**, grant Alex **Create requests** for the IT form, then sign out and sign in as Alex. Change the initial password and sign in again. Choose Equipment; fill in the title, equipment, quantity and business reason.
 2. Select **Save draft**. An incomplete draft is allowed; any supplied numeric value must still be valid. Open a different request, then reopen the draft.
 3. Switch request type to Software access. The second conditional section appears. Values from the inactive section are discarded on save.
 4. Switch English / Vietnamese without losing the entered values.
@@ -46,13 +46,7 @@ Final submission requires title (3-80 characters), business reason (10-500), req
 
 ### Change a form without rebuilding the frontend
 
-Change `forms/active.json` from `{"version": 1}` to `{"version": 2}`, then click **New request**. An optional Additional notes field appears. Reopen an existing v1 request: it still loads v1. Set the active version back to 1 after the demonstration. No frontend build or API restart is required; the API reads the fixtures when requested.
-
-The v2 field is already accepted by the backend. Labels, supported layouts and existing field visibility can be configured without frontend code changes. New stored fields or business rules may require backend contract changes. This is not unrestricted no-code application development. Published versions should be immutable in a real product; the demo relies on file discipline rather than a publishing system.
-
-### Persistence and reset
-
-Data is stored locally in `.data/requests.json` after the first save. On a fresh run, the API loads two seed records. To reset, stop the server and rename `.data/requests.json` to a backup filename, then restart. The zip excludes local test data, dependencies and build output.
+Open **Manage forms** as admin, create or edit a form type from the existing IT templates, save its draft and publish. The API persists each published JSON snapshot in `.data/forms.json`. New requests load the active version; saved requests retain their original version. Manage grants through **Manage users → Form permissions**. Editing individual inputs and dynamic validation will be added in step 4. See [form store and API details](docs/forms-and-permissions.md).
 
 ## What is real and what is simulated?
 
@@ -163,7 +157,7 @@ Application components use Tailwind CSS 4 via the Vite plugin. Utilities use the
 
 Install development tools with `npm ci --include=dev` (also works when the local npm configuration omits dev dependencies).
 
-- `npm run lint`: TypeScript, React Hooks and SonarJS recommended rules, with no warnings allowed.
+- `npm run lint`: TypeScript, React Hooks and SonarJS recommended rules, with no warnings allowed. Authored code files are limited to 200 lines, including comments and blank lines; JSON form definitions and documentation are excluded.
 - `npm run lint:fix`: apply available ESLint fixes.
 - `npm run format`: format source code and configuration with Prettier. Documents in `docs/` and generated files are excluded.
 - `npm run format:check`: verify formatting without changing files.

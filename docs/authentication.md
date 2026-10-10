@@ -21,7 +21,7 @@ Legacy Alex/Sam/Morgan IDs are preserved for existing request ownership. These a
 - `POST /api/admin/users/:id/reset-password`: `{password}`; revokes all target sessions and requires a password change.
 - `PATCH /api/admin/users/:id`: `{name?,email?,department?,role?,isAdmin?,active?}` with at least one property; revokes target sessions after edits. Enabling an account without a password and disabling the last active admin are rejected.
 
-Authenticated mutations require `X-CSRF-Token` from login/session. Accounts with a required password change can only use session, logout and change-password endpoints. Administrative access is separate from the requester/reviewer role; form-specific permissions are step 3.
+Authenticated mutations require `X-CSRF-Token` from login/session. Accounts with a required password change can only use session, logout and change-password endpoints. Administrative access is separate from the requester/reviewer role; form-specific permissions are now enforced as described in [forms and permissions](forms-and-permissions.md).
 
 The cookie is HttpOnly, SameSite=Strict, scoped to `/api`, with an absolute eight-hour lifetime. Set `SECURE_COOKIES=true` when serving through HTTPS. Sessions are in memory and invalidated on API restart; user credentials persist in users.json. No CORS permission is enabled. Login requires JSON and a custom header, and limits attempts per email (10) and IP (50) per 15-minute window. Successful login clears the email counter; the IP window remains. Rate limits are process-local.
 
@@ -33,7 +33,7 @@ The cookie is HttpOnly, SameSite=Strict, scoped to `/api`, with an absolute eigh
 
 Install the Chromium test browser with `npx playwright install chromium`, then run `npm run test:e2e`. Playwright builds the actual frontend and starts an isolated API on port 3107 using a temporary data directory. It refuses to reuse an existing server, cleans up test data on shutdown, and records trace/screenshots on failure. No real `.data` records are changed.
 
-The browser scenarios cover admin create/edit, mandatory password change with confirmation errors, login persistence across reload, CSRF-protected draft save, non-admin navigation, password reset and disabled-user session revocation, re-enable, logout, expired-session handling and English/Vietnamese labels. Admin account forms support name/email/department/role and administrator status. Form-specific permissions remain step 3.
+The browser scenarios cover admin create/edit, mandatory password change with confirmation errors, login persistence across reload, CSRF-protected draft save, non-admin navigation, password reset and disabled-user session revocation, re-enable, logout, expired-session handling and English/Vietnamese labels. Admin account forms support name/email/department/role and administrator status. Form-specific permissions are managed through the Form permissions action; see [forms and permissions](forms-and-permissions.md).
 
 User edits revoke sessions so role/account changes take effect immediately; editing your own account returns you to login. Admin screens report API failures and require confirmation before disabling a user or resetting a password. Existing request navigation still protects unsaved input before logout or changing screens.
 

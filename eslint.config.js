@@ -23,6 +23,7 @@ export default tseslint.config(
   {
     languageOptions: { globals: globals.node },
     rules: {
+      "max-lines": ["error", { max: 200 }],
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_" },
