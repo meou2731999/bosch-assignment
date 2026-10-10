@@ -18,7 +18,7 @@ export function Workspace({
   onManage,
   onForms,
   onPassword,
-}: {
+}: Readonly<{
   user: AccountUser;
   locale: Locale;
   setLocale: (locale: Locale) => void;
@@ -26,7 +26,7 @@ export function Workspace({
   onManage: () => void;
   onForms: () => void;
   onPassword: () => void;
-}) {
+}>) {
   const t = copy(locale);
   const f = formCopy(locale);
   const {
