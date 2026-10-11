@@ -23,7 +23,7 @@ export function AppNavigation({
       aria-label={locale === "vi" ? "Điều hướng quản trị" : "Admin navigation"}
       className="tw:border-b tw:border-line tw:bg-white"
     >
-      <div className="tw:mx-auto tw:flex tw:max-w-6xl tw:flex-wrap tw:gap-3 tw:px-5 tw:py-3 tw:md:px-10">
+      <div className="tw:flex tw:gap-3 tw:px-5 tw:py-3 tw:md:px-[5vw]">
         {[
           { key: "requests", label: t.workspace, action: onRequests },
           { key: "users", label: t.users, action: onManage },
