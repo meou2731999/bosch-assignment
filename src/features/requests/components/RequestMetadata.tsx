@@ -25,7 +25,7 @@ export function RequestMetadata({
       <span>
         {t.revision} <strong>{record?.revision ?? 0}</strong>
       </span>
-      <span className="md:ml-auto">
+      <span className="min-w-0 break-words md:ml-auto">
         {t.requestOwner}{" "}
         <strong>
           {record && record.ownerId !== user.id ? record.ownerId : user.name}

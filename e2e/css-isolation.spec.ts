@@ -45,6 +45,16 @@ test("unprefixed Tailwind and scoped Bootstrap coexist on desktop and mobile", a
     await expect(
       user.locator(".formio-surface .form-control").first(),
     ).toBeVisible();
+    await user.getByRole("button", { name: "Save draft", exact: true }).click();
+    const notice = user.getByRole("status").filter({ hasText: "Draft saved." });
+    await expect(notice).toBeVisible();
+    const noticeBox = await notice.boundingBox();
+    const cardBox = await user
+      .getByRole("region", { name: "New request", exact: true })
+      .boundingBox();
+    expect(
+      cardBox!.y - noticeBox!.y - noticeBox!.height,
+    ).toBeGreaterThanOrEqual(19);
     await user.screenshot({
       path: "test-results/css-isolation-desktop.png",
       fullPage: true,

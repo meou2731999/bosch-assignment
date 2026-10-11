@@ -50,7 +50,7 @@ export function Workspace({
   function renderContent() {
     if (loading)
       return (
-        <output className="rounded-xl border border-line bg-white px-7 py-16 text-center text-muted">
+        <output className="block rounded-xl border border-line bg-white px-7 py-16 text-center text-muted">
           {t.loading}
         </output>
       );
@@ -84,7 +84,7 @@ export function Workspace({
         />
       );
     return (
-      <div className="rounded-xl border border-line bg-white px-7 py-16 text-center text-muted">
+      <div className="block rounded-xl border border-line bg-white px-7 py-16 text-center text-muted">
         {forms.some((form) => form.permissions.includes("create")) ||
         requests.length
           ? t.selectHint
@@ -150,16 +150,16 @@ export function Workspace({
             {user.role === "reviewer" ? t.reviewHint : t.introduction}
           </p>
           {notice && !dirty && (
-            <output className="mb-5 rounded-lg border border-green-200 bg-green-50 px-5 py-4 text-sm text-green-900">
+            <output className="mb-5 block rounded-lg border border-green-200 bg-green-50 px-5 py-4 text-sm text-green-900">
               ✓ {t[notice]}
             </output>
           )}
           {!record && canCreate && (
-            <label className="mb-5 block text-sm">
+            <label className="mb-5 flex flex-wrap items-center gap-3 text-sm">
               {f.select}
               <select
                 aria-label={f.select}
-                className="ml-3 rounded-lg border border-line bg-white p-2"
+                className="rounded-lg border border-line bg-white p-2"
                 value={definition?.formId ?? ""}
                 disabled={busy || loading}
                 onChange={(event) => {
