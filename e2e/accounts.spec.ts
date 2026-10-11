@@ -128,6 +128,7 @@ test("admin creates and edits account; user changes password; reset and disable 
   );
   await row.getByRole("button", { name: "Enable user" }).click();
   await expect(row.getByRole("button", { name: "Disable user" })).toBeVisible();
+  await page.getByRole("button", { name: /^User menu:/ }).click();
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
   await page.reload();

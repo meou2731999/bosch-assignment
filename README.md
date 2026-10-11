@@ -20,7 +20,7 @@ New accounts must change their initial password and sign in again. New accounts,
 ```sh
 npm run check                 # lint, format, 77 unit/API tests, typecheck/build
 npx playwright install chromium
-npm run test:e2e:headed       # 11 visible Chromium scenarios, isolated data
+npm run test:e2e:headed       # 12 visible Chromium scenarios, isolated data
 npm run test:e2e              # same scenarios headless, used by CI
 npm start                    # built app + API, after npm run build
 ```
