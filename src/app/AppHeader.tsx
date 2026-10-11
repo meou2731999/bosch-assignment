@@ -45,26 +45,14 @@ export function AppHeader({
             Request Desk<small>{t.tagline}</small>
           </span>
         </a>
-        <div className="tw:flex tw:items-center tw:gap-4 tw:[&_label]:flex tw:[&_label]:min-w-0 tw:[&_label]:flex-col tw:[&_label]:gap-1 tw:[&_label]:text-xs tw:[&_label]:text-muted tw:[&_select]:max-w-full tw:[&_select]:rounded-lg tw:[&_select]:border tw:[&_select]:border-line tw:[&_select]:bg-white tw:[&_select]:p-2 tw:[&_select]:text-sm tw:[&_select]:text-ink">
-          <UserMenu
-            user={user}
-            locale={locale}
-            disabled={busy || loading}
-            onPassword={onPassword}
-            onLogout={onLogout}
-          />
-          <label>
-            {t.language}
-            <select
-              value={locale}
-              disabled={busy}
-              onChange={(e) => setLocale(e.target.value as Locale)}
-            >
-              <option value="en">English</option>
-              <option value="vi">Tiếng Việt</option>
-            </select>
-          </label>
-        </div>
+        <UserMenu
+          user={user}
+          locale={locale}
+          setLocale={setLocale}
+          disabled={busy || loading}
+          onPassword={onPassword}
+          onLogout={onLogout}
+        />
       </header>
       {user.isAdmin && (
         <AppNavigation

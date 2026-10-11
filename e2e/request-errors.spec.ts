@@ -27,6 +27,7 @@ test("conditional fields, locale, unsaved navigation, invalid upload, failed sav
     await user.getByLabel("Quantity", { exact: false }).fill("2");
     await software(user, "Browser recovery flow");
     await expect(user.getByLabel("Quantity", { exact: false })).toBeHidden();
+    await user.getByRole("button", { name: /^User menu:/ }).click();
     await user
       .getByRole("combobox", { name: "Language", exact: true })
       .selectOption("vi");

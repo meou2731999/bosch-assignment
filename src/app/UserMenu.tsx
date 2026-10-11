@@ -1,17 +1,21 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { AccountUser, Locale } from "../../shared/model";
 import { authCopy } from "../features/auth/copy";
+import { copy } from "../i18n";
+import { inputClass } from "../components/ui/field";
 import { Button } from "../components/ui/Button";
 export function UserMenu({
   user,
   locale,
   disabled,
+  setLocale,
   onPassword,
   onLogout,
 }: {
   user: AccountUser;
   locale: Locale;
   disabled: boolean;
+  setLocale: (locale: Locale) => void;
   onPassword: () => void;
   onLogout: () => void;
 }) {
@@ -82,6 +86,19 @@ export function UserMenu({
           <p className="tw:mb-3 tw:truncate tw:border-b tw:border-line tw:pb-3 tw:text-xs tw:text-muted">
             {user.email}
           </p>
+          <label className="tw:mb-3 tw:block tw:border-b tw:border-line tw:pb-3 tw:text-xs tw:text-muted">
+            {copy(locale).language}
+            <select
+              className={inputClass}
+              aria-label={copy(locale).language}
+              value={locale}
+              disabled={disabled}
+              onChange={(event) => setLocale(event.target.value as Locale)}
+            >
+              <option value="en">English</option>
+              <option value="vi">Tiếng Việt</option>
+            </select>
+          </label>
           <Button
             className="tw:w-full tw:justify-start"
             variant="secondary"

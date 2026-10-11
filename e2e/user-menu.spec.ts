@@ -9,9 +9,13 @@ test("user dropdown closes outside/on Escape and opens password settings", async
     name: "Change password",
     exact: true,
   });
+  await expect(page.getByLabel("Language", { exact: true })).toHaveCount(0);
   await expect(password).toHaveCount(0);
   await trigger.click();
   await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  await page.getByLabel("Language", { exact: true }).selectOption("vi");
+  await expect(page.getByLabel("Ngôn ngữ", { exact: true })).toHaveValue("vi");
+  await page.getByLabel("Ngôn ngữ", { exact: true }).selectOption("en");
   await password.focus();
   await page.keyboard.press("Escape");
   await expect(password).toHaveCount(0);

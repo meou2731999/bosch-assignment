@@ -11,7 +11,7 @@ npx playwright show-report --host 127.0.0.1
 
 The browser suite covers:
 
-- User dropdown for account name/password/logout, outside-click and Escape dismissal with restored focus; mobile popup stays within a 390px viewport.
+- User dropdown for account name/language/password/logout, outside-click and Escape dismissal with restored focus; mobile popup stays within a 390px viewport.
 - Admin create/edit accounts, first-password change and confirmation mismatch, session persistence, reset, disable/re-enable, logout, invalid login and expired sessions.
 - Form publication, scoped create grants and revocation, requester catalog, old draft version preservation.
 - Field add/edit/remove/reorder/preview, required and numeric validation, all seven basic inputs with persisted types, and loading newly published JSON in the same browser document without a frontend release or page reload.
