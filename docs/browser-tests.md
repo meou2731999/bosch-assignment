@@ -1,6 +1,6 @@
 # Browser verification through step 7
 
-Run `npm run test:e2e:headed` to see Chromium execute the fourteen browser scenarios. Playwright builds the actual frontend, starts an isolated API on port 3107 and uses disposable test accounts/data. It never uses `.data` records.
+Run `npm run test:e2e:headed` to see Chromium execute the fifteen browser scenarios. Playwright builds the actual frontend, starts an isolated API on port 3107 and uses disposable test accounts/data. It never uses `.data` records.
 
 For a reviewable HTML report:
 
@@ -10,6 +10,8 @@ npx playwright show-report --host 127.0.0.1
 ```
 
 The browser suite covers:
+
+- Form spacing audit for login/change password, create/edit users, password reset, form permissions and custom-field/condition editors; controls have label spacing, action rows stay separated, save notices leave space above request cards and desktop/mobile screenshots expose layout regressions.
 
 - Unprefixed Tailwind utilities and scoped Bootstrap/Form.io CSS: computed styles prove vendor padding and variables stay inside `.formio-surface`, with legacy-form screenshots and mobile field bounds.
 
