@@ -1,6 +1,6 @@
 # Browser verification through step 7
 
-Run `npm run test:e2e:headed` to see Chromium execute the twelve browser scenarios. Playwright builds the actual frontend, starts an isolated API on port 3107 and uses disposable test accounts/data. It never uses `.data` records.
+Run `npm run test:e2e:headed` to see Chromium execute the thirteen browser scenarios. Playwright builds the actual frontend, starts an isolated API on port 3107 and uses disposable test accounts/data. It never uses `.data` records.
 
 For a reviewable HTML report:
 
@@ -10,6 +10,8 @@ npx playwright show-report --host 127.0.0.1
 ```
 
 The browser suite covers:
+
+- Admin create/edit users, password resets, form permissions and create/edit form types open in modal dialogs; keyboard focus stays inside, Escape/Cancel restores focus, save errors retain input inside the modal, busy saves prevent closing and mobile content scrolls within the viewport.
 
 - User dropdown for account name/language/password/logout, outside-click and Escape dismissal with restored focus; mobile popup stays within a 390px viewport.
 - Admin create/edit accounts, first-password change and confirmation mismatch, session persistence, reset, disable/re-enable, logout, invalid login and expired sessions.
