@@ -66,10 +66,7 @@ export function AuthScreen({
       )}
       {error && <ErrorNotice error={error} locale={locale} />}
       <form onSubmit={(event) => void submit(event)}>
-        <fieldset
-          disabled={busy}
-          className="space-y-4 border-0 p-0 [&_label]:block [&_input]:mt-1"
-        >
+        <fieldset disabled={busy} className="ui-form-stack border-0 p-0">
           {!user && (
             <label>
               {t.email}
@@ -118,7 +115,7 @@ export function AuthScreen({
               />
             </label>
           )}
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button type="submit">{busy ? t.working : actionLabel}</Button>
             {onBack && (
               <Button variant="secondary" onClick={onBack}>

@@ -56,7 +56,7 @@ export function FieldEditor({
   }
   return (
     <fieldset
-      className="space-y-3 rounded-lg border border-line p-4"
+      className="ui-form-stack rounded-lg border border-line p-4"
       aria-label={`${t.fields} ${index + 1}`}
     >
       <legend>

@@ -4,7 +4,7 @@
     width: 100%;
     min-width: 0;
     min-height: 2.75rem;
-    margin-top: 0.375rem;
+    margin-top: 0.5rem;
     border: 1px solid var(--color-line);
     border-radius: 0.5rem;
     background-color: white;
@@ -29,14 +29,29 @@
     outline-width: 2px;
     outline-offset: 2px;
   }
+  .ui-form-stack {
+    display: grid;
+    gap: 1.25rem;
+    min-width: 0;
+  }
+  .ui-form-stack > * {
+    margin-block: 0;
+  }
+  .ui-form-stack > button {
+    justify-self: start;
+  }
+  label:has(> .ui-field),
+  .ui-form-stack label,
   .editor-fields label {
     display: block;
   }
+  .ui-form-stack label:has(> input[type="checkbox"]),
   .editor-fields label:has(> input[type="checkbox"]) {
     display: flex;
     align-items: center;
     gap: 0.625rem;
   }
+  .ui-form-stack input[type="checkbox"],
   .editor-fields input[type="checkbox"] {
     flex-shrink: 0;
     width: 1rem;

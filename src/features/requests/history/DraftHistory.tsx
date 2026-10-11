@@ -44,7 +44,7 @@ export function DraftHistory({
   return (
     <section
       aria-label={t.title}
-      className="mt-5 space-y-3 rounded-xl border border-line p-4"
+      className="mt-5 ui-form-stack rounded-xl border border-line p-4"
     >
       <h2>{t.title}</h2>
       <p>{t.hint}</p>

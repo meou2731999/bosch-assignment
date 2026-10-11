@@ -53,7 +53,7 @@ export function FormPermissionsPanel({
       <p className="font-semibold">{user.name}</p>
       <p>{t.permissionHint}</p>
       <form onSubmit={save}>
-        <fieldset disabled={busy} className="space-y-4 border-0 p-0">
+        <fieldset disabled={busy} className="ui-form-stack border-0 p-0">
           {forms.map((form) => (
             <fieldset
               key={form.id}
@@ -88,7 +88,7 @@ export function FormPermissionsPanel({
               </div>
             </fieldset>
           ))}
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button type="submit">{busy ? t.working : t.grantSave}</Button>
             <Button variant="secondary" onClick={onCancel}>
               {t.cancel}

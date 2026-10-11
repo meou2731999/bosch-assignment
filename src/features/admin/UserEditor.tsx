@@ -24,10 +24,7 @@ export function UserEditor({
         key={typeof editing === "string" ? editing : editing.id}
         onSubmit={save}
       >
-        <fieldset
-          disabled={busy}
-          className="space-y-4 border-0 p-0 [&_label]:block [&_input]:mt-1"
-        >
+        <fieldset disabled={busy} className="ui-form-stack border-0 p-0">
           <label>
             {t.name}
             <input
@@ -93,7 +90,7 @@ export function UserEditor({
               />
             </label>
           )}
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button type="submit">{busy ? t.working : t.save}</Button>
             <Button variant="secondary" onClick={onCancel}>
               {t.cancel}

@@ -47,7 +47,7 @@ export function FormDraftEditor({
       <form onSubmit={save}>
         <fieldset
           disabled={busy}
-          className="editor-fields space-y-5 border-0 p-0"
+          className="editor-fields ui-form-stack border-0 p-0"
         >
           <label>
             {t.name}

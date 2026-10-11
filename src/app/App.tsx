@@ -85,10 +85,11 @@ export function App() {
   if (auth)
     content = (
       <>
-        <div className="flex justify-end gap-3 p-5">
+        <div className="flex flex-wrap items-end justify-end gap-3 p-5">
           <label>
             {locale === "vi" ? "Ngôn ngữ" : "Language"}
             <select
+              className="ui-field"
               value={locale}
               onChange={(event) => setLocale(event.target.value as Locale)}
             >

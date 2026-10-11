@@ -34,7 +34,7 @@ export function ResetPasswordPanel({
             void act(() => adminApi.reset(resetting.id, password), t.resetDone);
         }}
       >
-        <fieldset disabled={busy} className="space-y-4 border-0 p-0">
+        <fieldset disabled={busy} className="ui-form-stack border-0 p-0">
           <label>
             {t.initialPassword}
             <input
@@ -47,7 +47,7 @@ export function ResetPasswordPanel({
               autoComplete="new-password"
             />
           </label>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button type="submit">{busy ? t.working : t.reset}</Button>
             <Button variant="secondary" onClick={onCancel}>
               {t.cancel}

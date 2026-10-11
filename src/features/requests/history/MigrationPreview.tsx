@@ -46,7 +46,7 @@ export function MigrationPreview({
   return (
     <section
       aria-label={t.preview}
-      className="space-y-4 rounded-lg border border-line bg-white p-4"
+      className="ui-form-stack rounded-lg border border-line bg-white p-4"
     >
       <h3>{t.preview}</h3>
       <p>
@@ -167,7 +167,7 @@ export function MigrationPreview({
         />
         {t.confirm}
       </label>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-3">
         <Button disabled={busy || !confirmed || blocked} onClick={onApply}>
           {t.apply}
         </Button>
