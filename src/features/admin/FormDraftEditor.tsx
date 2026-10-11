@@ -51,7 +51,7 @@ export function FormDraftEditor({
       <form onSubmit={save}>
         <fieldset
           disabled={busy}
-          className="tw:space-y-4 tw:border-0 tw:p-0 tw:[&_label]:block"
+          className="editor-fields tw:space-y-5 tw:border-0 tw:p-0"
         >
           <label>
             {t.name}
@@ -101,7 +101,7 @@ export function FormDraftEditor({
               />
             </>
           )}
-          <div className="tw:flex tw:gap-3">
+          <div className="tw:flex tw:flex-wrap tw:gap-3">
             <Button
               type="submit"
               disabled={custom && !fieldsSchema.safeParse(fields).success}

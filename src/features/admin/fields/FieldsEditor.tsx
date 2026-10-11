@@ -56,7 +56,7 @@ export function FieldsEditor({
         />
       ))}
       {!valid && <p role="alert">{fields.length ? t.invalid : t.empty}</p>}
-      <div className="tw:flex tw:gap-3">
+      <div className="tw:flex tw:flex-wrap tw:gap-3">
         <Button
           variant="secondary"
           disabled={fields.length >= 50}

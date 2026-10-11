@@ -13,6 +13,24 @@
   .formio-surface .form-select {
     @apply tw:min-h-11 tw:rounded-md tw:border tw:border-line tw:px-3 tw:py-2 tw:text-sm tw:shadow-none;
   }
+  .formio-surface label {
+    margin-bottom: 0.5rem;
+  }
+  .formio-surface textarea.form-control {
+    min-height: 6rem;
+    padding: 0.75rem 1rem;
+    line-height: 1.6;
+    resize: vertical;
+  }
+  .formio-surface .formio-component-textarea .card-body {
+    min-height: 6rem;
+    padding: 0.75rem 1rem;
+  }
+  .formio-surface .formio-editor-read-only-content {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+  }
   .formio-surface .form-control:focus {
     @apply tw:border-brand tw:ring-2 tw:ring-brand/15;
   }

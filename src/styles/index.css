@@ -3,6 +3,7 @@
 @import "bootstrap/dist/css/bootstrap.min.css" layer(vendor);
 @import "@formio/js/dist/formio.form.min.css" layer(vendor);
 @import "../features/forms/formio.css";
+@import "../components/ui/field.css";
 
 @theme {
   --color-brand: #173f35;

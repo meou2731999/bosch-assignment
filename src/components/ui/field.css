@@ -1,0 +1,66 @@
+@layer components {
+  .ui-field {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 2.75rem;
+    margin-top: 0.375rem;
+    border: 1px solid var(--tw-color-line);
+    border-radius: 0.5rem;
+    background-color: white;
+    padding: 0.75rem 1rem;
+    color: var(--tw-color-ink);
+    font: inherit;
+    line-height: 1.5;
+  }
+  select.ui-field:not([multiple]) {
+    appearance: none;
+    padding-right: 2.75rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23253b37' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+  }
+  textarea.ui-field {
+    min-height: 6rem;
+    resize: vertical;
+  }
+  .ui-field:focus-visible {
+    border-color: var(--tw-color-brand);
+    outline-width: 2px;
+    outline-offset: 2px;
+  }
+  .editor-fields label {
+    display: block;
+  }
+  .editor-fields label:has(> input[type="checkbox"]) {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+  .editor-fields input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    accent-color: var(--tw-color-brand);
+  }
+  .editor-condition {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+    border: 1px solid var(--tw-color-line);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background: var(--tw-color-canvas);
+  }
+  .editor-condition > legend {
+    float: none;
+    width: auto;
+    margin: 0;
+    padding: 0 0.25rem;
+    font-size: 1rem;
+  }
+  .editor-condition > button {
+    justify-self: start;
+  }
+}

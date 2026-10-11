@@ -4,8 +4,8 @@ import { Button } from "../../components/ui/Button";
 import { ErrorNotice } from "../../components/ui/ErrorNotice";
 import { authApi } from "./api";
 import { authCopy } from "./copy";
-export const inputClass =
-  "tw:w-full tw:rounded-lg tw:border tw:border-line tw:bg-white tw:p-3 tw:text-ink";
+export { inputClass } from "../../components/ui/field";
+import { inputClass } from "../../components/ui/field";
 export function AuthScreen({
   locale,
   user,

@@ -26,7 +26,7 @@ export function ConditionEditor({
     );
   const group = condition.op === "and" || condition.op === "or";
   return (
-    <fieldset aria-label={t.title}>
+    <fieldset className="editor-condition" aria-label={t.title}>
       <legend>{t.title}</legend>
       <label>
         {t.op}
