@@ -1,3 +1,4 @@
+import { Modal } from "../../components/ui/Modal";
 import { useEffect, useState } from "react";
 import type { FormRecord, FormDraft } from "../../../shared/forms";
 import type { Locale } from "../../../shared/model";
@@ -74,7 +75,7 @@ export function FormsPanel({ locale }: { locale: Locale }) {
         </Button>
       </div>
       <p className="tw:text-muted">{t.templateHint}</p>
-      {error && <ErrorNotice error={error} locale={locale} />}
+      {error && !editing && <ErrorNotice error={error} locale={locale} />}
       {notice && <p role="status">{notice}</p>}
       {loading ? (
         <p role="status">{t.working}</p>
@@ -121,14 +122,29 @@ export function FormsPanel({ locale }: { locale: Locale }) {
         </ul>
       )}
       {editing && (
-        <FormDraftEditor
-          key={existing?.id ?? "new"}
-          existing={existing}
+        <Modal
+          title={existing ? t.edit : t.create}
           locale={locale}
           busy={busy}
-          onSave={save}
-          onCancel={() => setEditing(null)}
-        />
+          wide
+          onClose={() => {
+            setEditing(null);
+            setError(null);
+          }}
+        >
+          {error && <ErrorNotice error={error} locale={locale} />}
+          <FormDraftEditor
+            key={existing?.id ?? "new"}
+            existing={existing}
+            locale={locale}
+            busy={busy}
+            onSave={save}
+            onCancel={() => {
+              setEditing(null);
+              setError(null);
+            }}
+          />
+        </Modal>
       )}
     </main>
   );

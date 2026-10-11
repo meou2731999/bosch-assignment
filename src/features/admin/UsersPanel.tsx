@@ -1,3 +1,5 @@
+import { Modal } from "../../components/ui/Modal";
+import { formCopy } from "../forms/copy";
 import { UsersTable } from "./UsersTable";
 import { UserEditor } from "./UserEditor";
 import { ResetPasswordPanel } from "./ResetPasswordPanel";
@@ -70,6 +72,12 @@ export function UsersPanel({
       setBusy(false);
     }
   }
+  function closeEditor() {
+    setEditing(null);
+    setResetting(null);
+    setGranting(null);
+    setError(null);
+  }
   function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -93,6 +101,9 @@ export function UsersPanel({
     );
   }
 
+  let title = formCopy(locale).permissions;
+  if (editing) title = editing === "new" ? t.create : t.edit;
+  if (resetting) title = t.reset;
   return (
     <main id="main" className="tw:mx-auto tw:max-w-6xl tw:p-5 tw:md:p-10">
       <div className="tw:mb-6 tw:flex tw:items-center tw:justify-between">
@@ -110,7 +121,9 @@ export function UsersPanel({
           {t.create}
         </Button>
       </div>
-      {error && <ErrorNotice error={error} locale={locale} />}
+      {error && !editing && !resetting && !granting && (
+        <ErrorNotice error={error} locale={locale} />
+      )}
       {notice && <p role="status">{notice}</p>}
       {loading ? (
         <p role="status">{t.working}</p>
@@ -129,34 +142,45 @@ export function UsersPanel({
           act={act}
         />
       )}
-      {granting && (
-        <FormPermissionsPanel
-          key={granting.id}
-          user={granting}
-          forms={forms}
+      {(editing || resetting || granting) && (
+        <Modal
+          title={title}
           locale={locale}
           busy={busy}
-          onSave={act}
-          onCancel={() => setGranting(null)}
-        />
-      )}
-      {editing && (
-        <UserEditor
-          editing={editing}
-          locale={locale}
-          busy={busy}
-          save={save}
-          onCancel={() => setEditing(null)}
-        />
-      )}
-      {resetting && (
-        <ResetPasswordPanel
-          resetting={resetting}
-          locale={locale}
-          busy={busy}
-          act={act}
-          onCancel={() => setResetting(null)}
-        />
+          wide={Boolean(granting)}
+          onClose={closeEditor}
+        >
+          {error && <ErrorNotice error={error} locale={locale} />}
+          {granting && (
+            <FormPermissionsPanel
+              key={granting.id}
+              user={granting}
+              forms={forms}
+              locale={locale}
+              busy={busy}
+              onSave={act}
+              onCancel={closeEditor}
+            />
+          )}
+          {editing && (
+            <UserEditor
+              editing={editing}
+              locale={locale}
+              busy={busy}
+              save={save}
+              onCancel={closeEditor}
+            />
+          )}
+          {resetting && (
+            <ResetPasswordPanel
+              resetting={resetting}
+              locale={locale}
+              busy={busy}
+              act={act}
+              onCancel={closeEditor}
+            />
+          )}
+        </Modal>
       )}
     </main>
   );

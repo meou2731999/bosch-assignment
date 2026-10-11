@@ -49,13 +49,8 @@ export function FormPermissionsPanel({
     );
   }
   return (
-    <section
-      aria-label={t.permissions}
-      className="tw:mt-6 tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-6"
-    >
-      <h2>
-        {t.permissions}: {user.name}
-      </h2>
+    <section aria-label={t.permissions} className="tw:space-y-4">
+      <p className="tw:font-semibold">{user.name}</p>
       <p>{t.permissionHint}</p>
       <form onSubmit={save}>
         <fieldset disabled={busy} className="tw:space-y-4 tw:border-0 tw:p-0">

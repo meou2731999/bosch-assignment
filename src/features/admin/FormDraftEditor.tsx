@@ -43,11 +43,7 @@ export function FormDraftEditor({
     });
   }
   return (
-    <section
-      className="tw:mt-6 tw:max-w-3xl tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-6"
-      aria-label={existing ? t.edit : t.create}
-    >
-      <h2>{existing ? t.edit : t.create}</h2>
+    <section className="tw:space-y-4" aria-label={existing ? t.edit : t.create}>
       <form onSubmit={save}>
         <fieldset
           disabled={busy}

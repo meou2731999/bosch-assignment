@@ -21,13 +21,8 @@ export function ResetPasswordPanel({
 }) {
   const t = authCopy(locale);
   return (
-    <section
-      aria-label={t.reset}
-      className="tw:mt-6 tw:max-w-xl tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-6"
-    >
-      <h2>
-        {t.reset}: {resetting.name}
-      </h2>
+    <section aria-label={t.reset} className="tw:space-y-4">
+      <p className="tw:font-semibold">{resetting.name}</p>
       <p>{t.resetHint}</p>
       <form
         onSubmit={(event) => {
