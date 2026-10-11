@@ -9,14 +9,14 @@ export function AppNavigation({
   onRequests,
   onManage,
   onForms,
-}: {
+}: Readonly<{
   locale: Locale;
   activeView: "requests" | "users" | "forms";
   disabled: boolean;
   onRequests?: () => void;
   onManage: () => void;
   onForms: () => void;
-}) {
+}>) {
   const t = authCopy(locale);
   return (
     <nav
