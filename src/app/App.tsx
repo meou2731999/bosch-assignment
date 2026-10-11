@@ -139,12 +139,9 @@ export function App() {
           onManage={() => setView("users")}
           onForms={() => setView("forms")}
           onPassword={() => setView("password")}
+          activeView={view}
+          onRequests={() => setView("requests")}
         />
-        <div className="tw:px-5 tw:pt-5">
-          <Button variant="secondary" onClick={() => setView("requests")}>
-            {t.workspace}
-          </Button>
-        </div>
         {view === "forms" ? (
           <FormsPanel locale={locale} />
         ) : (
