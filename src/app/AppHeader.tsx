@@ -1,7 +1,6 @@
 import { AppNavigation } from "./AppNavigation";
 import { type Locale, type AccountUser } from "../../shared/model";
-import { authCopy } from "../features/auth/copy";
-import { Button } from "../components/ui/Button";
+import { UserMenu } from "./UserMenu";
 import { copy } from "../i18n";
 export function AppHeader({
   user,
@@ -29,7 +28,6 @@ export function AppHeader({
   activeView?: "requests" | "users" | "forms";
 }) {
   const t = copy(locale);
-  const a = authCopy(locale);
   return (
     <>
       <header className="tw:flex tw:flex-col tw:gap-5 tw:border-b tw:border-line tw:bg-white tw:px-5 tw:py-6 tw:md:flex-row tw:md:items-center tw:md:justify-between tw:md:px-[5vw]">
@@ -47,24 +45,14 @@ export function AppHeader({
             Request Desk<small>{t.tagline}</small>
           </span>
         </a>
-        <div className="tw:flex tw:gap-4 tw:[&_label]:flex tw:[&_label]:min-w-0 tw:[&_label]:flex-col tw:[&_label]:gap-1 tw:[&_label]:text-xs tw:[&_label]:text-muted tw:[&_select]:max-w-full tw:[&_select]:rounded-lg tw:[&_select]:border tw:[&_select]:border-line tw:[&_select]:bg-white tw:[&_select]:p-2 tw:[&_select]:text-sm tw:[&_select]:text-ink">
-          <div className="tw:flex tw:flex-wrap tw:items-center tw:gap-2">
-            <span className="tw:text-sm">{user.name}</span>
-            <Button
-              variant="secondary"
-              disabled={busy || loading}
-              onClick={onPassword}
-            >
-              {a.changePassword}
-            </Button>
-            <Button
-              variant="secondary"
-              disabled={busy || loading}
-              onClick={onLogout}
-            >
-              {a.logout}
-            </Button>
-          </div>
+        <div className="tw:flex tw:items-center tw:gap-4 tw:[&_label]:flex tw:[&_label]:min-w-0 tw:[&_label]:flex-col tw:[&_label]:gap-1 tw:[&_label]:text-xs tw:[&_label]:text-muted tw:[&_select]:max-w-full tw:[&_select]:rounded-lg tw:[&_select]:border tw:[&_select]:border-line tw:[&_select]:bg-white tw:[&_select]:p-2 tw:[&_select]:text-sm tw:[&_select]:text-ink">
+          <UserMenu
+            user={user}
+            locale={locale}
+            disabled={busy || loading}
+            onPassword={onPassword}
+            onLogout={onLogout}
+          />
           <label>
             {t.language}
             <select
