@@ -63,18 +63,18 @@ export function Modal({
         event.preventDefault();
         if (!busy) onClose();
       }}
-      className={`tw:m-auto tw:max-h-[92dvh] tw:w-[94vw] tw:overflow-hidden tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-0 tw:font-sans tw:text-ink tw:shadow-xl tw:backdrop:bg-slate-950/50 ${wide ? "tw:max-w-5xl" : "tw:max-w-xl"}`}
+      className={`m-auto max-h-[92dvh] w-[94vw] overflow-hidden rounded-xl border border-line bg-white p-0 font-sans text-ink shadow-xl backdrop:bg-slate-950/50 ${wide ? "max-w-5xl" : "max-w-xl"}`}
     >
-      <div className="tw:flex tw:max-h-[92dvh] tw:flex-col">
-        <div className="tw:shrink-0 tw:flex tw:items-center tw:justify-between tw:gap-4 tw:border-b tw:border-line tw:bg-white tw:p-5">
-          <h2 id={titleId} className="tw:mb-0 tw:text-xl tw:font-semibold">
+      <div className="flex max-h-[92dvh] flex-col">
+        <div className="shrink-0 flex items-center justify-between gap-4 border-b border-line bg-white p-5">
+          <h2 id={titleId} className="mb-0 text-xl font-semibold">
             {title}
           </h2>
           <Button variant="secondary" disabled={busy} onClick={onClose}>
             {locale === "vi" ? "Đóng" : "Close"}
           </Button>
         </div>
-        <div className="tw:min-h-0 tw:space-y-4 tw:overflow-y-auto tw:p-5 tw:md:p-6">
+        <div className="min-h-0 space-y-4 overflow-y-auto p-5 md:p-6">
           {children}
         </div>
       </div>

@@ -48,7 +48,7 @@ export function UserMenu({
     action();
   }
   return (
-    <div ref={root} className="tw:relative tw:min-w-0">
+    <div ref={root} className="relative min-w-0">
       <button
         ref={trigger}
         type="button"
@@ -57,15 +57,15 @@ export function UserMenu({
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen(!open)}
-        className="tw:flex tw:max-w-full tw:items-center tw:gap-3 tw:rounded-lg tw:border tw:border-line tw:bg-white tw:px-3 tw:py-2.5 tw:text-sm tw:font-semibold tw:hover:bg-sage"
+        className="flex max-w-full items-center gap-3 rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-semibold hover:bg-sage"
       >
         <span
           aria-hidden="true"
-          className="tw:grid tw:h-8 tw:w-8 tw:shrink-0 tw:place-items-center tw:rounded-full tw:bg-sage tw:text-brand"
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sage text-brand"
         >
           {user.name.slice(0, 1).toUpperCase()}
         </span>
-        <span className="tw:max-w-44 tw:truncate">{user.name}</span>
+        <span className="max-w-44 truncate">{user.name}</span>
         <svg
           aria-hidden="true"
           width="16"
@@ -81,12 +81,12 @@ export function UserMenu({
       {open && (
         <div
           id={id}
-          className="tw:absolute tw:left-0 tw:z-50 tw:mt-2 tw:w-60 tw:max-w-[calc(100vw-2.5rem)] tw:space-y-2 tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-3 tw:shadow-lg tw:md:right-0 tw:md:left-auto"
+          className="absolute left-0 z-50 mt-2 w-60 max-w-[calc(100vw-2.5rem)] space-y-2 rounded-xl border border-line bg-white p-3 shadow-lg md:right-0 md:left-auto"
         >
-          <p className="tw:mb-3 tw:truncate tw:border-b tw:border-line tw:pb-3 tw:text-xs tw:text-muted">
+          <p className="mb-3 truncate border-b border-line pb-3 text-xs text-muted">
             {user.email}
           </p>
-          <label className="tw:mb-3 tw:block tw:border-b tw:border-line tw:pb-3 tw:text-xs tw:text-muted">
+          <label className="mb-3 block border-b border-line pb-3 text-xs text-muted">
             {copy(locale).language}
             <select
               className={inputClass}
@@ -100,7 +100,7 @@ export function UserMenu({
             </select>
           </label>
           <Button
-            className="tw:w-full tw:justify-start"
+            className="w-full justify-start"
             variant="secondary"
             disabled={disabled}
             onClick={() => choose(onPassword)}
@@ -108,7 +108,7 @@ export function UserMenu({
             {t.changePassword}
           </Button>
           <Button
-            className="tw:w-full tw:justify-start"
+            className="w-full justify-start"
             variant="secondary"
             disabled={disabled}
             onClick={() => choose(onLogout)}

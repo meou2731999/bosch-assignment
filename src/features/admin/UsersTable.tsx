@@ -22,9 +22,9 @@ export function UsersTable({
   const t = authCopy(locale);
   const f = formCopy(locale);
   return (
-    <div className="tw:overflow-x-auto tw:rounded-xl tw:border tw:border-line tw:bg-white">
-      <table className="tw:w-full tw:text-left tw:text-sm tw:[&_td]:border-t tw:[&_td]:border-line tw:[&_td]:p-4 tw:[&_th]:p-4">
-        <caption className="tw:sr-only">{t.users}</caption>
+    <div className="overflow-x-auto rounded-xl border border-line bg-white">
+      <table className="w-full text-left text-sm [&_td]:border-t [&_td]:border-line [&_td]:p-4 [&_th]:p-4">
+        <caption className="sr-only">{t.users}</caption>
         <thead>
           <tr>
             <th>{t.name}</th>
@@ -39,9 +39,7 @@ export function UsersTable({
             <tr key={user.id}>
               <td>
                 {user.name}
-                <small className="tw:block tw:text-muted">
-                  {user.department}
-                </small>
+                <small className="block text-muted">{user.department}</small>
               </td>
               <td>{user.email}</td>
               <td>
@@ -50,7 +48,7 @@ export function UsersTable({
               </td>
               <td>{user.active ? t.active : t.disabled}</td>
               <td>
-                <div className="tw:flex tw:flex-wrap tw:gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     variant="secondary"
                     disabled={busy}

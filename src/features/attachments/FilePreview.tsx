@@ -51,7 +51,7 @@ export function FilePreview({
     if (!content) return null;
     if (file.type === "text/plain")
       return (
-        <pre className="tw:max-h-[60vh] tw:overflow-auto tw:whitespace-pre-wrap tw:break-words tw:rounded-lg tw:bg-stone-50 tw:p-4 tw:text-sm">
+        <pre className="max-h-[60vh] overflow-auto whitespace-pre-wrap break-words rounded-lg bg-stone-50 p-4 text-sm">
           {content.text}
         </pre>
       );
@@ -60,14 +60,14 @@ export function FilePreview({
         <img
           src={content.url}
           alt={file.name}
-          className="tw:mx-auto tw:max-h-[65vh] tw:max-w-full tw:object-contain"
+          className="mx-auto max-h-[65vh] max-w-full object-contain"
         />
       );
     return (
       <iframe
         src={content.url}
         title={`${t.preview}: ${file.name}`}
-        className="tw:h-[65vh] tw:w-full tw:border-0"
+        className="h-[65vh] w-full border-0"
       />
     );
   }
@@ -77,11 +77,11 @@ export function FilePreview({
     return (
       <>
         {renderPreview()}
-        <p className="tw:mt-4 tw:text-xs tw:text-muted">{t.previewHint}</p>
+        <p className="mt-4 text-xs text-muted">{t.previewHint}</p>
         <a
           href={content.url}
           download={file.name}
-          className="tw:inline-flex tw:rounded-lg tw:bg-brand tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:text-white tw:no-underline"
+          className="inline-flex rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white no-underline"
         >
           {t.download}
         </a>
@@ -93,14 +93,14 @@ export function FilePreview({
       ref={dialog}
       onCancel={onClose}
       aria-labelledby="file-preview-title"
-      className="tw:m-auto tw:max-h-[92vh] tw:w-[min(960px,94vw)] tw:max-w-none tw:overflow-auto tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-0 tw:font-sans tw:text-ink tw:shadow-xl tw:backdrop:bg-slate-950/50"
+      className="m-auto max-h-[92vh] w-[min(960px,94vw)] max-w-none overflow-auto rounded-xl border border-line bg-white p-0 font-sans text-ink shadow-xl backdrop:bg-slate-950/50"
     >
-      <div className="tw:sticky tw:top-0 tw:flex tw:items-center tw:justify-between tw:gap-4 tw:border-b tw:border-line tw:bg-white tw:p-4">
-        <div className="tw:min-w-0">
-          <p className="tw:mb-1 tw:text-xs tw:text-muted">{t.preview}</p>
+      <div className="sticky top-0 flex items-center justify-between gap-4 border-b border-line bg-white p-4">
+        <div className="min-w-0">
+          <p className="mb-1 text-xs text-muted">{t.preview}</p>
           <h2
             id="file-preview-title"
-            className="tw:mb-0 tw:break-all tw:text-base tw:font-semibold"
+            className="mb-0 break-all text-base font-semibold"
           >
             {file.name}
           </h2>
@@ -109,7 +109,7 @@ export function FilePreview({
           {t.close}
         </Button>
       </div>
-      <div className="tw:p-4">{renderContent()}</div>
+      <div className="p-4">{renderContent()}</div>
     </dialog>,
     document.body,
   );

@@ -21,8 +21,8 @@ export function ResetPasswordPanel({
 }) {
   const t = authCopy(locale);
   return (
-    <section aria-label={t.reset} className="tw:space-y-4">
-      <p className="tw:font-semibold">{resetting.name}</p>
+    <section aria-label={t.reset} className="space-y-4">
+      <p className="font-semibold">{resetting.name}</p>
       <p>{t.resetHint}</p>
       <form
         onSubmit={(event) => {
@@ -34,7 +34,7 @@ export function ResetPasswordPanel({
             void act(() => adminApi.reset(resetting.id, password), t.resetDone);
         }}
       >
-        <fieldset disabled={busy} className="tw:space-y-4 tw:border-0 tw:p-0">
+        <fieldset disabled={busy} className="space-y-4 border-0 p-0">
           <label>
             {t.initialPassword}
             <input
@@ -47,7 +47,7 @@ export function ResetPasswordPanel({
               autoComplete="new-password"
             />
           </label>
-          <div className="tw:flex tw:gap-3">
+          <div className="flex gap-3">
             <Button type="submit">{busy ? t.working : t.reset}</Button>
             <Button variant="secondary" onClick={onCancel}>
               {t.cancel}

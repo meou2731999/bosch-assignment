@@ -65,15 +65,15 @@ export function ReviewPanel({
   return (
     <section
       aria-labelledby="review-heading"
-      className="tw:mt-6 tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-6"
+      className="mt-6 rounded-xl border border-line bg-white p-6"
     >
-      <h2 id="review-heading" className="tw:mb-4 tw:text-base tw:font-semibold">
+      <h2 id="review-heading" className="mb-4 text-base font-semibold">
         {t.reviewTitle}
       </h2>
       {error && <ErrorNotice error={error} locale={locale} reload={reload} />}
       <label
         htmlFor="review-comment"
-        className="tw:mb-2 tw:block tw:text-sm tw:font-medium"
+        className="mb-2 block text-sm font-medium"
       >
         {t.reviewComment}
       </label>
@@ -88,13 +88,13 @@ export function ReviewPanel({
           setComment(e.target.value);
           onDirty(!!e.target.value);
         }}
-        className="tw:w-full tw:rounded-lg tw:border tw:border-line tw:p-3 tw:text-sm"
+        className="w-full rounded-lg border border-line p-3 text-sm"
       />
-      <p id="review-help" className="tw:mt-2 tw:text-xs tw:text-muted">
+      <p id="review-help" className="mt-2 text-xs text-muted">
         {t.reviewHelp}
       </p>
-      <div className="tw:mt-4 tw:flex tw:flex-wrap tw:items-center tw:justify-end tw:gap-3">
-        <span role="status" className="tw:mr-auto tw:text-xs tw:text-muted">
+      <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
+        <span role="status" className="mr-auto text-xs text-muted">
           {saving ? t.reviewing : ""}
         </span>
         <Button

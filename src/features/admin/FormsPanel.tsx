@@ -61,8 +61,8 @@ export function FormsPanel({ locale }: { locale: Locale }) {
   }
   const existing = editing && editing !== "new" ? editing : undefined;
   return (
-    <main id="main" className="tw:mx-auto tw:max-w-6xl tw:p-5 tw:md:p-10">
-      <div className="tw:flex tw:items-center tw:justify-between">
+    <main id="main" className="mx-auto max-w-6xl p-5 md:p-10">
+      <div className="flex items-center justify-between">
         <h1>{t.manage}</h1>
         <Button
           disabled={busy || loading}
@@ -74,26 +74,26 @@ export function FormsPanel({ locale }: { locale: Locale }) {
           {t.create}
         </Button>
       </div>
-      <p className="tw:text-muted">{t.templateHint}</p>
+      <p className="text-muted">{t.templateHint}</p>
       {error && !editing && <ErrorNotice error={error} locale={locale} />}
       {notice && <p role="status">{notice}</p>}
       {loading ? (
         <p role="status">{t.working}</p>
       ) : (
-        <ul className="tw:list-none tw:space-y-4 tw:p-0">
+        <ul className="list-none space-y-4 p-0">
           {forms.map((form) => (
             <li
               key={form.id}
-              className="tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-4 tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-5"
+              className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-white p-5"
             >
               <div>
-                <h2 className="tw:text-lg">{form.draft.name}</h2>
+                <h2 className="text-lg">{form.draft.name}</h2>
                 <p>
                   {t.version}: {form.activeVersion ?? t.unpublished} · {t.draft}
                   : {form.draft.revision}
                 </p>
               </div>
-              <div className="tw:flex tw:gap-3">
+              <div className="flex gap-3">
                 <Button
                   variant="secondary"
                   disabled={busy}

@@ -19,14 +19,14 @@ export function UserEditor({
   const t = authCopy(locale);
   const existing = editing !== "new" ? editing : undefined;
   return (
-    <section className="tw:space-y-4" aria-label={existing ? t.edit : t.create}>
+    <section className="space-y-4" aria-label={existing ? t.edit : t.create}>
       <form
         key={typeof editing === "string" ? editing : editing.id}
         onSubmit={save}
       >
         <fieldset
           disabled={busy}
-          className="tw:space-y-4 tw:border-0 tw:p-0 tw:[&_label]:block tw:[&_input]:mt-1"
+          className="space-y-4 border-0 p-0 [&_label]:block [&_input]:mt-1"
         >
           <label>
             {t.name}
@@ -93,7 +93,7 @@ export function UserEditor({
               />
             </label>
           )}
-          <div className="tw:flex tw:gap-3">
+          <div className="flex gap-3">
             <Button type="submit">{busy ? t.working : t.save}</Button>
             <Button variant="secondary" onClick={onCancel}>
               {t.cancel}

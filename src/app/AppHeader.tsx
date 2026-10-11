@@ -30,13 +30,13 @@ export function AppHeader({
   const t = copy(locale);
   return (
     <>
-      <header className="tw:flex tw:flex-col tw:gap-5 tw:border-b tw:border-line tw:bg-white tw:px-5 tw:py-6 tw:md:flex-row tw:md:items-center tw:md:justify-between tw:md:px-[5vw]">
+      <header className="flex flex-col gap-5 border-b border-line bg-white px-5 py-6 md:flex-row md:items-center md:justify-between md:px-[5vw]">
         <a
-          className="tw:flex tw:items-center tw:gap-3 tw:text-xl tw:font-bold tw:tracking-tight tw:text-ink tw:no-underline tw:[&_small]:mt-1 tw:[&_small]:block tw:[&_small]:text-xs tw:[&_small]:font-normal tw:[&_small]:tracking-normal tw:[&_small]:text-muted"
+          className="flex items-center gap-3 text-xl font-bold tracking-tight text-ink no-underline [&_small]:mt-1 [&_small]:block [&_small]:text-xs [&_small]:font-normal [&_small]:tracking-normal [&_small]:text-muted"
           href="#main"
         >
           <span
-            className="tw:grid tw:h-11 tw:w-10 tw:place-items-center tw:rounded-[11px_11px_2px_11px] tw:bg-brand tw:text-2xl tw:text-lime-200"
+            className="grid h-11 w-10 place-items-center rounded-[11px_11px_2px_11px] bg-brand text-2xl text-lime-200"
             aria-hidden="true"
           >
             R

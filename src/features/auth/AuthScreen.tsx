@@ -55,9 +55,9 @@ export function AuthScreen({
   return (
     <main
       id="main"
-      className="tw:mx-auto tw:my-12 tw:max-w-md tw:rounded-xl tw:border tw:border-line tw:bg-white tw:p-7 tw:shadow-sm"
+      className="mx-auto my-12 max-w-md rounded-xl border border-line bg-white p-7 shadow-sm"
     >
-      <h1 className="tw:mb-4 tw:text-2xl tw:font-semibold">
+      <h1 className="mb-4 text-2xl font-semibold">
         {user ? t.changePassword : t.login}
       </h1>
       {notice && <p role="status">{notice}</p>}
@@ -68,7 +68,7 @@ export function AuthScreen({
       <form onSubmit={(event) => void submit(event)}>
         <fieldset
           disabled={busy}
-          className="tw:space-y-4 tw:border-0 tw:p-0 tw:[&_label]:block tw:[&_input]:mt-1"
+          className="space-y-4 border-0 p-0 [&_label]:block [&_input]:mt-1"
         >
           {!user && (
             <label>
@@ -118,7 +118,7 @@ export function AuthScreen({
               />
             </label>
           )}
-          <div className="tw:flex tw:gap-3">
+          <div className="flex gap-3">
             <Button type="submit">{busy ? t.working : actionLabel}</Button>
             {onBack && (
               <Button variant="secondary" onClick={onBack}>

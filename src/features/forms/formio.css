@@ -1,17 +1,17 @@
 /* The renderer owns this DOM. Keep vendor selectors scoped to this integration. */
 @layer components {
   .formio-surface {
-    @apply tw:text-sm tw:text-ink;
+    @apply text-sm text-ink;
   }
   .formio-surface label {
-    @apply tw:font-medium;
+    @apply font-medium;
   }
   .formio-surface .formio-component {
-    @apply tw:mb-5;
+    @apply mb-5;
   }
   .formio-surface .form-control,
   .formio-surface .form-select {
-    @apply tw:min-h-11 tw:rounded-md tw:border tw:border-line tw:px-3 tw:py-2 tw:text-sm tw:shadow-none;
+    @apply min-h-11 rounded-md border border-line px-3 py-2 text-sm shadow-none;
   }
   .formio-surface label {
     margin-bottom: 0.5rem;
@@ -32,27 +32,27 @@
     line-height: 1.6;
   }
   .formio-surface .form-control:focus {
-    @apply tw:border-brand tw:ring-2 tw:ring-brand/15;
+    @apply border-brand ring-2 ring-brand/15;
   }
   .formio-surface .form-control:disabled {
-    @apply tw:bg-stone-50 tw:text-slate-600;
+    @apply bg-stone-50 text-slate-600;
   }
   .formio-surface .card {
-    @apply tw:overflow-hidden tw:rounded-lg tw:border-line tw:bg-stone-50;
+    @apply overflow-hidden rounded-lg border-line bg-stone-50;
   }
   .formio-surface .card-header {
-    @apply tw:border-0 tw:bg-sage tw:px-5 tw:py-3 tw:text-xs tw:font-semibold;
+    @apply border-0 bg-sage px-5 py-3 text-xs font-semibold;
   }
   .formio-surface .card-body {
-    @apply tw:px-5 tw:pt-5 tw:pb-0;
+    @apply px-5 pt-5 pb-0;
   }
   .formio-surface .form-check-input:checked {
-    @apply tw:border-brand tw:bg-brand;
+    @apply border-brand bg-brand;
   }
   .formio-surface .form-text {
-    @apply tw:text-xs tw:text-muted;
+    @apply text-xs text-muted;
   }
   .formio-surface .formio-errors {
-    @apply tw:text-xs;
+    @apply text-xs;
   }
 }

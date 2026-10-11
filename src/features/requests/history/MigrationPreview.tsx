@@ -46,7 +46,7 @@ export function MigrationPreview({
   return (
     <section
       aria-label={t.preview}
-      className="tw:space-y-4 tw:rounded-lg tw:border tw:border-line tw:bg-white tw:p-4"
+      className="space-y-4 rounded-lg border border-line bg-white p-4"
     >
       <h3>{t.preview}</h3>
       <p>
@@ -64,7 +64,7 @@ export function MigrationPreview({
                 <summary>
                   {t.before} / {t.after}
                 </summary>
-                <pre className="tw:overflow-auto tw:text-xs">
+                <pre className="overflow-auto text-xs">
                   {JSON.stringify(
                     { before: change.before, after: change.after },
                     null,
@@ -80,7 +80,7 @@ export function MigrationPreview({
       )}
       <h4>{t.data}</h4>
       {preview.dataChanges.length ? (
-        <table className="tw:w-full">
+        <table className="w-full">
           <thead>
             <tr>
               <th>{t.field}</th>
@@ -94,12 +94,12 @@ export function MigrationPreview({
                 <td>
                   {change.path}: {t[change.kind]}
                 </td>
-                <td className="tw:break-all">
+                <td className="break-all">
                   {change.before === undefined
                     ? "—"
                     : JSON.stringify(change.before)}
                 </td>
-                <td className="tw:break-all">
+                <td className="break-all">
                   {change.kind === "removed"
                     ? "—"
                     : JSON.stringify(change.after)}
@@ -158,7 +158,7 @@ export function MigrationPreview({
           </Button>
         </>
       )}
-      <label className="tw:flex tw:items-center tw:gap-2">
+      <label className="flex items-center gap-2">
         <input
           type="checkbox"
           checked={confirmed}
@@ -167,7 +167,7 @@ export function MigrationPreview({
         />
         {t.confirm}
       </label>
-      <div className="tw:flex tw:gap-2">
+      <div className="flex gap-2">
         <Button disabled={busy || !confirmed || blocked} onClick={onApply}>
           {t.apply}
         </Button>

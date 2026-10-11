@@ -54,7 +54,7 @@ export function RequestEditor({
   return (
     <>
       <section
-        className="tw:overflow-hidden tw:rounded-xl tw:border tw:border-line tw:bg-white tw:shadow-sm"
+        className="overflow-hidden rounded-xl border border-line bg-white shadow-sm"
         aria-label={t.newRequest}
       >
         <RequestMetadata
@@ -64,18 +64,18 @@ export function RequestEditor({
           definition={definition}
         />
         {readOnly && (
-          <div className="tw:bg-slate-100 tw:px-5 tw:py-3 tw:text-xs tw:text-slate-600 tw:md:px-7">
+          <div className="bg-slate-100 px-5 py-3 text-xs text-slate-600 md:px-7">
             {t.readonly}
           </div>
         )}
         {error && (
-          <div className="tw:px-5 tw:pt-4 tw:md:px-7">
+          <div className="px-5 pt-4 md:px-7">
             <ErrorNotice error={error} locale={locale} reload={reload} />
           </div>
         )}
         <fieldset
           disabled={saving || uploading || historyBusy}
-          className="tw:min-w-0 tw:border-0 tw:px-5 tw:pt-6 tw:pb-4 tw:md:px-7"
+          className="min-w-0 border-0 px-5 pt-6 pb-4 md:px-7"
         >
           <DynamicForm
             fields={definition.fields}

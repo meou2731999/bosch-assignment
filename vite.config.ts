@@ -1,9 +1,10 @@
 import { defineConfig } from "vitest/config";
+import { scopedVendor } from "./tooling/scoped-vendor";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [scopedVendor(), react(), tailwindcss()],
   test: {
     include: ["tests/**/*.test.ts"],
     coverage: {

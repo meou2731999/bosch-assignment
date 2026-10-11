@@ -12,7 +12,7 @@ export function ActivityTimeline({
   const h = historyCopy(locale);
   return (
     <section
-      className="tw:mt-8 tw:[&_h2]:mb-4 tw:[&_h2]:text-sm tw:[&_h2]:font-semibold tw:[&_ol]:m-0 tw:[&_ol]:list-none tw:[&_ol]:p-0 tw:[&_li]:mb-5 tw:[&_li]:flex tw:[&_li]:flex-wrap tw:[&_li]:items-baseline tw:[&_li]:gap-3 tw:[&_li]:text-xs tw:[&_li>div]:flex tw:[&_li>div]:min-w-0 tw:[&_li>div]:flex-1 tw:[&_li>div]:flex-col tw:[&_li>div]:gap-1 tw:[&_time]:text-xs tw:[&_time]:text-muted"
+      className="mt-8 [&_h2]:mb-4 [&_h2]:text-sm [&_h2]:font-semibold [&_ol]:m-0 [&_ol]:list-none [&_ol]:p-0 [&_li]:mb-5 [&_li]:flex [&_li]:flex-wrap [&_li]:items-baseline [&_li]:gap-3 [&_li]:text-xs [&_li>div]:flex [&_li>div]:min-w-0 [&_li>div]:flex-1 [&_li>div]:flex-col [&_li>div]:gap-1 [&_time]:text-xs [&_time]:text-muted"
       aria-label={t.history}
     >
       <h2>{t.history}</h2>
@@ -20,7 +20,7 @@ export function ActivityTimeline({
         {[...events].reverse().map((event, i) => (
           <li key={i}>
             <span
-              className="tw:size-1.5 tw:shrink-0 tw:rounded-full tw:bg-green-700"
+              className="size-1.5 shrink-0 rounded-full bg-green-700"
               aria-hidden="true"
             />
             <div>
@@ -41,7 +41,7 @@ export function ActivityTimeline({
                 </span>
               ))}
               {event.comment && (
-                <p className="tw:my-1 tw:whitespace-pre-wrap tw:break-words tw:rounded-lg tw:border tw:border-line tw:bg-white tw:p-3 tw:text-sm">
+                <p className="my-1 whitespace-pre-wrap break-words rounded-lg border border-line bg-white p-3 text-sm">
                   {event.comment}
                 </p>
               )}

@@ -105,9 +105,9 @@ export function UsersPanel({
   if (editing) title = editing === "new" ? t.create : t.edit;
   if (resetting) title = t.reset;
   return (
-    <main id="main" className="tw:mx-auto tw:max-w-6xl tw:p-5 tw:md:p-10">
-      <div className="tw:mb-6 tw:flex tw:items-center tw:justify-between">
-        <h1 className="tw:text-2xl tw:font-semibold">{t.users}</h1>
+    <main id="main" className="mx-auto max-w-6xl p-5 md:p-10">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">{t.users}</h1>
         <Button
           disabled={busy || loading}
           onClick={() => {

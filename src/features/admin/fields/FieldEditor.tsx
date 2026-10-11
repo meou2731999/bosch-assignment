@@ -56,7 +56,7 @@ export function FieldEditor({
   }
   return (
     <fieldset
-      className="tw:space-y-3 tw:rounded-lg tw:border tw:border-line tw:p-4"
+      className="space-y-3 rounded-lg border border-line p-4"
       aria-label={`${t.fields} ${index + 1}`}
     >
       <legend>
@@ -150,7 +150,7 @@ export function FieldEditor({
           onChange={(fields) => onChange({ ...field, fields })}
         />
       )}
-      <div className="tw:flex tw:flex-wrap tw:gap-2">
+      <div className="flex flex-wrap gap-2">
         <Button
           variant="secondary"
           disabled={index === 0}

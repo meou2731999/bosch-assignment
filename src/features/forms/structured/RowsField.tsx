@@ -36,7 +36,7 @@ export function RowsField(
     <fieldset>
       <legend>{field.label}</legend>
       {field.input === "table" ? (
-        <table className="tw:w-full">
+        <table className="w-full">
           <thead>
             <tr>
               {field.fields?.map((child) => (

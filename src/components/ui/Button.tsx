@@ -1,9 +1,8 @@
 import type { ButtonHTMLAttributes } from "react";
 const variants = {
-  primary:
-    "tw:border-transparent tw:bg-brand tw:text-white tw:hover:bg-brand-hover",
-  secondary: "tw:border-slate-300 tw:bg-white tw:text-brand tw:hover:bg-sage",
-  danger: "tw:border-red-300 tw:bg-white tw:text-red-800 tw:hover:bg-red-50",
+  primary: "border-transparent bg-brand text-white hover:bg-brand-hover",
+  secondary: "border-slate-300 bg-white text-brand hover:bg-sage",
+  danger: "border-red-300 bg-white text-red-800 hover:bg-red-50",
 };
 export function Button({
   variant = "primary",
@@ -16,7 +15,7 @@ export function Button({
   return (
     <button
       type={type}
-      className={`tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:opacity-50 ${variants[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50 ${variants[variant]} ${className}`}
       {...props}
     />
   );

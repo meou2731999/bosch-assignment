@@ -76,7 +76,7 @@ export function App() {
   }
   if (loading)
     return (
-      <p role="status" className="tw:p-8">
+      <p role="status" className="p-8">
         {t.working}
       </p>
     );
@@ -85,7 +85,7 @@ export function App() {
   if (auth)
     content = (
       <>
-        <div className="tw:flex tw:justify-end tw:gap-3 tw:p-5">
+        <div className="flex justify-end gap-3 p-5">
           <label>
             {locale === "vi" ? "Ngôn ngữ" : "Language"}
             <select
@@ -169,9 +169,9 @@ export function App() {
       />
     );
   return (
-    <div className="tw:min-h-screen tw:bg-canvas tw:font-sans tw:text-ink">
+    <div className="min-h-screen bg-canvas font-sans text-ink">
       {error && (
-        <div className="tw:p-5">
+        <div className="p-5">
           <ErrorNotice error={error} locale={locale} />
         </div>
       )}

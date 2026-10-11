@@ -81,15 +81,12 @@ export function AttachmentsPanel({
   return (
     <section
       aria-labelledby="attachments-heading"
-      className="tw:mt-6 tw:border-t tw:border-line tw:pt-6"
+      className="mt-6 border-t border-line pt-6"
     >
-      <h2 id="attachments-heading" className="tw:text-sm tw:font-semibold">
+      <h2 id="attachments-heading" className="text-sm font-semibold">
         {t.attachments}
       </h2>
-      <p
-        id="file-help"
-        className="tw:max-w-xl tw:text-xs tw:leading-relaxed tw:text-muted"
-      >
+      <p id="file-help" className="max-w-xl text-xs leading-relaxed text-muted">
         {t.fileHint}
       </p>
       {error && <ErrorNotice error={error} locale={locale} />}
@@ -105,32 +102,32 @@ export function AttachmentsPanel({
             void upload(Array.from(e.target.files ?? []));
             e.target.value = "";
           }}
-          className="tw:max-w-full tw:text-xs tw:file:mr-3 tw:file:rounded-md tw:file:border tw:file:border-line tw:file:bg-sage tw:file:px-3 tw:file:py-2"
+          className="max-w-full text-xs file:mr-3 file:rounded-md file:border file:border-line file:bg-sage file:px-3 file:py-2"
         />
       )}
-      <p role="status" className="tw:mt-3 tw:text-xs tw:text-muted">
+      <p role="status" className="mt-3 text-xs text-muted">
         {uploadStatus}
       </p>
-      <ul className="tw:m-0 tw:list-none tw:p-0">
+      <ul className="m-0 list-none p-0">
         {attachments.map((file, index) => (
           <li
             key={file.id ?? `${file.name}-${index}`}
-            className="tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3 tw:border-b tw:border-line tw:py-3"
+            className="flex flex-wrap items-center justify-between gap-3 border-b border-line py-3"
           >
-            <div className="tw:min-w-0 tw:flex-1">
-              <strong className="tw:block tw:break-all tw:text-sm tw:font-medium">
+            <div className="min-w-0 flex-1">
+              <strong className="block break-all text-sm font-medium">
                 {file.name}
               </strong>
-              <small className="tw:text-muted">
+              <small className="text-muted">
                 {Math.ceil(file.size / 1024)} KB
               </small>
               {!file.id && (
-                <p className="tw:mb-0 tw:mt-1 tw:text-xs tw:text-amber-800">
+                <p className="mb-0 mt-1 text-xs text-amber-800">
                   {t.legacyFile}
                 </p>
               )}
             </div>
-            <div className="tw:flex tw:gap-2">
+            <div className="flex gap-2">
               {file.id && (
                 <Button
                   variant="secondary"

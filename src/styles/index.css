@@ -1,9 +1,8 @@
 @layer theme, base, vendor, components, utilities;
-@import "tailwindcss" prefix(tw);
-@import "bootstrap/dist/css/bootstrap.min.css" layer(vendor);
-@import "@formio/js/dist/formio.form.min.css" layer(vendor);
+@import "tailwindcss";
 @import "../features/forms/formio.css";
 @import "../components/ui/field.css";
+@import "./typography.css";
 
 @theme {
   --color-brand: #173f35;

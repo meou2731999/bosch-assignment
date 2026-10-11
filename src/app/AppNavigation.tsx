@@ -21,9 +21,9 @@ export function AppNavigation({
   return (
     <nav
       aria-label={locale === "vi" ? "Điều hướng quản trị" : "Admin navigation"}
-      className="tw:border-b tw:border-line tw:bg-white"
+      className="border-b border-line bg-white"
     >
-      <div className="tw:flex tw:gap-3 tw:px-5 tw:py-3 tw:md:px-[5vw]">
+      <div className="flex gap-3 px-5 py-3 md:px-[5vw]">
         {[
           { key: "requests", label: t.workspace, action: onRequests },
           { key: "users", label: t.users, action: onManage },

@@ -49,21 +49,21 @@ export function FormPermissionsPanel({
     );
   }
   return (
-    <section aria-label={t.permissions} className="tw:space-y-4">
-      <p className="tw:font-semibold">{user.name}</p>
+    <section aria-label={t.permissions} className="space-y-4">
+      <p className="font-semibold">{user.name}</p>
       <p>{t.permissionHint}</p>
       <form onSubmit={save}>
-        <fieldset disabled={busy} className="tw:space-y-4 tw:border-0 tw:p-0">
+        <fieldset disabled={busy} className="space-y-4 border-0 p-0">
           {forms.map((form) => (
             <fieldset
               key={form.id}
-              className="tw:rounded-lg tw:border tw:border-line tw:p-4"
+              className="rounded-lg border border-line p-4"
             >
-              <legend className="tw:text-base">
+              <legend className="text-base">
                 {form.draft.name} ·{" "}
                 {form.activeVersion ? `v${form.activeVersion}` : t.unpublished}
               </legend>
-              <div className="tw:flex tw:flex-wrap tw:gap-5">
+              <div className="flex flex-wrap gap-5">
                 {(["create", "view", "review"] as const).map((permission) => {
                   const labels = {
                     create: t.grantCreate,
@@ -88,7 +88,7 @@ export function FormPermissionsPanel({
               </div>
             </fieldset>
           ))}
-          <div className="tw:flex tw:gap-3">
+          <div className="flex gap-3">
             <Button type="submit">{busy ? t.working : t.grantSave}</Button>
             <Button variant="secondary" onClick={onCancel}>
               {t.cancel}

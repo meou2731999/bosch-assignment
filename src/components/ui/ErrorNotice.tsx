@@ -23,10 +23,10 @@ export function ErrorNotice({
       ref={box}
       tabIndex={-1}
       role="alert"
-      className="tw:mb-4 tw:rounded-lg tw:border tw:border-red-200 tw:bg-red-50 tw:p-4 tw:text-sm tw:text-red-900"
+      className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900"
     >
       <strong>{t.errorTitle}</strong>
-      <p className="tw:my-2">{error.message}</p>
+      <p className="my-2">{error.message}</p>
       {error instanceof HttpError && Object.keys(error.fields).length > 0 && (
         <ul>
           {Object.entries(error.fields).map(([field, message]) => (

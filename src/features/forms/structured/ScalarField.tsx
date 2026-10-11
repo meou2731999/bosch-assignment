@@ -44,10 +44,10 @@ export function ScalarField({
     );
   } else if (field.input === "checkbox")
     return (
-      <div className="tw:mb-3 tw:flex tw:items-center tw:gap-2">
+      <div className="mb-3 flex items-center gap-2">
         <input
           {...common}
-          className="tw:h-4 tw:w-4"
+          className="h-4 w-4"
           type="checkbox"
           checked={value === true}
           onChange={(event) => onChange(event.target.checked)}
@@ -83,7 +83,7 @@ export function ScalarField({
       />
     );
   return (
-    <div className="tw:mb-3">
+    <div className="mb-3">
       <label htmlFor={id}>
         {field.label}
         {field.required ? " *" : ""}

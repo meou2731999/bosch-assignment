@@ -13,7 +13,7 @@ export function DemoControls({
 }) {
   const t = copy(locale);
   return (
-    <details className="tw:mx-1 tw:mt-4 tw:mb-7 tw:text-xs tw:text-muted tw:[&_label]:block tw:[&_label]:pt-3 tw:[&_input]:mr-1 tw:[&_input]:accent-brand">
+    <details className="mx-1 mt-4 mb-7 text-xs text-muted [&_label]:block [&_label]:pt-3 [&_input]:mr-1 [&_input]:accent-brand">
       <summary>{t.demoTools}</summary>
       <label>
         <input

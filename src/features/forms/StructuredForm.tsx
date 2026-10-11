@@ -29,7 +29,7 @@ export function StructuredForm({
     onReady(handle.current);
   }, [onReady]);
   return (
-    <div className="formio-surface">
+    <div className="text-sm text-ink">
       <FieldTree
         fields={fields}
         scope={{ root: data, row: data, parent: data }}

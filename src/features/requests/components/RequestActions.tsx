@@ -17,20 +17,20 @@ export function RequestActions({
 }) {
   const t = copy(locale);
   return (
-    <div className="tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-4 tw:border-t tw:border-line tw:px-5 tw:py-5 tw:md:px-7 tw:[&>div]:flex tw:[&>div]:flex-wrap tw:[&>div]:gap-2">
-      <span className="tw:max-w-xs tw:text-xs tw:text-muted" role="status">
+    <div className="flex flex-wrap items-center justify-between gap-4 border-t border-line px-5 py-5 md:px-7 [&>div]:flex [&>div]:flex-wrap [&>div]:gap-2">
+      <span className="max-w-xs text-xs text-muted" role="status">
         {saveStatus}
       </span>
       <div>
         <button
-          className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:border-transparent tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:cursor-wait tw:disabled:opacity-50 tw:border-slate-300 tw:bg-white tw:text-brand tw:hover:bg-sage"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-50 border-slate-300 bg-white text-brand hover:bg-sage"
           disabled={!ready || saving || uploading}
           onClick={() => void save("draft")}
         >
           {t.saveDraft}
         </button>
         <button
-          className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-lg tw:border tw:border-transparent tw:px-4 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition-colors tw:disabled:cursor-wait tw:disabled:opacity-50 tw:bg-brand tw:text-white tw:hover:bg-brand-hover"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-50 bg-brand text-white hover:bg-brand-hover"
           disabled={!ready || saving || uploading}
           onClick={() => void save("submit")}
         >

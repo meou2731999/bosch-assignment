@@ -43,11 +43,11 @@ export function FormDraftEditor({
     });
   }
   return (
-    <section className="tw:space-y-4" aria-label={existing ? t.edit : t.create}>
+    <section className="space-y-4" aria-label={existing ? t.edit : t.create}>
       <form onSubmit={save}>
         <fieldset
           disabled={busy}
-          className="editor-fields tw:space-y-5 tw:border-0 tw:p-0"
+          className="editor-fields space-y-5 border-0 p-0"
         >
           <label>
             {t.name}
@@ -97,7 +97,7 @@ export function FormDraftEditor({
               />
             </>
           )}
-          <div className="tw:flex tw:flex-wrap tw:gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button
               type="submit"
               disabled={custom && !fieldsSchema.safeParse(fields).success}

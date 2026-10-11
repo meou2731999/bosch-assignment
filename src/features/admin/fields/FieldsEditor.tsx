@@ -37,7 +37,7 @@ export function FieldsEditor({
     onChange(next);
   }
   return (
-    <div className="tw:space-y-4">
+    <div className="space-y-4">
       {fields.map((field, index) => (
         <FieldEditor
           key={ids[index]}
@@ -56,7 +56,7 @@ export function FieldsEditor({
         />
       ))}
       {!valid && <p role="alert">{fields.length ? t.invalid : t.empty}</p>}
-      <div className="tw:flex tw:flex-wrap tw:gap-3">
+      <div className="flex flex-wrap gap-3">
         <Button
           variant="secondary"
           disabled={fields.length >= 50}
@@ -87,7 +87,7 @@ export function FieldsEditor({
       {preview && (
         <section
           aria-label={t.preview}
-          className="tw:rounded-lg tw:border tw:border-line tw:p-4"
+          className="rounded-lg border border-line p-4"
         >
           <h3>{t.preview}</h3>
           <DynamicForm

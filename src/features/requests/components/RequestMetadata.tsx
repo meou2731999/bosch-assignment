@@ -15,7 +15,7 @@ export function RequestMetadata({
 }) {
   const t = copy(locale);
   return (
-    <div className="tw:flex tw:flex-wrap tw:gap-x-6 tw:gap-y-2 tw:border-b tw:border-line tw:bg-stone-50 tw:px-5 tw:py-4 tw:text-xs tw:text-muted tw:md:px-7 tw:[&_strong]:ml-1 tw:[&_strong]:font-semibold tw:[&_strong]:text-ink">
+    <div className="flex flex-wrap gap-x-6 gap-y-2 border-b border-line bg-stone-50 px-5 py-4 text-xs text-muted md:px-7 [&_strong]:ml-1 [&_strong]:font-semibold [&_strong]:text-ink">
       <span>
         {formCopy(locale).select} <strong>{definition.name}</strong>
       </span>
@@ -25,7 +25,7 @@ export function RequestMetadata({
       <span>
         {t.revision} <strong>{record?.revision ?? 0}</strong>
       </span>
-      <span className="tw:md:ml-auto">
+      <span className="md:ml-auto">
         {t.requestOwner}{" "}
         <strong>
           {record && record.ownerId !== user.id ? record.ownerId : user.name}
