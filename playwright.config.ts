@@ -1,13 +1,16 @@
 import { defineConfig, devices } from "@playwright/test";
+const slowMo = Number(process.env.E2E_SLOW_MO ?? 0);
 export default defineConfig({
+  timeout: slowMo > 0 ? 180000 : 30000,
   testDir: "./e2e",
   testMatch: "**/*.spec.ts",
   forbidOnly: Boolean(process.env.CI),
-  globalTimeout: 10 * 60 * 1000,
+  globalTimeout: (slowMo > 0 ? 30 : 10) * 60 * 1000,
   reporter: [["list"], ["html", { open: "never" }]],
   workers: 1,
   fullyParallel: false,
   use: {
+    launchOptions: { slowMo },
     baseURL: "http://127.0.0.1:3107",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",

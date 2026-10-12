@@ -2,6 +2,14 @@
 
 Run `npm run test:e2e:headed` to see Chromium execute the fifteen browser scenarios. Playwright builds the actual frontend, starts an isolated API on port 3107 and uses disposable test accounts/data. It never uses `.data` records.
 
+To watch each UI more slowly (500ms between browser operations):
+
+```sh
+E2E_SLOW_MO=500 npm run test:e2e:headed
+```
+
+Increase or decrease `E2E_SLOW_MO` in milliseconds. Slow mode raises the per-test timeout to three minutes and the suite limit to thirty minutes; ordinary runs retain the existing timeouts.
+
 For a reviewable HTML report:
 
 ```sh
