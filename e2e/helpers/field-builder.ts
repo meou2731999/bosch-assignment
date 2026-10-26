@@ -23,6 +23,7 @@ export async function publish(page: Page, name: string, version: number) {
     .getByRole("listitem")
     .filter({ has: page.getByRole("heading", { name, exact: true }) });
   page.once("dialog", (dialog) => dialog.accept());
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row.getByRole("button", { name: "Publish form", exact: true }).click();
   await expect(row).toContainText(`Published version: ${version}`);
   return row;

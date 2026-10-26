@@ -52,6 +52,7 @@ test("form spacing stays consistent across auth, account dialogs and the field e
   );
   await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
   const row = page.getByRole("row").filter({ hasText: "admin@example.test" });
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row.getByRole("button", { name: "Edit user", exact: true }).click();
   await checkFields(dialog);
   const checkboxGap = await dialog
@@ -60,6 +61,7 @@ test("form spacing stays consistent across auth, account dialogs and the field e
   expect(Number.parseFloat(checkboxGap)).toBeGreaterThanOrEqual(10);
   await dialog.screenshot({ path: "test-results/spacing-edit-user.png" });
   await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row
     .getByRole("button", { name: "Reset password", exact: true })
     .click();
@@ -77,6 +79,7 @@ test("form spacing stays consistent across auth, account dialogs and the field e
   await dialog.screenshot({ path: "test-results/spacing-reset-mobile.png" });
   await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
   await page.setViewportSize({ width: 1280, height: 800 });
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row
     .getByRole("button", { name: "Form permissions", exact: true })
     .click();

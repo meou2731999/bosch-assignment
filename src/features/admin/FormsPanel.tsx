@@ -1,3 +1,4 @@
+import { ActionDropdown } from "../../components/ui/ActionDropdown";
 import { Modal } from "../../components/ui/Modal";
 import { useEffect, useState } from "react";
 import type { FormRecord, FormDraft } from "../../../shared/forms";
@@ -93,30 +94,30 @@ export function FormsPanel({ locale }: Readonly<{ locale: Locale }>) {
                   : {form.draft.revision}
                 </p>
               </div>
-              <div className="flex gap-3">
-                <Button
-                  variant="secondary"
-                  disabled={busy}
-                  onClick={() => {
-                    setEditing(form);
-                    setError(null);
-                  }}
-                >
-                  {t.edit}
-                </Button>
-                <Button
-                  disabled={busy}
-                  onClick={() => {
-                    if (window.confirm(t.confirm))
-                      void act(
-                        () => formsApi.publish(form.id, form.draft.revision),
-                        t.published,
-                      );
-                  }}
-                >
-                  {t.publish}
-                </Button>
-              </div>
+              <ActionDropdown
+                label={locale === "vi" ? "Thao tác" : "Actions"}
+                context={form.draft.name}
+                disabled={busy}
+                actions={[
+                  {
+                    label: t.edit,
+                    onSelect: () => {
+                      setEditing(form);
+                      setError(null);
+                    },
+                  },
+                  {
+                    label: t.publish,
+                    onSelect: () => {
+                      if (window.confirm(t.confirm))
+                        void act(
+                          () => formsApi.publish(form.id, form.draft.revision),
+                          t.published,
+                        );
+                    },
+                  },
+                ]}
+              />
             </li>
           ))}
         </ul>

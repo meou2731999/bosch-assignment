@@ -23,6 +23,7 @@ async function createForm(page: Page, name: string) {
     .filter({ has: page.getByRole("heading", { name, exact: true }) });
   await expect(row).toContainText("Not published");
   page.once("dialog", (dialog) => dialog.accept());
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row.getByRole("button", { name: "Publish form", exact: true }).click();
   await expect(row).toContainText("Published version: 1");
 }
@@ -52,6 +53,7 @@ test("admin publishes form types, grants scoped creation and preserves old draft
   const user = page
     .getByRole("row")
     .filter({ hasText: "form-requester@example.test" });
+  await user.getByRole("button", { name: /^Actions:/ }).click();
   await user
     .getByRole("button", { name: "Form permissions", exact: true })
     .click();
@@ -102,6 +104,7 @@ test("admin publishes form types, grants scoped creation and preserves old draft
   const form = page.getByRole("listitem").filter({
     has: page.getByRole("heading", { name: "Procurement", exact: true }),
   });
+  await form.getByRole("button", { name: /^Actions:/ }).click();
   await form
     .getByRole("button", { name: "Edit form draft", exact: true })
     .click();
@@ -122,6 +125,7 @@ test("admin publishes form types, grants scoped creation and preserves old draft
     }),
   });
   page.once("dialog", (dialog) => dialog.accept());
+  await changed.getByRole("button", { name: /^Actions:/ }).click();
   await changed
     .getByRole("button", { name: "Publish form", exact: true })
     .click();
@@ -143,6 +147,7 @@ test("admin publishes form types, grants scoped creation and preserves old draft
       .getByText("Form version", { exact: false }),
   ).toContainText("1");
   await page.getByRole("button", { name: "Manage users", exact: true }).click();
+  await user.getByRole("button", { name: /^Actions:/ }).click();
   await user
     .getByRole("button", { name: "Form permissions", exact: true })
     .click();

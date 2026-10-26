@@ -30,12 +30,14 @@ test("admin creates and edits account; user changes password; reset and disable 
   await editor.getByRole("button", { name: "Save user" }).click();
   const row = page.getByRole("row").filter({ hasText: "browser@example.test" });
   await expect(row).toBeVisible();
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row.getByRole("button", { name: "Edit user" }).click();
   const edit = page.getByRole("region", { name: "Edit user", exact: true });
   await edit.getByLabel("Name", { exact: true }).fill("Updated Browser User");
   await edit.getByLabel("Department", { exact: true }).fill("Operations");
   await edit.getByRole("button", { name: "Save user" }).click();
   await expect(row).toContainText("Updated Browser User");
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row.getByRole("button", { name: "Form permissions" }).click();
   const grants = page.getByRole("region", {
     name: "Form permissions",
@@ -90,6 +92,7 @@ test("admin creates and edits account; user changes password; reset and disable 
   await expect(
     userPage.getByRole("status").filter({ hasText: "Draft saved." }),
   ).toBeVisible();
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row.getByRole("button", { name: "Reset password" }).click();
   const reset = page.getByRole("region", {
     name: "Reset password",
@@ -116,6 +119,7 @@ test("admin creates and edits account; user changes password; reset and disable 
     userPage.getByRole("heading", { name: "Change password" }),
   ).toBeVisible();
   page.once("dialog", (dialog) => dialog.accept());
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row.getByRole("button", { name: "Disable user" }).click();
   await expect(row).toContainText("Disabled");
   await userPage.reload();
@@ -126,8 +130,9 @@ test("admin creates and edits account; user changes password; reset and disable 
   await expect(userPage.getByRole("alert")).toContainText(
     "Invalid email or password",
   );
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row.getByRole("button", { name: "Enable user" }).click();
-  await expect(row.getByRole("button", { name: "Disable user" })).toBeVisible();
+  await expect(row).toContainText("Active");
   await page.getByRole("button", { name: /^User menu:/ }).click();
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();

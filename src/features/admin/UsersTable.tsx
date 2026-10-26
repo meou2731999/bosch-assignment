@@ -1,5 +1,5 @@
 import type { AccountUser, Locale } from "../../../shared/model";
-import { Button } from "../../components/ui/Button";
+import { ActionDropdown } from "../../components/ui/ActionDropdown";
 import { authCopy } from "../auth/copy";
 import { formCopy } from "../forms/copy";
 import { adminApi } from "../auth/api";
@@ -47,46 +47,32 @@ export function UsersTable({
                 {user.isAdmin && ` · ${t.admin}`}
               </td>
               <td>{user.active ? t.active : t.disabled}</td>
-              <td>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="secondary"
-                    disabled={busy}
-                    onClick={() => onSelect("edit", user)}
-                  >
-                    {t.edit}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    disabled={busy}
-                    onClick={() => onSelect("reset", user)}
-                  >
-                    {t.reset}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    disabled={busy}
-                    onClick={() => onSelect("permissions", user)}
-                  >
-                    {f.permissions}
-                  </Button>
-                  <Button
-                    variant={user.active ? "danger" : "secondary"}
-                    disabled={busy}
-                    onClick={() => {
-                      if (!user.active || window.confirm(t.confirmDisable))
-                        void act(
-                          () =>
-                            adminApi.edit(user.id, {
-                              active: !user.active,
-                            }),
-                          t.saved,
-                        );
-                    }}
-                  >
-                    {user.active ? t.disable : t.enable}
-                  </Button>
-                </div>
+              <td className="text-right">
+                <ActionDropdown
+                  label={t.actions}
+                  context={user.email}
+                  disabled={busy}
+                  actions={[
+                    { label: t.edit, onSelect: () => onSelect("edit", user) },
+                    { label: t.reset, onSelect: () => onSelect("reset", user) },
+                    {
+                      label: f.permissions,
+                      onSelect: () => onSelect("permissions", user),
+                    },
+                    {
+                      label: user.active ? t.disable : t.enable,
+                      danger: user.active,
+                      onSelect: () => {
+                        if (!user.active || window.confirm(t.confirmDisable))
+                          void act(
+                            () =>
+                              adminApi.edit(user.id, { active: !user.active }),
+                            t.saved,
+                          );
+                      },
+                    },
+                  ]}
+                />
               </td>
             </tr>
           ))}

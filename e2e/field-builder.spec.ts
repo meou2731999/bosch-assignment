@@ -80,6 +80,7 @@ test("admin edits and previews fields; requester loads published JSON without fr
   await requester.evaluate(() => {
     document.documentElement.dataset.schemaSession = "same-document";
   });
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row
     .getByRole("button", { name: "Edit form draft", exact: true })
     .click();

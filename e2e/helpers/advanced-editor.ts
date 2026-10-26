@@ -30,6 +30,7 @@ export async function advancedEditor(page: Page) {
       exact: true,
     }),
   });
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row
     .getByRole("button", { name: "Edit form draft", exact: true })
     .click();

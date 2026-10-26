@@ -32,6 +32,43 @@ test("admin actions use accessible dialogs with recovery, focus and mobile scrol
   await expect(create).toBeFocused();
   const row = page.getByRole("row").filter({ hasText: "admin@example.test" });
   const edit = row.getByRole("button", { name: "Edit user", exact: true });
+  const actions = row.getByRole("button", { name: /^Actions:/ });
+  await expect(edit).toBeHidden();
+  await actions.click();
+  await expect(actions).toHaveAttribute("aria-expanded", "true");
+  await expect(edit).toBeFocused();
+  await page.keyboard.press("End");
+  await expect(
+    row.getByRole("button", { name: "Disable user", exact: true }),
+  ).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(actions).toBeFocused();
+  await expect(edit).toBeHidden();
+  await actions.click();
+  await page
+    .getByRole("heading", { name: "Manage users", exact: true })
+    .click();
+  await expect(edit).toBeHidden();
+  await actions.click();
+  await expect(
+    row.getByRole("button", { name: "Disable user", exact: true }),
+  ).toBeInViewport();
+  await page.screenshot({ path: "test-results/user-actions-dropdown.png" });
+  await page.keyboard.press("Escape");
+  await page.setViewportSize({ width: 390, height: 600 });
+  await actions.click();
+  const popup = page.locator("[popover]:popover-open");
+  const popupBox = await popup.boundingBox();
+  expect(popupBox!.x).toBeGreaterThanOrEqual(0);
+  expect(popupBox!.x + popupBox!.width).toBeLessThanOrEqual(390);
+  expect(popupBox!.y + popupBox!.height).toBeLessThanOrEqual(600);
+  await expect(edit).toBeInViewport();
+  await page.screenshot({
+    path: "test-results/user-actions-dropdown-mobile.png",
+  });
+  await page.keyboard.press("Escape");
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await actions.click();
   await edit.click();
   const editDialog = page.getByRole("dialog", {
     name: "Edit user",
@@ -39,9 +76,10 @@ test("admin actions use accessible dialogs with recovery, focus and mobile scrol
   });
   await editDialog.getByLabel("Name", { exact: true }).fill("Cancelled edit");
   await editDialog.getByRole("button", { name: "Cancel", exact: true }).click();
-  await expect(edit).toBeFocused();
+  await expect(actions).toBeFocused();
   await expect(row).toContainText("E2E Admin");
   await expect(row).not.toContainText("Cancelled edit");
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row
     .getByRole("button", { name: "Reset password", exact: true })
     .click();
@@ -49,6 +87,7 @@ test("admin actions use accessible dialogs with recovery, focus and mobile scrol
     page.getByRole("dialog", { name: "Reset password", exact: true }),
   ).toBeVisible();
   await page.keyboard.press("Escape");
+  await row.getByRole("button", { name: /^Actions:/ }).click();
   await row
     .getByRole("button", { name: "Form permissions", exact: true })
     .click();
@@ -129,6 +168,10 @@ test("admin actions use accessible dialogs with recovery, focus and mobile scrol
   ).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(createForm).toBeFocused();
+  await page
+    .getByRole("button", { name: /^Actions:/ })
+    .first()
+    .click();
   await page
     .getByRole("button", { name: "Edit form draft", exact: true })
     .first()
