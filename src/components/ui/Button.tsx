@@ -9,9 +9,11 @@ export function Button({
   className = "",
   type = "button",
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: keyof typeof variants;
-}) {
+}: Readonly<
+  ButtonHTMLAttributes<HTMLButtonElement> & {
+    variant?: keyof typeof variants;
+  }
+>) {
   return (
     <button
       type={type}

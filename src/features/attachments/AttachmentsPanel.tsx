@@ -16,7 +16,7 @@ export function AttachmentsPanel({
   readOnly,
   onChange,
   onUploading,
-}: {
+}: Readonly<{
   user: User;
   requestId: string;
   formId: string;
@@ -25,7 +25,7 @@ export function AttachmentsPanel({
   readOnly: boolean;
   onChange: (files: Attachment[]) => void;
   onUploading: (uploading: boolean) => void;
-}) {
+}>) {
   const t = copy(locale);
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<Attachment | null>(null);

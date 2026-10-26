@@ -14,7 +14,7 @@ export interface TreeProps {
   locale: Locale;
   onChange: (data: Record<string, unknown>) => void;
 }
-export function FieldTree(props: TreeProps) {
+export function FieldTree(props: Readonly<TreeProps>) {
   const { fields, scope, onChange } = props;
   return (
     <>

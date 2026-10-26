@@ -7,11 +7,11 @@ export function FieldValidationEditor({
   field,
   locale,
   onChange,
-}: {
+}: Readonly<{
   field: BasicField;
   locale: Locale;
   onChange: (field: BasicField) => void;
-}) {
+}>) {
   const t = fieldCopy(locale);
   const [options, setOptions] = useState(
     () =>

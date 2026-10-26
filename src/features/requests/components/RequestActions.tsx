@@ -7,14 +7,14 @@ export function RequestActions({
   saving,
   uploading,
   save,
-}: {
+}: Readonly<{
   locale: Locale;
   saveStatus: string;
   ready: boolean;
   saving: boolean;
   uploading: boolean;
   save: (action: "draft" | "submit") => Promise<void>;
-}) {
+}>) {
   const t = copy(locale);
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 border-t border-line px-5 py-5 md:px-7 [&>div]:flex [&>div]:flex-wrap [&>div]:gap-2">

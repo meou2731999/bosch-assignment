@@ -7,7 +7,7 @@ import { ErrorNotice } from "../../components/ui/ErrorNotice";
 import { FormDraftEditor } from "./FormDraftEditor";
 import { formsApi } from "../forms/api";
 import { formCopy } from "../forms/copy";
-export function FormsPanel({ locale }: { locale: Locale }) {
+export function FormsPanel({ locale }: Readonly<{ locale: Locale }>) {
   const t = formCopy(locale);
   const [forms, setForms] = useState<FormRecord[]>([]);
   const [editing, setEditing] = useState<FormRecord | "new" | null>(null);

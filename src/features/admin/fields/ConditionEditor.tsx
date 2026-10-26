@@ -12,11 +12,11 @@ export function ConditionEditor({
   condition,
   locale,
   onChange,
-}: {
+}: Readonly<{
   condition?: Condition;
   locale: Locale;
   onChange: (condition: Condition | undefined) => void;
-}) {
+}>) {
   const t = conditionCopy(locale);
   if (!condition)
     return (

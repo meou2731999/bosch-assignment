@@ -17,11 +17,11 @@ export function UsersPanel({
   locale,
   onSelfChanged,
   userId,
-}: {
+}: Readonly<{
   locale: Locale;
   onSelfChanged: () => Promise<void>;
   userId: string;
-}) {
+}>) {
   const t = authCopy(locale);
   const [forms, setForms] = useState<FormRecord[]>([]);
   const [granting, setGranting] = useState<AccountUser | null>(null);

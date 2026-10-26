@@ -16,7 +16,7 @@ export function DraftHistory({
   onBusy,
   onSaved,
   reload,
-}: {
+}: Readonly<{
   record: RequestRecord;
   user: User;
   locale: Locale;
@@ -25,7 +25,7 @@ export function DraftHistory({
   onBusy: (busy: boolean) => void;
   onSaved: (record: RequestRecord, definition?: Definition) => void;
   reload: () => void;
-}) {
+}>) {
   const t = historyCopy(locale);
   const [selected, setSelected] = useState("");
   const {

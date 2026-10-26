@@ -20,7 +20,7 @@ export function RequestEditor({
   onBusy,
   onSaved,
   reload,
-}: RequestEditorProps) {
+}: Readonly<RequestEditorProps>) {
   const t = copy(locale);
   const [historyBusy, setHistoryBusy] = useState(false);
   const {

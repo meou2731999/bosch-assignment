@@ -3,11 +3,13 @@ import { isObject } from "../../../../shared/field-values";
 import { Button } from "../../../components/ui/Button";
 import { FieldTree, type TreeProps } from "./FieldTree";
 export function RowsField(
-  props: TreeProps & {
-    field: BasicField;
-    value: unknown[];
-    onUpdate: (rows: unknown[]) => void;
-  },
+  props: Readonly<
+    TreeProps & {
+      field: BasicField;
+      value: unknown[];
+      onUpdate: (rows: unknown[]) => void;
+    }
+  >,
 ) {
   const { field, value, readOnly, onUpdate, locale } = props;
   const remove = (index: number) => (

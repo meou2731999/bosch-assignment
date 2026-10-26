@@ -6,12 +6,12 @@ export function ScalarField({
   value,
   readOnly,
   onChange,
-}: {
+}: Readonly<{
   field: BasicField;
   value: unknown;
   readOnly: boolean;
   onChange: (value: unknown) => void;
-}) {
+}>) {
   const id = useId();
   const common = { id, disabled: readOnly, className: inputClass };
   let control;

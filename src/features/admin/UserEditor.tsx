@@ -9,13 +9,13 @@ export function UserEditor({
   busy,
   save,
   onCancel,
-}: {
+}: Readonly<{
   editing: AccountUser | "new";
   locale: Locale;
   busy: boolean;
   save: (event: FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
-}) {
+}>) {
   const t = authCopy(locale);
   const existing = editing !== "new" ? editing : undefined;
   return (

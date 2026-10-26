@@ -11,7 +11,7 @@ export function FormPermissionsPanel({
   busy,
   onSave,
   onCancel,
-}: {
+}: Readonly<{
   user: AccountUser;
   forms: FormRecord[];
   locale: Locale;
@@ -21,7 +21,7 @@ export function FormPermissionsPanel({
     message: string,
   ) => Promise<void>;
   onCancel: () => void;
-}) {
+}>) {
   const t = formCopy(locale);
   const [permissions, setPermissions] = useState<FormPermissions>(
     structuredClone(user.formPermissions),

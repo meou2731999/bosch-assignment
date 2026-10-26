@@ -18,7 +18,7 @@ export function ReviewPanel({
   onBusy,
   onDirty,
   reload,
-}: {
+}: Readonly<{
   user: User;
   record: RequestRecord;
   locale: Locale;
@@ -26,7 +26,7 @@ export function ReviewPanel({
   onBusy: (busy: boolean) => void;
   onDirty: (dirty: boolean) => void;
   reload: () => void;
-}) {
+}>) {
   const t = copy(locale);
   const [comment, setComment] = useState("");
   const [saving, setSaving] = useState(false);

@@ -11,7 +11,7 @@ export function RequestList({
   busy,
   loading,
   navigate,
-}: {
+}: Readonly<{
   user: User;
   canCreate: boolean;
   locale: Locale;
@@ -20,7 +20,7 @@ export function RequestList({
   busy: boolean;
   loading: boolean;
   navigate: (id?: string) => void;
-}) {
+}>) {
   const t = copy(locale);
   const seesAll =
     Boolean(user.isAdmin) ||

@@ -11,12 +11,12 @@ export function FilePreview({
   user,
   locale,
   onClose,
-}: {
+}: Readonly<{
   file: Attachment;
   user: User;
   locale: Locale;
   onClose: () => void;
-}) {
+}>) {
   const t = copy(locale);
   const dialog = useRef<HTMLDialogElement>(null);
   const [content, setContent] = useState<{ url: string; text?: string } | null>(

@@ -7,12 +7,12 @@ export function RequestMetadata({
   user,
   record,
   definition,
-}: {
+}: Readonly<{
   locale: Locale;
   user: User;
   record: RequestRecord | null;
   definition: Definition;
-}) {
+}>) {
   const t = copy(locale);
   return (
     <div className="flex flex-wrap gap-x-6 gap-y-2 border-b border-line bg-stone-50 px-5 py-4 text-xs text-muted md:px-7 [&_strong]:ml-1 [&_strong]:font-semibold [&_strong]:text-ink">

@@ -4,10 +4,10 @@ import { copy } from "../../../i18n";
 export function ActivityTimeline({
   events,
   locale,
-}: {
+}: Readonly<{
   events: AuditEvent[];
   locale: Locale;
-}) {
+}>) {
   const t = copy(locale);
   const h = historyCopy(locale);
   return (

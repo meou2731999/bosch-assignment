@@ -17,13 +17,13 @@ export function FormDraftEditor({
   busy,
   onSave,
   onCancel,
-}: {
+}: Readonly<{
   existing?: FormRecord;
   locale: Locale;
   busy: boolean;
   onSave: (draft: FormDraft) => void;
   onCancel: () => void;
-}) {
+}>) {
   const t = formCopy(locale),
     f = fieldCopy(locale);
   const [custom, setCustom] = useState(Boolean(existing?.draft.fields));

@@ -10,14 +10,14 @@ export function StructuredForm({
   locale,
   onReady,
   onDirty,
-}: {
+}: Readonly<{
   fields: BasicField[];
   initialData: RequestData;
   readOnly: boolean;
   locale: Locale;
   onReady: (form: FormHandle) => void;
   onDirty: () => void;
-}) {
+}>) {
   const [data, setData] = useState<Record<string, unknown>>(() =>
     structuredClone(initialData),
   );

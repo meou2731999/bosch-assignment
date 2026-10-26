@@ -9,7 +9,7 @@ export function UsersTable({
   busy,
   onSelect,
   act,
-}: {
+}: Readonly<{
   users: AccountUser[];
   locale: Locale;
   busy: boolean;
@@ -18,7 +18,7 @@ export function UsersTable({
     operation: () => Promise<AccountUser>,
     message: string,
   ) => Promise<void>;
-}) {
+}>) {
   const t = authCopy(locale);
   const f = formCopy(locale);
   return (

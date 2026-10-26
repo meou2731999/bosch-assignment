@@ -11,14 +11,14 @@ export function UserMenu({
   setLocale,
   onPassword,
   onLogout,
-}: {
+}: Readonly<{
   user: AccountUser;
   locale: Locale;
   disabled: boolean;
   setLocale: (locale: Locale) => void;
   onPassword: () => void;
   onLogout: () => void;
-}) {
+}>) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);

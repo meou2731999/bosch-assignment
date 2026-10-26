@@ -10,7 +10,7 @@ import { ErrorNotice } from "../../components/ui/ErrorNotice";
 import { formTranslations } from "../../i18n";
 
 // All renderer-specific integration stays here. Schema/data remain Form.io-shaped.
-export function DynamicForm(props: DynamicFormProps) {
+export function DynamicForm(props: Readonly<DynamicFormProps>) {
   if (
     props.fields?.some(
       (field) =>
@@ -36,14 +36,14 @@ function FormioForm({
   locale,
   onReady,
   onDirty,
-}: {
+}: Readonly<{
   definition: FormType | FormDefinition;
   initialData: RequestData;
   readOnly: boolean;
   locale: Locale;
   onReady: (instance: FormHandle) => void;
   onDirty: () => void;
-}) {
+}>) {
   const instance = useRef<Webform | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const currentLocale = useRef(locale);

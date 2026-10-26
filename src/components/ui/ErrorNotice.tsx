@@ -8,11 +8,11 @@ export function ErrorNotice({
   error,
   locale,
   reload,
-}: {
+}: Readonly<{
   error: Error;
   locale: Locale;
   reload?: () => void;
-}) {
+}>) {
   const box = useRef<HTMLDivElement>(null);
   const t = copy(locale);
   useEffect(() => {

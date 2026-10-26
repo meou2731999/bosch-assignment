@@ -5,12 +5,12 @@ export function DemoControls({
   fail,
   saving,
   onChange,
-}: {
+}: Readonly<{
   locale: Locale;
   fail: boolean;
   saving: boolean;
   onChange: (fail: boolean) => void;
-}) {
+}>) {
   const t = copy(locale);
   return (
     <details className="mx-1 mt-4 mb-7 text-xs text-muted [&_label]:block [&_label]:pt-3 [&_input]:mr-1 [&_input]:accent-brand">

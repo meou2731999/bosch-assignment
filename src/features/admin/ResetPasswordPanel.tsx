@@ -9,7 +9,7 @@ export function ResetPasswordPanel({
   busy,
   act,
   onCancel,
-}: {
+}: Readonly<{
   resetting: AccountUser;
   locale: Locale;
   busy: boolean;
@@ -18,7 +18,7 @@ export function ResetPasswordPanel({
     message: string,
   ) => Promise<void>;
   onCancel: () => void;
-}) {
+}>) {
   const t = authCopy(locale);
   return (
     <section aria-label={t.reset} className="space-y-4">

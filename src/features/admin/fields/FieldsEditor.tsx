@@ -12,11 +12,11 @@ export function FieldsEditor({
   fields,
   locale,
   onChange: onFieldsChange,
-}: {
+}: Readonly<{
   fields: BasicField[];
   locale: Locale;
   onChange: (fields: BasicField[]) => void;
-}) {
+}>) {
   const t = fieldCopy(locale);
   const [ids, setIds] = useState(() => fields.map(() => crypto.randomUUID()));
   const [preview, setPreview] = useState<ReturnType<

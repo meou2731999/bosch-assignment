@@ -14,7 +14,7 @@ export function AppHeader({
   onPassword,
   onRequests,
   activeView = "requests",
-}: {
+}: Readonly<{
   user: AccountUser;
   locale: Locale;
   busy: boolean;
@@ -26,7 +26,7 @@ export function AppHeader({
   onPassword: () => void;
   onRequests?: () => void;
   activeView?: "requests" | "users" | "forms";
-}) {
+}>) {
   const t = copy(locale);
   return (
     <>

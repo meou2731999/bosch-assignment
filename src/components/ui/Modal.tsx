@@ -10,14 +10,14 @@ export function Modal({
   wide = false,
   onClose,
   children,
-}: {
+}: Readonly<{
   title: string;
   locale: Locale;
   busy: boolean;
   wide?: boolean;
   onClose: () => void;
   children: ReactNode;
-}) {
+}>) {
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   useEffect(() => {

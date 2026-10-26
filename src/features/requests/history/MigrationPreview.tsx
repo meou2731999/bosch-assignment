@@ -12,14 +12,14 @@ export function MigrationPreview({
   onApply,
   onValidate,
   onCancel,
-}: {
+}: Readonly<{
   preview: DraftPreview;
   locale: Locale;
   busy: boolean;
   onApply: () => void;
   onValidate: (data: Record<string, unknown>) => Promise<boolean>;
   onCancel: () => void;
-}) {
+}>) {
   const [confirmed, setConfirmed] = useState(false);
   const t = historyCopy(locale);
   const [changed, setChanged] = useState(false);

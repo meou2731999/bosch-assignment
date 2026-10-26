@@ -13,14 +13,14 @@ export function AuthScreen({
   onLogin,
   onChanged,
   onBack,
-}: {
+}: Readonly<{
   locale: Locale;
   user?: AccountUser;
   notice: string;
   onLogin: (user: AccountUser) => void;
   onChanged: () => void;
   onBack?: () => void;
-}) {
+}>) {
   const t = authCopy(locale);
   const [error, setError] = useState<Error | null>(null);
   const [busy, setBusy] = useState(false);

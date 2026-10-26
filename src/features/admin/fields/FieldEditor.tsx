@@ -18,7 +18,7 @@ export function FieldEditor({
   onChange,
   onMove,
   onRemove,
-}: {
+}: Readonly<{
   field: BasicField;
   index: number;
   count: number;
@@ -26,7 +26,7 @@ export function FieldEditor({
   onChange: (field: BasicField) => void;
   onMove: (direction: number) => void;
   onRemove: () => void;
-}) {
+}>) {
   const t = fieldCopy(locale);
   function changeInput(input: BasicField["input"]) {
     onChange({
