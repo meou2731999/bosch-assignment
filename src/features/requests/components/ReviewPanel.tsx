@@ -10,7 +10,7 @@ import { Button } from "../../../components/ui/Button";
 import { ErrorNotice } from "../../../components/ui/ErrorNotice";
 import { api } from "../api";
 
-export function ReviewPanel({
+export const ReviewPanel = ({
   user,
   record,
   locale,
@@ -26,13 +26,13 @@ export function ReviewPanel({
   onBusy: (busy: boolean) => void;
   onDirty: (dirty: boolean) => void;
   reload: () => void;
-}>) {
+}>) => {
   const t = copy(locale);
   const [comment, setComment] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const inFlight = useRef(false);
-  async function decide(decision: ReviewInput["decision"]) {
+  const decide = async (decision: ReviewInput["decision"]) => {
     if (inFlight.current) return;
     if (decision === "reject" && !comment.trim()) {
       setError(new Error(t.rejectReason));
@@ -61,7 +61,11 @@ export function ReviewPanel({
       setSaving(false);
       onBusy(false);
     }
-  }
+  };
+  const changeComment = (value: string) => {
+    setComment(value);
+    onDirty(Boolean(value));
+  };
   return (
     <section
       aria-labelledby="review-heading"
@@ -84,10 +88,7 @@ export function ReviewPanel({
         value={comment}
         disabled={saving}
         aria-describedby="review-help"
-        onChange={(e) => {
-          setComment(e.target.value);
-          onDirty(!!e.target.value);
-        }}
+        onChange={(event) => changeComment(event.target.value)}
         className="w-full rounded-lg border border-line p-3 text-sm"
       />
       <p id="review-help" className="mt-2 text-xs text-muted">
@@ -110,4 +111,4 @@ export function ReviewPanel({
       </div>
     </section>
   );
-}
+};

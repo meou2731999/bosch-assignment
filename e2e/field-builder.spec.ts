@@ -82,7 +82,7 @@ test("admin edits and previews fields; requester loads published JSON without fr
   });
   await row.getByRole("button", { name: /^Actions:/ }).click();
   await row
-    .getByRole("button", { name: "Edit form draft", exact: true })
+    .getByRole("menuitem", { name: "Edit form draft", exact: true })
     .click();
   const edit = page.getByRole("region", {
     name: "Edit form draft",

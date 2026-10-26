@@ -3,7 +3,7 @@ import { Button } from "../../components/ui/Button";
 import { authCopy } from "../auth/copy";
 import type { FormEvent } from "react";
 import { inputClass } from "../auth/AuthScreen";
-export function UserEditor({
+export const UserEditor = ({
   editing,
   locale,
   busy,
@@ -15,7 +15,7 @@ export function UserEditor({
   busy: boolean;
   save: (event: FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
-}>) {
+}>) => {
   const t = authCopy(locale);
   const existing = editing !== "new" ? editing : undefined;
   return (
@@ -100,4 +100,4 @@ export function UserEditor({
       </form>
     </section>
   );
-}
+};

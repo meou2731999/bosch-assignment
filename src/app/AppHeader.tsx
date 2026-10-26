@@ -2,7 +2,7 @@ import { AppNavigation } from "./AppNavigation";
 import { type Locale, type AccountUser } from "../../shared/model";
 import { UserMenu } from "./UserMenu";
 import { copy } from "../i18n";
-export function AppHeader({
+export const AppHeader = ({
   user,
   locale,
   busy,
@@ -26,7 +26,7 @@ export function AppHeader({
   onPassword: () => void;
   onRequests?: () => void;
   activeView?: "requests" | "users" | "forms";
-}>) {
+}>) => {
   const t = copy(locale);
   return (
     <>
@@ -66,4 +66,4 @@ export function AppHeader({
       )}
     </>
   );
-}
+};

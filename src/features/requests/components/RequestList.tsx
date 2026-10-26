@@ -1,8 +1,11 @@
+import { Button } from "../../../components/ui/Button";
+import { SelectableCard } from "../../../components/ui/SelectableCard";
+import { PlusIcon } from "../../../components/ui/icons";
 import { hasFormPermission } from "../../../../shared/forms";
 import type { Locale, RequestRecord, User } from "../../../../shared/model";
 import { copy } from "../../../i18n";
 import { Status } from "./Status";
-export function RequestList({
+export const RequestList = ({
   user,
   canCreate,
   locale,
@@ -20,7 +23,7 @@ export function RequestList({
   busy: boolean;
   loading: boolean;
   navigate: (id?: string) => void;
-}>) {
+}>) => {
   const t = copy(locale);
   const seesAll =
     Boolean(user.isAdmin) ||
@@ -37,13 +40,16 @@ export function RequestList({
         <span>{requests.length}</span>
       </div>
       {canCreate && (
-        <button
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-50 bg-brand text-white hover:bg-brand-hover mb-5 w-full justify-start"
+        <Button
+          startIcon={<PlusIcon />}
+          fullWidth
+          align="start"
+          className="mb-5"
           disabled={loading || busy}
           onClick={() => navigate()}
         >
-          <span aria-hidden="true">＋</span> {t.newRequest}
-        </button>
+          {t.newRequest}
+        </Button>
       )}
       <nav
         className="flex gap-2 overflow-x-auto pb-2 md:flex-col"
@@ -53,10 +59,9 @@ export function RequestList({
           <p className="text-sm leading-relaxed text-muted">{t.empty}</p>
         )}
         {requests.map((r) => (
-          <button
+          <SelectableCard
             key={r.id}
-            className={`flex min-w-[210px] flex-col gap-2 rounded-lg border p-4 text-left disabled:opacity-50 md:min-w-0 [&_strong]:text-sm [&_strong]:font-semibold [&_small]:text-xs [&_small]:text-muted ${r.id === selectedId ? "border-green-300 bg-white shadow-sm" : "border-transparent bg-sage/40 hover:bg-sage"}`}
-            aria-current={r.id === selectedId ? "page" : undefined}
+            selected={r.id === selectedId}
             disabled={busy || loading}
             onClick={() => navigate(r.id)}
           >
@@ -68,7 +73,7 @@ export function RequestList({
               )}{" "}
               · v{r.formVersion}
             </small>
-          </button>
+          </SelectableCard>
         ))}
       </nav>
       <div className="mt-7 hidden border-t border-line pt-5 text-xs leading-relaxed text-muted md:block [&_span]:mb-2 [&_span]:block [&_span]:text-xl">
@@ -76,4 +81,4 @@ export function RequestList({
       </div>
     </aside>
   );
-}
+};

@@ -13,7 +13,7 @@ import { ErrorNotice } from "../../components/ui/ErrorNotice";
 import { adminApi } from "../auth/api";
 import { authCopy } from "../auth/copy";
 
-export function UsersPanel({
+export const UsersPanel = ({
   locale,
   onSelfChanged,
   userId,
@@ -21,7 +21,7 @@ export function UsersPanel({
   locale: Locale;
   onSelfChanged: () => Promise<void>;
   userId: string;
-}>) {
+}>) => {
   const t = authCopy(locale);
   const [forms, setForms] = useState<FormRecord[]>([]);
   const [granting, setGranting] = useState<AccountUser | null>(null);
@@ -51,7 +51,10 @@ export function UsersPanel({
       live = false;
     };
   }, []);
-  async function act(operation: () => Promise<AccountUser>, message: string) {
+  const act = async (
+    operation: () => Promise<AccountUser>,
+    message: string,
+  ) => {
     setBusy(true);
     setError(null);
     setNotice("");
@@ -71,14 +74,31 @@ export function UsersPanel({
     } finally {
       setBusy(false);
     }
-  }
-  function closeEditor() {
+  };
+  const closeEditor = () => {
     setEditing(null);
     setResetting(null);
     setGranting(null);
     setError(null);
-  }
-  function save(event: FormEvent<HTMLFormElement>) {
+  };
+  const openCreate = () => {
+    setGranting(null);
+    setEditing("new");
+    setResetting(null);
+    setError(null);
+    setNotice("");
+  };
+  const selectUser = (
+    mode: "edit" | "reset" | "permissions",
+    user: AccountUser,
+  ) => {
+    setGranting(mode === "permissions" ? user : null);
+    setEditing(mode === "edit" ? user : null);
+    setResetting(mode === "reset" ? user : null);
+    setError(null);
+    setNotice("");
+  };
+  const save = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const input = {
@@ -99,7 +119,7 @@ export function UsersPanel({
           : adminApi.edit((target as AccountUser).id, input),
       t.saved,
     );
-  }
+  };
 
   let title = formCopy(locale).permissions;
   if (editing) title = editing === "new" ? t.create : t.edit;
@@ -108,16 +128,7 @@ export function UsersPanel({
     <main id="main" className="mx-auto max-w-6xl p-5 md:p-10">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t.users}</h1>
-        <Button
-          disabled={busy || loading}
-          onClick={() => {
-            setGranting(null);
-            setEditing("new");
-            setResetting(null);
-            setError(null);
-            setNotice("");
-          }}
-        >
+        <Button disabled={busy || loading} onClick={openCreate}>
           {t.create}
         </Button>
       </div>
@@ -132,13 +143,7 @@ export function UsersPanel({
           users={users}
           locale={locale}
           busy={busy}
-          onSelect={(mode, user) => {
-            setGranting(mode === "permissions" ? user : null);
-            setEditing(mode === "edit" ? user : null);
-            setResetting(mode === "reset" ? user : null);
-            setError(null);
-            setNotice("");
-          }}
+          onSelect={selectUser}
           act={act}
         />
       )}
@@ -184,4 +189,4 @@ export function UsersPanel({
       )}
     </main>
   );
-}
+};

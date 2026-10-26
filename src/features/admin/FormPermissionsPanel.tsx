@@ -4,7 +4,7 @@ import type { AccountUser, Locale } from "../../../shared/model";
 import { Button } from "../../components/ui/Button";
 import { formsApi } from "../forms/api";
 import { formCopy } from "../forms/copy";
-export function FormPermissionsPanel({
+export const FormPermissionsPanel = ({
   user,
   forms,
   locale,
@@ -21,16 +21,16 @@ export function FormPermissionsPanel({
     message: string,
   ) => Promise<void>;
   onCancel: () => void;
-}>) {
+}>) => {
   const t = formCopy(locale);
   const [permissions, setPermissions] = useState<FormPermissions>(
     structuredClone(user.formPermissions),
   );
-  function toggle(
+  const toggle = (
     formId: string,
     permission: "create" | "view" | "review",
     checked: boolean,
-  ) {
+  ) => {
     setPermissions((current) => {
       const previous = current[formId] ?? [];
       return {
@@ -40,14 +40,19 @@ export function FormPermissionsPanel({
           : previous.filter((value) => value !== permission),
       };
     });
-  }
-  function save(event: FormEvent) {
+  };
+  const save = (event: FormEvent) => {
     event.preventDefault();
     void onSave(
       () => formsApi.permissions(user.id, user.permissionRevision, permissions),
       t.grantSaved,
     );
-  }
+  };
+  const permissionLabels = {
+    create: t.grantCreate,
+    view: t.grantView,
+    review: t.grantReview,
+  };
   return (
     <section aria-label={t.permissions} className="space-y-4">
       <p className="font-semibold">{user.name}</p>
@@ -64,27 +69,20 @@ export function FormPermissionsPanel({
                 {form.activeVersion ? `v${form.activeVersion}` : t.unpublished}
               </legend>
               <div className="flex flex-wrap gap-5">
-                {(["create", "view", "review"] as const).map((permission) => {
-                  const labels = {
-                    create: t.grantCreate,
-                    view: t.grantView,
-                    review: t.grantReview,
-                  };
-                  return (
-                    <label key={permission}>
-                      <input
-                        type="checkbox"
-                        checked={(permissions[form.id] ?? []).includes(
-                          permission,
-                        )}
-                        onChange={(event) =>
-                          toggle(form.id, permission, event.target.checked)
-                        }
-                      />{" "}
-                      {labels[permission]}
-                    </label>
-                  );
-                })}
+                {(["create", "view", "review"] as const).map((permission) => (
+                  <label key={permission}>
+                    <input
+                      type="checkbox"
+                      checked={(permissions[form.id] ?? []).includes(
+                        permission,
+                      )}
+                      onChange={(event) =>
+                        toggle(form.id, permission, event.target.checked)
+                      }
+                    />{" "}
+                    {permissionLabels[permission]}
+                  </label>
+                ))}
               </div>
             </fieldset>
           ))}
@@ -98,4 +96,4 @@ export function FormPermissionsPanel({
       </form>
     </section>
   );
-}
+};

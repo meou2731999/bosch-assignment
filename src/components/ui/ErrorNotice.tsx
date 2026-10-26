@@ -4,7 +4,7 @@ import { HttpError } from "../../lib/http";
 import { copy } from "../../i18n";
 import { Button } from "./Button";
 
-export function ErrorNotice({
+export const ErrorNotice = ({
   error,
   locale,
   reload,
@@ -12,7 +12,7 @@ export function ErrorNotice({
   error: Error;
   locale: Locale;
   reload?: () => void;
-}>) {
+}>) => {
   const box = useRef<HTMLDivElement>(null);
   const t = copy(locale);
   useEffect(() => {
@@ -48,4 +48,4 @@ export function ErrorNotice({
         )}
     </div>
   );
-}
+};

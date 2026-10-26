@@ -6,7 +6,7 @@ import { authApi } from "./api";
 import { authCopy } from "./copy";
 export { inputClass } from "../../components/ui/field";
 import { inputClass } from "../../components/ui/field";
-export function AuthScreen({
+export const AuthScreen = ({
   locale,
   user,
   notice,
@@ -20,11 +20,11 @@ export function AuthScreen({
   onLogin: (user: AccountUser) => void;
   onChanged: () => void;
   onBack?: () => void;
-}>) {
+}>) => {
   const t = authCopy(locale);
   const [error, setError] = useState<Error | null>(null);
   const [busy, setBusy] = useState(false);
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -50,7 +50,7 @@ export function AuthScreen({
     } finally {
       setBusy(false);
     }
-  }
+  };
   const actionLabel = user ? t.changePassword : t.login;
   return (
     <main
@@ -127,4 +127,4 @@ export function AuthScreen({
       </form>
     </main>
   );
-}
+};

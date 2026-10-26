@@ -10,7 +10,7 @@ import { ErrorNotice } from "../../components/ui/ErrorNotice";
 import { formTranslations } from "../../i18n";
 
 // All renderer-specific integration stays here. Schema/data remain Form.io-shaped.
-export function DynamicForm(props: Readonly<DynamicFormProps>) {
+export const DynamicForm = (props: Readonly<DynamicFormProps>) => {
   if (
     props.fields?.some(
       (field) =>
@@ -19,7 +19,7 @@ export function DynamicForm(props: Readonly<DynamicFormProps>) {
   )
     return <StructuredForm {...props} fields={props.fields} />;
   return <FormioForm {...props} />;
-}
+};
 type DynamicFormProps = {
   definition: FormType | FormDefinition;
   initialData: RequestData;
@@ -29,7 +29,7 @@ type DynamicFormProps = {
   onReady: (instance: FormHandle) => void;
   onDirty: () => void;
 };
-function FormioForm({
+const FormioForm = ({
   definition,
   initialData,
   readOnly,
@@ -43,7 +43,7 @@ function FormioForm({
   locale: Locale;
   onReady: (instance: FormHandle) => void;
   onDirty: () => void;
-}>) {
+}>) => {
   const instance = useRef<Webform | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const currentLocale = useRef(locale);
@@ -108,4 +108,4 @@ function FormioForm({
       />
     </>
   );
-}
+};

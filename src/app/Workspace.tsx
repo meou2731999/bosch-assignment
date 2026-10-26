@@ -1,3 +1,5 @@
+import { Button } from "../components/ui/Button";
+import type { ChangeEvent } from "react";
 import { useWorkspace } from "./useWorkspace";
 import { formCopy } from "../features/forms/copy";
 
@@ -10,7 +12,7 @@ import { copy } from "../i18n";
 import { RequestEditor } from "../features/requests/components/RequestEditor";
 import { Status } from "../features/requests/components/Status";
 
-export function Workspace({
+export const Workspace = ({
   user,
   locale,
   setLocale,
@@ -26,7 +28,7 @@ export function Workspace({
   onManage: () => void;
   onForms: () => void;
   onPassword: () => void;
-}>) {
+}>) => {
   const t = copy(locale);
   const f = formCopy(locale);
   const {
@@ -47,7 +49,7 @@ export function Workspace({
     navigate,
     saved,
   } = useWorkspace(user, locale);
-  function renderContent() {
+  const renderContent = () => {
     if (loading)
       return (
         <output className="block rounded-xl border border-line bg-white px-7 py-16 text-center text-muted">
@@ -61,12 +63,12 @@ export function Workspace({
           role="alert"
         >
           {error}{" "}
-          <button
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-50 border-slate-300 bg-white text-brand hover:bg-sage"
+          <Button
+            variant="secondary"
             onClick={() => void load(record?.id, true)}
           >
             {t.retry}
-          </button>
+          </Button>
         </div>
       );
     if (definition)
@@ -91,12 +93,18 @@ export function Workspace({
           : f.noCreate}
       </div>
     );
-  }
+  };
   const canCreate = forms.some((form) => form.permissions.includes("create"));
   const defaultTitle = canCreate ? t.newRequest : t.allRequests;
   const title = record
     ? String(record.data.requestTitle || t.untitled)
     : defaultTitle;
+  const leaveFor = (action: () => void) => {
+    if (canLeave()) action();
+  };
+  const changeForm = (event: ChangeEvent<HTMLSelectElement>) => {
+    if (canLeave()) void load(undefined, false, event.target.value);
+  };
 
   return (
     <div className="min-h-screen bg-canvas font-sans text-[15px] text-ink">
@@ -106,18 +114,10 @@ export function Workspace({
         busy={busy}
         loading={loading}
         setLocale={setLocale}
-        onLogout={() => {
-          if (canLeave()) onLogout();
-        }}
-        onManage={() => {
-          if (canLeave()) onManage();
-        }}
-        onForms={() => {
-          if (canLeave()) onForms();
-        }}
-        onPassword={() => {
-          if (canLeave()) onPassword();
-        }}
+        onLogout={() => leaveFor(onLogout)}
+        onManage={() => leaveFor(onManage)}
+        onForms={() => leaveFor(onForms)}
+        onPassword={() => leaveFor(onPassword)}
       />
       <div className="flex justify-between gap-3 bg-sage px-5 py-2 text-[10px] font-semibold tracking-wider text-muted md:px-[5vw] [&_span]:font-normal [&_span]:tracking-normal">
         {t.demo}
@@ -162,10 +162,7 @@ export function Workspace({
                 className="rounded-lg border border-line bg-white p-2"
                 value={definition?.formId ?? ""}
                 disabled={busy || loading}
-                onChange={(event) => {
-                  if (canLeave())
-                    void load(undefined, false, event.target.value);
-                }}
+                onChange={changeForm}
               >
                 {forms
                   .filter((form) => form.permissions.includes("create"))
@@ -185,4 +182,4 @@ export function Workspace({
       </footer>
     </div>
   );
-}
+};

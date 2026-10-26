@@ -7,13 +7,13 @@ const tones: Record<RequestStatus, string> = {
   rejected: "bg-red-100 text-red-800",
   approved: "bg-green-100 text-green-800",
 };
-export function Status({
+export const Status = ({
   status,
   locale,
 }: Readonly<{
   status: RequestStatus;
   locale: Locale;
-}>) {
+}>) => {
   return (
     <span
       className={`inline-flex w-fit shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold ${tones[status]}`}
@@ -24,4 +24,4 @@ export function Status({
       {copy(locale)[status]}
     </span>
   );
-}
+};

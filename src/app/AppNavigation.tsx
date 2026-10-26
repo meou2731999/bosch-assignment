@@ -2,7 +2,7 @@ import type { Locale } from "../../shared/model";
 import { authCopy } from "../features/auth/copy";
 import { formCopy } from "../features/forms/copy";
 import { Button } from "../components/ui/Button";
-export function AppNavigation({
+export const AppNavigation = ({
   locale,
   activeView,
   disabled,
@@ -16,7 +16,7 @@ export function AppNavigation({
   onRequests?: () => void;
   onManage: () => void;
   onForms: () => void;
-}>) {
+}>) => {
   const t = authCopy(locale);
   return (
     <nav
@@ -42,4 +42,4 @@ export function AppNavigation({
       </div>
     </nav>
   );
-}
+};

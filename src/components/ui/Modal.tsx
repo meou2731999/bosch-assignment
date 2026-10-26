@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import type { Locale } from "../../../shared/model";
 import { Button } from "./Button";
 
-export function Modal({
+export const Modal = ({
   title,
   locale,
   busy,
@@ -17,7 +17,7 @@ export function Modal({
   wide?: boolean;
   onClose: () => void;
   children: ReactNode;
-}>) {
+}>) => {
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   useEffect(() => {
@@ -81,4 +81,4 @@ export function Modal({
     </dialog>,
     document.body,
   );
-}
+};

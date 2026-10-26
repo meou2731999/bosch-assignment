@@ -1,7 +1,8 @@
 import { useId } from "react";
+import type { ChangeEvent } from "react";
 import type { BasicField } from "../../../../shared/fields";
 import { inputClass } from "../../auth/AuthScreen";
-export function ScalarField({
+export const ScalarField = ({
   field,
   value,
   readOnly,
@@ -11,9 +12,23 @@ export function ScalarField({
   value: unknown;
   readOnly: boolean;
   onChange: (value: unknown) => void;
-}>) {
+}>) => {
   const id = useId();
   const common = { id, disabled: readOnly, className: inputClass };
+  const changeSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    onChange(
+      field.input === "multiselect"
+        ? Array.from(event.target.selectedOptions, (option) => option.value)
+        : event.target.value,
+    );
+  };
+  const changeInput = (event: ChangeEvent<HTMLInputElement>) => {
+    onChange(
+      field.input === "number" && event.target.value !== ""
+        ? Number(event.target.value)
+        : event.target.value,
+    );
+  };
   let control;
   if (field.input === "select" || field.input === "multiselect") {
     const multiple = field.input === "multiselect";
@@ -23,16 +38,7 @@ export function ScalarField({
         {...common}
         multiple={multiple}
         value={multiple ? selected : String(value ?? "")}
-        onChange={(event) =>
-          onChange(
-            multiple
-              ? Array.from(
-                  event.target.selectedOptions,
-                  (option) => option.value,
-                )
-              : event.target.value,
-          )
-        }
+        onChange={changeSelect}
       >
         {!multiple && <option value="">—</option>}
         {field.options?.map((option) => (
@@ -73,13 +79,7 @@ export function ScalarField({
         type={field.input === "text" ? "text" : field.input}
         value={String(value ?? "")}
         step={field.integer ? "1" : "any"}
-        onChange={(event) =>
-          onChange(
-            field.input === "number" && event.target.value !== ""
-              ? Number(event.target.value)
-              : event.target.value,
-          )
-        }
+        onChange={changeInput}
       />
     );
   return (
@@ -91,4 +91,4 @@ export function ScalarField({
       {control}
     </div>
   );
-}
+};

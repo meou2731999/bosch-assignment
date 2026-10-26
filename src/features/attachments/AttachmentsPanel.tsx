@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 import type { Attachment, Locale, User } from "../../../shared/model";
 import { MAX_ATTACHMENTS, MAX_FILE_BYTES } from "../../../shared/attachments";
 import { copy } from "../../i18n";
@@ -7,7 +8,7 @@ import { ErrorNotice } from "../../components/ui/ErrorNotice";
 import { attachmentApi } from "./api";
 import { FilePreview } from "./FilePreview";
 
-export function AttachmentsPanel({
+export const AttachmentsPanel = ({
   user,
   requestId,
   formId,
@@ -25,14 +26,14 @@ export function AttachmentsPanel({
   readOnly: boolean;
   onChange: (files: Attachment[]) => void;
   onUploading: (uploading: boolean) => void;
-}>) {
+}>) => {
   const t = copy(locale);
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<Attachment | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const controller = useRef<AbortController | null>(null);
   useEffect(() => () => controller.current?.abort(), []);
-  async function upload(files: File[]) {
+  const upload = async (files: File[]) => {
     if (!files.length || controller.current) return;
     if (
       attachments.length + files.length > MAX_ATTACHMENTS ||
@@ -75,7 +76,14 @@ export function AttachmentsPanel({
         onUploading(false);
       }
     }
-  }
+  };
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    void upload(Array.from(event.target.files ?? []));
+    event.target.value = "";
+  };
+  const removeAttachment = (index: number) => {
+    onChange(attachments.filter((_, i) => i !== index));
+  };
   const emptyStatus = attachments.length ? "" : t.noFiles;
   const uploadStatus = uploading ? t.uploading : emptyStatus;
   return (
@@ -98,10 +106,7 @@ export function AttachmentsPanel({
           multiple
           disabled={uploading}
           accept=".pdf,.png,.jpg,.jpeg,.txt"
-          onChange={(e) => {
-            void upload(Array.from(e.target.files ?? []));
-            e.target.value = "";
-          }}
+          onChange={handleFileChange}
           className="max-w-full text-xs file:mr-3 file:rounded-md file:border file:border-line file:bg-sage file:px-3 file:py-2"
         />
       )}
@@ -142,9 +147,7 @@ export function AttachmentsPanel({
                   variant="danger"
                   disabled={uploading}
                   aria-label={`${t.remove} ${file.name}`}
-                  onClick={() =>
-                    onChange(attachments.filter((_, i) => i !== index))
-                  }
+                  onClick={() => removeAttachment(index)}
                 >
                   {t.remove}
                 </Button>
@@ -163,4 +166,4 @@ export function AttachmentsPanel({
       )}
     </section>
   );
-}
+};

@@ -1,9 +1,12 @@
 import type { AccountUser, Locale } from "../../../shared/model";
-import { ActionDropdown } from "../../components/ui/ActionDropdown";
+import {
+  ActionDropdown,
+  type DropdownAction,
+} from "../../components/ui/ActionDropdown";
 import { authCopy } from "../auth/copy";
 import { formCopy } from "../forms/copy";
 import { adminApi } from "../auth/api";
-export function UsersTable({
+export const UsersTable = ({
   users,
   locale,
   busy,
@@ -18,9 +21,29 @@ export function UsersTable({
     operation: () => Promise<AccountUser>,
     message: string,
   ) => Promise<void>;
-}>) {
+}>) => {
   const t = authCopy(locale);
   const f = formCopy(locale);
+  const toggleActive = (user: AccountUser) => {
+    if (!user.active || window.confirm(t.confirmDisable)) {
+      void act(() => adminApi.edit(user.id, { active: !user.active }), t.saved);
+    }
+  };
+  const actionsFor = (user: AccountUser): DropdownAction[] => {
+    return [
+      { label: t.edit, onSelect: () => onSelect("edit", user) },
+      { label: t.reset, onSelect: () => onSelect("reset", user) },
+      {
+        label: f.permissions,
+        onSelect: () => onSelect("permissions", user),
+      },
+      {
+        label: user.active ? t.disable : t.enable,
+        danger: user.active,
+        onSelect: () => toggleActive(user),
+      },
+    ];
+  };
   return (
     <div className="overflow-x-auto rounded-xl border border-line bg-white">
       <table className="w-full text-left text-sm [&_td]:border-t [&_td]:border-line [&_td]:p-4 [&_th]:p-4">
@@ -52,26 +75,7 @@ export function UsersTable({
                   label={t.actions}
                   context={user.email}
                   disabled={busy}
-                  actions={[
-                    { label: t.edit, onSelect: () => onSelect("edit", user) },
-                    { label: t.reset, onSelect: () => onSelect("reset", user) },
-                    {
-                      label: f.permissions,
-                      onSelect: () => onSelect("permissions", user),
-                    },
-                    {
-                      label: user.active ? t.disable : t.enable,
-                      danger: user.active,
-                      onSelect: () => {
-                        if (!user.active || window.confirm(t.confirmDisable))
-                          void act(
-                            () =>
-                              adminApi.edit(user.id, { active: !user.active }),
-                            t.saved,
-                          );
-                      },
-                    },
-                  ]}
+                  actions={actionsFor(user)}
                 />
               </td>
             </tr>
@@ -80,4 +84,4 @@ export function UsersTable({
       </table>
     </div>
   );
-}
+};

@@ -11,7 +11,7 @@ import { ActivityTimeline } from "./ActivityTimeline";
 import { useRequestEditor, type RequestEditorProps } from "./useRequestEditor";
 import { copy } from "../../../i18n";
 import { DynamicForm } from "../../forms/DynamicForm";
-export function RequestEditor({
+export const RequestEditor = ({
   user,
   locale,
   definition,
@@ -20,7 +20,7 @@ export function RequestEditor({
   onBusy,
   onSaved,
   reload,
-}: Readonly<RequestEditorProps>) {
+}: Readonly<RequestEditorProps>) => {
   const t = copy(locale);
   const [historyBusy, setHistoryBusy] = useState(false);
   const {
@@ -51,6 +51,14 @@ export function RequestEditor({
     onSaved,
     reload,
   });
+  const changeAttachments = (next: typeof attachments) => {
+    setAttachments(next);
+    markDirty();
+  };
+  const changeHistoryBusy = (value: boolean) => {
+    setHistoryBusy(value);
+    onBusy(value);
+  };
   return (
     <>
       <section
@@ -93,10 +101,7 @@ export function RequestEditor({
             locale={locale}
             attachments={attachments}
             readOnly={readOnly}
-            onChange={(next) => {
-              setAttachments(next);
-              markDirty();
-            }}
+            onChange={changeAttachments}
             onUploading={onUploading}
           />
         </fieldset>
@@ -140,10 +145,7 @@ export function RequestEditor({
           locale={locale}
           disabled={!ready || saving || uploading}
           dirty={dirty}
-          onBusy={(value) => {
-            setHistoryBusy(value);
-            onBusy(value);
-          }}
+          onBusy={changeHistoryBusy}
           onSaved={onSaved}
           reload={reload}
         />
@@ -151,4 +153,4 @@ export function RequestEditor({
       {record && <ActivityTimeline events={record.audit} locale={locale} />}
     </>
   );
-}
+};

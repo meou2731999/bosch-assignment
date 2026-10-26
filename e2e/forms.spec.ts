@@ -24,7 +24,9 @@ async function createForm(page: Page, name: string) {
   await expect(row).toContainText("Not published");
   page.once("dialog", (dialog) => dialog.accept());
   await row.getByRole("button", { name: /^Actions:/ }).click();
-  await row.getByRole("button", { name: "Publish form", exact: true }).click();
+  await row
+    .getByRole("menuitem", { name: "Publish form", exact: true })
+    .click();
   await expect(row).toContainText("Published version: 1");
 }
 test("admin publishes form types, grants scoped creation and preserves old draft version", async ({
@@ -55,7 +57,7 @@ test("admin publishes form types, grants scoped creation and preserves old draft
     .filter({ hasText: "form-requester@example.test" });
   await user.getByRole("button", { name: /^Actions:/ }).click();
   await user
-    .getByRole("button", { name: "Form permissions", exact: true })
+    .getByRole("menuitem", { name: "Form permissions", exact: true })
     .click();
   const grants = page.getByRole("region", {
     name: "Form permissions",
@@ -106,7 +108,7 @@ test("admin publishes form types, grants scoped creation and preserves old draft
   });
   await form.getByRole("button", { name: /^Actions:/ }).click();
   await form
-    .getByRole("button", { name: "Edit form draft", exact: true })
+    .getByRole("menuitem", { name: "Edit form draft", exact: true })
     .click();
   const edit = page.getByRole("region", {
     name: "Edit form draft",
@@ -127,7 +129,7 @@ test("admin publishes form types, grants scoped creation and preserves old draft
   page.once("dialog", (dialog) => dialog.accept());
   await changed.getByRole("button", { name: /^Actions:/ }).click();
   await changed
-    .getByRole("button", { name: "Publish form", exact: true })
+    .getByRole("menuitem", { name: "Publish form", exact: true })
     .click();
   await expect(changed).toContainText("Published version: 2");
   await userPage.reload();
@@ -149,7 +151,7 @@ test("admin publishes form types, grants scoped creation and preserves old draft
   await page.getByRole("button", { name: "Manage users", exact: true }).click();
   await user.getByRole("button", { name: /^Actions:/ }).click();
   await user
-    .getByRole("button", { name: "Form permissions", exact: true })
+    .getByRole("menuitem", { name: "Form permissions", exact: true })
     .click();
   await grants
     .getByRole("group", { name: "Procurement updated · v2", exact: true })

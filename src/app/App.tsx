@@ -10,7 +10,7 @@ import { UsersPanel } from "../features/admin/UsersPanel";
 import { ErrorNotice } from "../components/ui/ErrorNotice";
 import { Button } from "../components/ui/Button";
 import { HttpError, setCsrfToken } from "../lib/http";
-export function App() {
+export const App = () => {
   const [user, setUser] = useState<AccountUser | null>(null);
   const [locale, setLocale] = useState<Locale>("en");
   const [loading, setLoading] = useState(true);
@@ -46,15 +46,15 @@ export function App() {
     };
   }, []);
   useEffect(() => {
-    function expired() {
+    const expired = () => {
       setUser(null);
       setView("requests");
       setNotice("expired");
-    }
+    };
     window.addEventListener("session-expired", expired);
     return () => window.removeEventListener("session-expired", expired);
   }, []);
-  async function logout() {
+  const logout = async () => {
     setBusy(true);
     setError(null);
     try {
@@ -67,13 +67,13 @@ export function App() {
     } finally {
       setBusy(false);
     }
-  }
-  function changed() {
+  };
+  const changed = () => {
     setCsrfToken("");
     setUser(null);
     setView("requests");
     setNotice("changed");
-  }
+  };
   if (loading)
     return (
       <p role="status" className="p-8">
@@ -179,4 +179,4 @@ export function App() {
       {content}
     </div>
   );
-}
+};

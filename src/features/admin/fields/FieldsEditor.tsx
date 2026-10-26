@@ -8,7 +8,7 @@ import { FieldEditor } from "./FieldEditor";
 import { fieldCopy } from "./copy";
 const emptyData = {};
 const noop = () => {};
-export function FieldsEditor({
+export const FieldsEditor = ({
   fields,
   locale,
   onChange: onFieldsChange,
@@ -16,18 +16,18 @@ export function FieldsEditor({
   fields: BasicField[];
   locale: Locale;
   onChange: (fields: BasicField[]) => void;
-}>) {
+}>) => {
   const t = fieldCopy(locale);
   const [ids, setIds] = useState(() => fields.map(() => crypto.randomUUID()));
   const [preview, setPreview] = useState<ReturnType<
     typeof fieldDefinition
   > | null>(null);
-  function onChange(next: BasicField[]) {
+  const onChange = (next: BasicField[]) => {
     setPreview(null);
     onFieldsChange(next);
-  }
+  };
   const valid = fieldsSchema.safeParse(fields).success;
-  function move(index: number, direction: number) {
+  const move = (index: number, direction: number) => {
     const next = [...fields],
       keys = [...ids];
     const other = index + direction;
@@ -35,7 +35,27 @@ export function FieldsEditor({
     [keys[index], keys[other]] = [keys[other], keys[index]];
     setIds(keys);
     onChange(next);
-  }
+  };
+  const update = (index: number, field: BasicField) => {
+    onChange(fields.map((item, i) => (i === index ? field : item)));
+  };
+  const remove = (index: number) => {
+    setIds(ids.filter((_, i) => i !== index));
+    onChange(fields.filter((_, i) => i !== index));
+  };
+  const add = () => {
+    setIds([...ids, crypto.randomUUID()]);
+    onChange([
+      ...fields,
+      {
+        key: `field${crypto.randomUUID().slice(0, 8)}`,
+        label: "New field",
+        input: "text",
+        dataType: "string",
+        required: false,
+      },
+    ]);
+  };
   return (
     <div className="space-y-4">
       {fields.map((field, index) => (
@@ -45,14 +65,9 @@ export function FieldsEditor({
           index={index}
           count={fields.length}
           locale={locale}
-          onChange={(next) =>
-            onChange(fields.map((item, i) => (i === index ? next : item)))
-          }
+          onChange={(next) => update(index, next)}
           onMove={(direction) => move(index, direction)}
-          onRemove={() => {
-            setIds(ids.filter((_, i) => i !== index));
-            onChange(fields.filter((_, i) => i !== index));
-          }}
+          onRemove={() => remove(index)}
         />
       ))}
       {!valid && <p role="alert">{fields.length ? t.invalid : t.empty}</p>}
@@ -60,19 +75,7 @@ export function FieldsEditor({
         <Button
           variant="secondary"
           disabled={fields.length >= 50}
-          onClick={() => {
-            setIds([...ids, crypto.randomUUID()]);
-            onChange([
-              ...fields,
-              {
-                key: `field${crypto.randomUUID().slice(0, 8)}`,
-                label: "New field",
-                input: "text",
-                dataType: "string",
-                required: false,
-              },
-            ]);
-          }}
+          onClick={add}
         >
           {t.add}
         </Button>
@@ -104,4 +107,4 @@ export function FieldsEditor({
       )}
     </div>
   );
-}
+};

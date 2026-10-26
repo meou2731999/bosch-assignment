@@ -8,7 +8,7 @@ import type { Locale } from "../../../../shared/model";
 import type { Condition } from "../../../../shared/field-conditions";
 import { Button } from "../../../components/ui/Button";
 import { inputClass } from "../../auth/AuthScreen";
-export function ConditionEditor({
+export const ConditionEditor = ({
   condition,
   locale,
   onChange,
@@ -16,7 +16,7 @@ export function ConditionEditor({
   condition?: Condition;
   locale: Locale;
   onChange: (condition: Condition | undefined) => void;
-}>) {
+}>) => {
   const t = conditionCopy(locale);
   if (!condition)
     return (
@@ -25,6 +25,52 @@ export function ConditionEditor({
       </Button>
     );
   const group = condition.op === "and" || condition.op === "or";
+  const changeChild = (index: number, next: Condition | undefined) => {
+    if (!condition || !("conditions" in condition)) return;
+    onChange({
+      ...condition,
+      conditions: next
+        ? condition.conditions.map((item, i) => (i === index ? next : item))
+        : condition.conditions.filter((_, i) => i !== index),
+    });
+  };
+  const addChild = () => {
+    if (!condition || !("conditions" in condition)) return;
+    onChange({
+      ...condition,
+      conditions: [...condition.conditions, { ...leaf }],
+    });
+  };
+  const changeTextValue = (value: string) => {
+    if (!condition || !("key" in condition)) return;
+    onChange({
+      ...condition,
+      value: typeof condition.value === "number" ? Number(value) : value,
+    });
+  };
+  const changeOp = (value: string) => {
+    if (condition)
+      onChange(changeOperator(condition, value as Condition["op"]));
+  };
+  const changeScope = (value: string) => {
+    if (condition && "key" in condition) {
+      onChange({
+        ...condition,
+        scope: value as "row" | "parent" | "root",
+      });
+    }
+  };
+  const changeKey = (value: string) => {
+    if (condition && "key" in condition) onChange({ ...condition, key: value });
+  };
+  const changeType = (value: string) => {
+    if (condition && "key" in condition) {
+      onChange({ ...condition, value: initialValue(value) });
+    }
+  };
+  const changeBooleanValue = (value: boolean) => {
+    if (condition && "key" in condition) onChange({ ...condition, value });
+  };
   return (
     <fieldset className="editor-condition" aria-label={t.title}>
       <legend>{t.title}</legend>
@@ -34,10 +80,7 @@ export function ConditionEditor({
           className={inputClass}
           aria-label={t.op}
           value={condition.op}
-          onChange={(event) => {
-            const op = event.target.value as Condition["op"];
-            onChange(changeOperator(condition, op));
-          }}
+          onChange={(event) => changeOp(event.target.value)}
         >
           {["eq", "neq", "contains", "and", "or"].map((op) => (
             <option key={op}>{op}</option>
@@ -48,30 +91,13 @@ export function ConditionEditor({
         <>
           {condition.conditions.map((child, index) => (
             <ConditionEditor
-              key={index}
+              key={index + "Editor"}
               condition={child}
               locale={locale}
-              onChange={(next) =>
-                onChange({
-                  ...condition,
-                  conditions: next
-                    ? condition.conditions.map((item, i) =>
-                        i === index ? next : item,
-                      )
-                    : condition.conditions.filter((_, i) => i !== index),
-                })
-              }
+              onChange={(next) => changeChild(index, next)}
             />
           ))}
-          <Button
-            variant="secondary"
-            onClick={() =>
-              onChange({
-                ...condition,
-                conditions: [...condition.conditions, { ...leaf }],
-              })
-            }
-          >
+          <Button variant="secondary" onClick={addChild}>
             {t.child}
           </Button>
         </>
@@ -84,12 +110,7 @@ export function ConditionEditor({
                 className={inputClass}
                 aria-label={t.scope}
                 value={condition.scope}
-                onChange={(event) =>
-                  onChange({
-                    ...condition,
-                    scope: event.target.value as "row" | "parent" | "root",
-                  })
-                }
+                onChange={(event) => changeScope(event.target.value)}
               >
                 {["row", "parent", "root"].map((scope) => (
                   <option key={scope}>{scope}</option>
@@ -101,9 +122,7 @@ export function ConditionEditor({
               <input
                 className={inputClass}
                 value={condition.key}
-                onChange={(event) =>
-                  onChange({ ...condition, key: event.target.value })
-                }
+                onChange={(event) => changeKey(event.target.value)}
               />
             </label>
             <label>
@@ -112,12 +131,7 @@ export function ConditionEditor({
                 className={inputClass}
                 aria-label={t.type}
                 value={typeof condition.value}
-                onChange={(event) =>
-                  onChange({
-                    ...condition,
-                    value: initialValue(event.target.value),
-                  })
-                }
+                onChange={(event) => changeType(event.target.value)}
               >
                 {["string", "number", "boolean"].map((type) => (
                   <option key={type}>{type}</option>
@@ -130,9 +144,7 @@ export function ConditionEditor({
                 <input
                   type="checkbox"
                   checked={condition.value}
-                  onChange={(event) =>
-                    onChange({ ...condition, value: event.target.checked })
-                  }
+                  onChange={(event) => changeBooleanValue(event.target.checked)}
                 />
               </label>
             ) : (
@@ -142,15 +154,7 @@ export function ConditionEditor({
                   className={inputClass}
                   type={typeof condition.value === "number" ? "number" : "text"}
                   value={String(condition.value)}
-                  onChange={(event) =>
-                    onChange({
-                      ...condition,
-                      value:
-                        typeof condition.value === "number"
-                          ? Number(event.target.value)
-                          : event.target.value,
-                    })
-                  }
+                  onChange={(event) => changeTextValue(event.target.value)}
                 />
               </label>
             )}
@@ -162,4 +166,4 @@ export function ConditionEditor({
       </Button>
     </fieldset>
   );
-}
+};

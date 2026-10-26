@@ -10,7 +10,7 @@ import { fieldCopy } from "./copy";
 import { FieldsEditor } from "./FieldsEditor";
 import { ConditionEditor } from "./ConditionEditor";
 import { FieldValidationEditor } from "./FieldValidationEditor";
-export function FieldEditor({
+export const FieldEditor = ({
   field,
   index,
   count,
@@ -26,9 +26,9 @@ export function FieldEditor({
   onChange: (field: BasicField) => void;
   onMove: (direction: number) => void;
   onRemove: () => void;
-}>) {
+}>) => {
   const t = fieldCopy(locale);
-  function changeInput(input: BasicField["input"]) {
+  const changeInput = (input: BasicField["input"]) => {
     onChange({
       key: field.key,
       label: field.label,
@@ -53,7 +53,7 @@ export function FieldEditor({
         ? { options: [{ label: "Option", value: "option" }] }
         : {}),
     });
-  }
+  };
   return (
     <fieldset
       className="ui-form-stack rounded-lg border border-line p-4"
@@ -171,4 +171,4 @@ export function FieldEditor({
       </div>
     </fieldset>
   );
-}
+};

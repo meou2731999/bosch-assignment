@@ -14,50 +14,52 @@ export interface TreeProps {
   locale: Locale;
   onChange: (data: Record<string, unknown>) => void;
 }
-export function FieldTree(props: Readonly<TreeProps>) {
+export const FieldTree = (props: Readonly<TreeProps>) => {
   const { fields, scope, onChange } = props;
+  const renderField = (field: BasicField) => {
+    const value = scope.row[field.key];
+    const update = (next: unknown) =>
+      onChange({ ...scope.row, [field.key]: next });
+    if (field.input === "object") {
+      const row = isObject(value) ? value : {};
+      return (
+        <fieldset key={field.key}>
+          <legend>{field.label}</legend>
+          <FieldTree
+            {...props}
+            fields={field.fields ?? []}
+            scope={{ root: scope.root, parent: scope.row, row }}
+            onChange={update}
+          />
+        </fieldset>
+      );
+    }
+    if (field.input === "repeat" || field.input === "table") {
+      return (
+        <RowsField
+          key={field.key}
+          {...props}
+          field={field}
+          value={Array.isArray(value) ? value : []}
+          onUpdate={update}
+        />
+      );
+    }
+    return (
+      <ScalarField
+        key={field.key}
+        field={field}
+        value={value}
+        readOnly={props.readOnly}
+        onChange={update}
+      />
+    );
+  };
   return (
     <>
       {fields
         .filter((field) => isVisible(field.visibility, scope))
-        .map((field) => {
-          const value = scope.row[field.key];
-          const update = (next: unknown) =>
-            onChange({ ...scope.row, [field.key]: next });
-          if (field.input === "object") {
-            const row = isObject(value) ? value : {};
-            return (
-              <fieldset key={field.key}>
-                <legend>{field.label}</legend>
-                <FieldTree
-                  {...props}
-                  fields={field.fields ?? []}
-                  scope={{ root: scope.root, parent: scope.row, row }}
-                  onChange={update}
-                />
-              </fieldset>
-            );
-          }
-          if (field.input === "repeat" || field.input === "table")
-            return (
-              <RowsField
-                key={field.key}
-                {...props}
-                field={field}
-                value={Array.isArray(value) ? value : []}
-                onUpdate={update}
-              />
-            );
-          return (
-            <ScalarField
-              key={field.key}
-              field={field}
-              value={value}
-              readOnly={props.readOnly}
-              onChange={update}
-            />
-          );
-        })}
+        .map(renderField)}
     </>
   );
-}
+};

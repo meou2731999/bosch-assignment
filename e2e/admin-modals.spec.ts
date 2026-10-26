@@ -31,7 +31,7 @@ test("admin actions use accessible dialogs with recovery, focus and mobile scrol
   await expect(dialog).toHaveCount(0);
   await expect(create).toBeFocused();
   const row = page.getByRole("row").filter({ hasText: "admin@example.test" });
-  const edit = row.getByRole("button", { name: "Edit user", exact: true });
+  const edit = row.getByRole("menuitem", { name: "Edit user", exact: true });
   const actions = row.getByRole("button", { name: /^Actions:/ });
   await expect(edit).toBeHidden();
   await actions.click();
@@ -39,7 +39,7 @@ test("admin actions use accessible dialogs with recovery, focus and mobile scrol
   await expect(edit).toBeFocused();
   await page.keyboard.press("End");
   await expect(
-    row.getByRole("button", { name: "Disable user", exact: true }),
+    row.getByRole("menuitem", { name: "Disable user", exact: true }),
   ).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(actions).toBeFocused();
@@ -51,7 +51,7 @@ test("admin actions use accessible dialogs with recovery, focus and mobile scrol
   await expect(edit).toBeHidden();
   await actions.click();
   await expect(
-    row.getByRole("button", { name: "Disable user", exact: true }),
+    row.getByRole("menuitem", { name: "Disable user", exact: true }),
   ).toBeInViewport();
   await page.screenshot({ path: "test-results/user-actions-dropdown.png" });
   await page.keyboard.press("Escape");
@@ -81,7 +81,7 @@ test("admin actions use accessible dialogs with recovery, focus and mobile scrol
   await expect(row).not.toContainText("Cancelled edit");
   await row.getByRole("button", { name: /^Actions:/ }).click();
   await row
-    .getByRole("button", { name: "Reset password", exact: true })
+    .getByRole("menuitem", { name: "Reset password", exact: true })
     .click();
   await expect(
     page.getByRole("dialog", { name: "Reset password", exact: true }),
@@ -89,7 +89,7 @@ test("admin actions use accessible dialogs with recovery, focus and mobile scrol
   await page.keyboard.press("Escape");
   await row.getByRole("button", { name: /^Actions:/ }).click();
   await row
-    .getByRole("button", { name: "Form permissions", exact: true })
+    .getByRole("menuitem", { name: "Form permissions", exact: true })
     .click();
   await expect(
     page.getByRole("dialog", { name: "Form permissions", exact: true }),
@@ -173,7 +173,7 @@ test("admin actions use accessible dialogs with recovery, focus and mobile scrol
     .first()
     .click();
   await page
-    .getByRole("button", { name: "Edit form draft", exact: true })
+    .getByRole("menuitem", { name: "Edit form draft", exact: true })
     .first()
     .click();
   await expect(

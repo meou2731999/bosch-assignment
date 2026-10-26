@@ -3,7 +3,7 @@ import type { BasicField } from "../../../shared/fields";
 import type { RequestData, Locale } from "../../../shared/model";
 import type { FormHandle } from "./FormHandle";
 import { FieldTree } from "./structured/FieldTree";
-export function StructuredForm({
+export const StructuredForm = ({
   fields,
   initialData,
   readOnly,
@@ -17,7 +17,7 @@ export function StructuredForm({
   locale: Locale;
   onReady: (form: FormHandle) => void;
   onDirty: () => void;
-}>) {
+}>) => {
   const [data, setData] = useState<Record<string, unknown>>(() =>
     structuredClone(initialData),
   );
@@ -28,6 +28,11 @@ export function StructuredForm({
   useEffect(() => {
     onReady(handle.current);
   }, [onReady]);
+  const changeData = (next: Record<string, unknown>) => {
+    handle.current.submission = { data: next };
+    setData(next);
+    onDirty();
+  };
   return (
     <div className="text-sm text-ink">
       <FieldTree
@@ -35,12 +40,8 @@ export function StructuredForm({
         scope={{ root: data, row: data, parent: data }}
         readOnly={readOnly}
         locale={locale}
-        onChange={(next) => {
-          handle.current.submission = { data: next };
-          setData(next);
-          onDirty();
-        }}
+        onChange={changeData}
       />
     </div>
   );
-}
+};

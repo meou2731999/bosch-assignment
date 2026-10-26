@@ -1,4 +1,7 @@
-import { ActionDropdown } from "../../components/ui/ActionDropdown";
+import {
+  ActionDropdown,
+  type DropdownAction,
+} from "../../components/ui/ActionDropdown";
 import { Modal } from "../../components/ui/Modal";
 import { useEffect, useState } from "react";
 import type { FormRecord, FormDraft } from "../../../shared/forms";
@@ -8,7 +11,7 @@ import { ErrorNotice } from "../../components/ui/ErrorNotice";
 import { FormDraftEditor } from "./FormDraftEditor";
 import { formsApi } from "../forms/api";
 import { formCopy } from "../forms/copy";
-export function FormsPanel({ locale }: Readonly<{ locale: Locale }>) {
+export const FormsPanel = ({ locale }: Readonly<{ locale: Locale }>) => {
   const t = formCopy(locale);
   const [forms, setForms] = useState<FormRecord[]>([]);
   const [editing, setEditing] = useState<FormRecord | "new" | null>(null);
@@ -33,7 +36,7 @@ export function FormsPanel({ locale }: Readonly<{ locale: Locale }>) {
       live = false;
     };
   }, []);
-  async function act(operation: () => Promise<FormRecord>, message: string) {
+  const act = async (operation: () => Promise<FormRecord>, message: string) => {
     setBusy(true);
     setError(null);
     setNotice("");
@@ -50,8 +53,8 @@ export function FormsPanel({ locale }: Readonly<{ locale: Locale }>) {
     } finally {
       setBusy(false);
     }
-  }
-  function save(draft: FormDraft) {
+  };
+  const save = (draft: FormDraft) => {
     void act(
       () =>
         editing === "new"
@@ -59,19 +62,39 @@ export function FormsPanel({ locale }: Readonly<{ locale: Locale }>) {
           : formsApi.save((editing as FormRecord).id, draft),
       t.saved,
     );
-  }
+  };
+  const openCreate = () => {
+    setEditing("new");
+    setError(null);
+  };
+  const openEditor = (form: FormRecord) => {
+    setEditing(form);
+    setError(null);
+  };
+  const closeEditor = () => {
+    setEditing(null);
+    setError(null);
+  };
+  const publish = (form: FormRecord) => {
+    if (window.confirm(t.confirm)) {
+      void act(
+        () => formsApi.publish(form.id, form.draft.revision),
+        t.published,
+      );
+    }
+  };
+  const actionsFor = (form: FormRecord): DropdownAction[] => {
+    return [
+      { label: t.edit, onSelect: () => openEditor(form) },
+      { label: t.publish, onSelect: () => publish(form) },
+    ];
+  };
   const existing = editing && editing !== "new" ? editing : undefined;
   return (
     <main id="main" className="mx-auto max-w-6xl p-5 md:p-10">
       <div className="flex items-center justify-between">
         <h1>{t.manage}</h1>
-        <Button
-          disabled={busy || loading}
-          onClick={() => {
-            setEditing("new");
-            setError(null);
-          }}
-        >
+        <Button disabled={busy || loading} onClick={openCreate}>
           {t.create}
         </Button>
       </div>
@@ -98,25 +121,7 @@ export function FormsPanel({ locale }: Readonly<{ locale: Locale }>) {
                 label={locale === "vi" ? "Thao tác" : "Actions"}
                 context={form.draft.name}
                 disabled={busy}
-                actions={[
-                  {
-                    label: t.edit,
-                    onSelect: () => {
-                      setEditing(form);
-                      setError(null);
-                    },
-                  },
-                  {
-                    label: t.publish,
-                    onSelect: () => {
-                      if (window.confirm(t.confirm))
-                        void act(
-                          () => formsApi.publish(form.id, form.draft.revision),
-                          t.published,
-                        );
-                    },
-                  },
-                ]}
+                actions={actionsFor(form)}
               />
             </li>
           ))}
@@ -128,10 +133,7 @@ export function FormsPanel({ locale }: Readonly<{ locale: Locale }>) {
           locale={locale}
           busy={busy}
           wide
-          onClose={() => {
-            setEditing(null);
-            setError(null);
-          }}
+          onClose={closeEditor}
         >
           {error && <ErrorNotice error={error} locale={locale} />}
           <FormDraftEditor
@@ -140,13 +142,10 @@ export function FormsPanel({ locale }: Readonly<{ locale: Locale }>) {
             locale={locale}
             busy={busy}
             onSave={save}
-            onCancel={() => {
-              setEditing(null);
-              setError(null);
-            }}
+            onCancel={closeEditor}
           />
         </Modal>
       )}
     </main>
   );
-}
+};

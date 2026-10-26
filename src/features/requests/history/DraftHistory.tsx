@@ -7,7 +7,7 @@ import { MigrationPreview } from "./MigrationPreview";
 import { ErrorNotice } from "../../../components/ui/ErrorNotice";
 import { Button } from "../../../components/ui/Button";
 import { inputClass } from "../../auth/AuthScreen";
-export function DraftHistory({
+export const DraftHistory = ({
   record,
   user,
   locale,
@@ -25,7 +25,7 @@ export function DraftHistory({
   onBusy: (busy: boolean) => void;
   onSaved: (record: RequestRecord, definition?: Definition) => void;
   reload: () => void;
-}>) {
+}>) => {
   const t = historyCopy(locale);
   const [selected, setSelected] = useState("");
   const {
@@ -125,4 +125,4 @@ export function DraftHistory({
       )}
     </section>
   );
-}
+};

@@ -3,7 +3,7 @@ import { Button } from "../../components/ui/Button";
 import { authCopy } from "../auth/copy";
 import { adminApi } from "../auth/api";
 import { inputClass } from "../auth/AuthScreen";
-export function ResetPasswordPanel({
+export const ResetPasswordPanel = ({
   resetting,
   locale,
   busy,
@@ -18,7 +18,7 @@ export function ResetPasswordPanel({
     message: string,
   ) => Promise<void>;
   onCancel: () => void;
-}>) {
+}>) => {
   const t = authCopy(locale);
   return (
     <section aria-label={t.reset} className="space-y-4">
@@ -57,4 +57,4 @@ export function ResetPasswordPanel({
       </form>
     </section>
   );
-}
+};

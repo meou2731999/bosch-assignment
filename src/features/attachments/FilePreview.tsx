@@ -6,7 +6,7 @@ import { Button } from "../../components/ui/Button";
 import { ErrorNotice } from "../../components/ui/ErrorNotice";
 import { attachmentApi } from "./api";
 
-export function FilePreview({
+export const FilePreview = ({
   file,
   user,
   locale,
@@ -16,7 +16,7 @@ export function FilePreview({
   user: User;
   locale: Locale;
   onClose: () => void;
-}>) {
+}>) => {
   const t = copy(locale);
   const dialog = useRef<HTMLDialogElement>(null);
   const [content, setContent] = useState<{ url: string; text?: string } | null>(
@@ -47,7 +47,7 @@ export function FilePreview({
       if (url) URL.revokeObjectURL(url);
     };
   }, [file, user]);
-  function renderPreview() {
+  const renderPreview = () => {
     if (!content) return null;
     if (file.type === "text/plain")
       return (
@@ -70,8 +70,8 @@ export function FilePreview({
         className="h-[65vh] w-full border-0"
       />
     );
-  }
-  function renderContent() {
+  };
+  const renderContent = () => {
     if (error) return <ErrorNotice error={error} locale={locale} />;
     if (!content) return <p role="status">{t.loading}</p>;
     return (
@@ -87,7 +87,7 @@ export function FilePreview({
         </a>
       </>
     );
-  }
+  };
   return createPortal(
     <dialog
       ref={dialog}
@@ -113,4 +113,4 @@ export function FilePreview({
     </dialog>,
     document.body,
   );
-}
+};

@@ -11,7 +11,7 @@ import { inputClass } from "../auth/AuthScreen";
 import { formCopy } from "../forms/copy";
 import { fieldCopy } from "./fields/copy";
 import { FieldsEditor } from "./fields/FieldsEditor";
-export function FormDraftEditor({
+export const FormDraftEditor = ({
   existing,
   locale,
   busy,
@@ -23,14 +23,14 @@ export function FormDraftEditor({
   busy: boolean;
   onSave: (draft: FormDraft) => void;
   onCancel: () => void;
-}>) {
+}>) => {
   const t = formCopy(locale),
     f = fieldCopy(locale);
   const [custom, setCustom] = useState(Boolean(existing?.draft.fields));
   const [fields, setFields] = useState<BasicField[]>(
     () => existing?.draft.fields ?? [],
   );
-  function save(event: FormEvent<HTMLFormElement>) {
+  const save = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (custom && !fieldsSchema.safeParse(fields).success) return;
     const data = new FormData(event.currentTarget);
@@ -41,7 +41,7 @@ export function FormDraftEditor({
       template: String(data.get("template")) as FormTemplate,
       ...(custom ? { fields } : {}),
     });
-  }
+  };
   return (
     <section className="space-y-4" aria-label={existing ? t.edit : t.create}>
       <form onSubmit={save}>
@@ -112,4 +112,4 @@ export function FormDraftEditor({
       </form>
     </section>
   );
-}
+};

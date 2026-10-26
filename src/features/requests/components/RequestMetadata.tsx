@@ -2,7 +2,7 @@ import type { Locale, User, RequestRecord } from "../../../../shared/model";
 import type { Definition } from "../api";
 import { copy } from "../../../i18n";
 import { formCopy } from "../../forms/copy";
-export function RequestMetadata({
+export const RequestMetadata = ({
   locale,
   user,
   record,
@@ -12,7 +12,7 @@ export function RequestMetadata({
   user: User;
   record: RequestRecord | null;
   definition: Definition;
-}>) {
+}>) => {
   const t = copy(locale);
   return (
     <div className="flex flex-wrap gap-x-6 gap-y-2 border-b border-line bg-stone-50 px-5 py-4 text-xs text-muted md:px-7 [&_strong]:ml-1 [&_strong]:font-semibold [&_strong]:text-ink">
@@ -33,4 +33,4 @@ export function RequestMetadata({
       </span>
     </div>
   );
-}
+};

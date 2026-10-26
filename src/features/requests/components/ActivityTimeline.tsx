@@ -1,13 +1,13 @@
 import { historyCopy } from "../history/copy";
 import { USERS, type AuditEvent, type Locale } from "../../../../shared/model";
 import { copy } from "../../../i18n";
-export function ActivityTimeline({
+export const ActivityTimeline = ({
   events,
   locale,
 }: Readonly<{
   events: AuditEvent[];
   locale: Locale;
-}>) {
+}>) => {
   const t = copy(locale);
   const h = historyCopy(locale);
   return (
@@ -60,4 +60,4 @@ export function ActivityTimeline({
       </ol>
     </section>
   );
-}
+};

@@ -5,7 +5,7 @@ import { Button } from "../../../components/ui/Button";
 import { DynamicForm } from "../../forms/DynamicForm";
 import { historyCopy } from "./copy";
 import type { FormHandle } from "../../forms/FormHandle";
-export function MigrationPreview({
+export const MigrationPreview = ({
   preview,
   locale,
   busy,
@@ -19,7 +19,7 @@ export function MigrationPreview({
   onApply: () => void;
   onValidate: (data: Record<string, unknown>) => Promise<boolean>;
   onCancel: () => void;
-}>) {
+}>) => {
   const [confirmed, setConfirmed] = useState(false);
   const t = historyCopy(locale);
   const [changed, setChanged] = useState(false);
@@ -32,7 +32,7 @@ export function MigrationPreview({
   const blocked =
     preview.operation === "upgrade" &&
     (changed || Object.keys(preview.submissionErrors).length > 0);
-  async function check() {
+  const check = async () => {
     if (!form.current) return;
     if (
       await onValidate(
@@ -42,7 +42,7 @@ export function MigrationPreview({
       setChanged(false);
       setConfirmed(false);
     }
-  }
+  };
   return (
     <section
       aria-label={t.preview}
@@ -177,4 +177,4 @@ export function MigrationPreview({
       </div>
     </section>
   );
-}
+};

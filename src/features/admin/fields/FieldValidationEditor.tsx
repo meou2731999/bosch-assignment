@@ -3,7 +3,7 @@ import type { BasicField } from "../../../../shared/fields";
 import type { Locale } from "../../../../shared/model";
 import { inputClass } from "../../auth/AuthScreen";
 import { fieldCopy } from "./copy";
-export function FieldValidationEditor({
+export const FieldValidationEditor = ({
   field,
   locale,
   onChange,
@@ -11,7 +11,7 @@ export function FieldValidationEditor({
   field: BasicField;
   locale: Locale;
   onChange: (field: BasicField) => void;
-}>) {
+}>) => {
   const t = fieldCopy(locale);
   const [options, setOptions] = useState(
     () =>
@@ -23,6 +23,28 @@ export function FieldValidationEditor({
     field.dataType === "number"
       ? (["min", "max"] as const)
       : (["minLength", "maxLength"] as const);
+  const changeOptions = (value: string) => {
+    setOptions(value);
+    onChange({
+      ...field,
+      options: value
+        .split("\n")
+        .filter(Boolean)
+        .map((line) => {
+          const index = line.indexOf("=");
+          return {
+            label: index < 0 ? line : line.slice(0, index),
+            value: index < 0 ? "" : line.slice(index + 1),
+          };
+        }),
+    });
+  };
+  const changeBound = (key: (typeof bounds)[number], value: string) => {
+    onChange({
+      ...field,
+      [key]: value === "" ? undefined : Number(value),
+    });
+  };
   return (
     <>
       <label>
@@ -44,15 +66,7 @@ export function FieldValidationEditor({
               type="number"
               step={field.dataType === "number" ? "any" : "1"}
               value={field[key] ?? ""}
-              onChange={(event) =>
-                onChange({
-                  ...field,
-                  [key]:
-                    event.target.value === ""
-                      ? undefined
-                      : Number(event.target.value),
-                })
-              }
+              onChange={(event) => changeBound(key, event.target.value)}
             />
           </label>
         ))}
@@ -74,25 +88,10 @@ export function FieldValidationEditor({
           <textarea
             className={inputClass}
             value={options}
-            onChange={(event) => {
-              setOptions(event.target.value);
-              onChange({
-                ...field,
-                options: event.target.value
-                  .split("\n")
-                  .filter(Boolean)
-                  .map((line) => {
-                    const index = line.indexOf("=");
-                    return {
-                      label: index < 0 ? line : line.slice(0, index),
-                      value: index < 0 ? "" : line.slice(index + 1),
-                    };
-                  }),
-              });
-            }}
+            onChange={(event) => changeOptions(event.target.value)}
           />
         </label>
       )}
     </>
   );
-}
+};
