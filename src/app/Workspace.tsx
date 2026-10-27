@@ -159,7 +159,7 @@ export const Workspace = ({
               {f.select}
               <select
                 aria-label={f.select}
-                className="rounded-lg border border-line bg-white p-2"
+                className="ui-field mt-0 w-auto py-2"
                 value={definition?.formId ?? ""}
                 disabled={busy || loading}
                 onChange={changeForm}
