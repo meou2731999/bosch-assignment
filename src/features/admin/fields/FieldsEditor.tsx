@@ -52,7 +52,7 @@ export const FieldsEditor = ({
     onChange([
       ...fields,
       {
-        key: `field${crypto.randomUUID().slice(0, 8)}`,
+        key: `tmp_${crypto.randomUUID().replaceAll("-", "")}`,
         label: "New field",
         input: "text",
         dataType: "string",

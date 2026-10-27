@@ -20,9 +20,9 @@ test("create, preview, reopen and submit a blank form without IT template fields
     name: "Create form type",
     exact: true,
   });
-  await editor
-    .getByLabel("Starting template", { exact: true })
-    .selectOption("blank");
+  await expect(
+    editor.getByLabel("Starting template", { exact: true }),
+  ).toHaveValue("blank");
   await editor
     .getByLabel("Form name", { exact: true })
     .fill("Visitor registration");
@@ -30,8 +30,18 @@ test("create, preview, reopen and submit a blank form without IT template fields
   await expect(
     editor.getByRole("button", { name: "Save form draft", exact: true }),
   ).toBeDisabled();
-  const field = await addField(editor, "visitor", "Visitor name");
+  await addField(editor, "Show visitor", "checkbox");
+  const field = await addField(editor, "Visitor name");
   await field.getByLabel("Required", { exact: true }).check();
+  await field
+    .getByRole("button", { name: "Add visibility condition", exact: true })
+    .click();
+  await field
+    .getByLabel("Condition field", { exact: true })
+    .selectOption({ label: "Show visitor" });
+  await field.getByLabel("Value type", { exact: true }).selectOption("boolean");
+  await field.getByLabel("Condition value", { exact: true }).check();
+  await expect(editor.getByLabel("Field key", { exact: true })).toHaveCount(0);
   await editor
     .getByRole("button", { name: "Preview form", exact: true })
     .click();
@@ -39,6 +49,7 @@ test("create, preview, reopen and submit a blank form without IT template fields
     name: "Preview form",
     exact: true,
   });
+  await preview.getByLabel("Show visitor", { exact: true }).check();
   await expect(
     preview.getByLabel("Visitor name", { exact: false }),
   ).toBeVisible();
@@ -60,14 +71,23 @@ test("create, preview, reopen and submit a blank form without IT template fields
   await expect(
     edit.getByLabel("Starting template", { exact: true }),
   ).toHaveValue("blank");
-  await expect(edit.getByLabel("Field key", { exact: true })).toHaveValue(
-    "visitor",
-  );
+  await expect(edit.getByLabel("Field key", { exact: true })).toHaveCount(0);
+  await expect(
+    edit.getByLabel("Field label", { exact: true }).nth(1),
+  ).toHaveValue("Visitor name");
+  const condition = edit.getByLabel("Condition field", { exact: true });
+  await expect(condition.locator("option:checked")).toHaveText("Show visitor");
+  await expect(condition).toHaveValue(/^f_[a-f0-9]{32}$/);
+
   await edit.getByRole("button", { name: "Cancel", exact: true }).click();
   const context = await browser.newContext({ baseURL });
   try {
     const requester = await context.newPage();
     await prepareRequester(page, requester, "Visitor registration");
+    await expect(
+      requester.getByLabel("Visitor name", { exact: false }),
+    ).toBeHidden();
+    await requester.getByLabel("Show visitor", { exact: true }).check();
     await requester.getByLabel("Visitor name", { exact: false }).fill("An");
     await requester
       .getByRole("button", { name: "Submit request", exact: true })

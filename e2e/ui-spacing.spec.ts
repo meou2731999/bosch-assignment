@@ -92,7 +92,6 @@ test("form spacing stays consistent across auth, account dialogs and the field e
     .click();
   dialog = page.getByRole("dialog");
   await checkFields(dialog);
-  await dialog.getByLabel("Use custom fields", { exact: true }).check();
   await dialog.getByRole("button", { name: "Add field", exact: true }).click();
   await dialog
     .getByRole("button", { name: "Add visibility condition", exact: true })

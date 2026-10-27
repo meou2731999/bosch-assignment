@@ -27,7 +27,7 @@ export const FormDraftEditor = ({
   const t = formCopy(locale),
     f = fieldCopy(locale);
   const [template, setTemplate] = useState<FormTemplate>(
-    existing?.draft.template ?? "request-v2",
+    existing?.draft.template ?? "blank",
   );
   const [custom, setCustom] = useState(Boolean(existing?.draft.fields));
   const [fields, setFields] = useState<BasicField[]>(

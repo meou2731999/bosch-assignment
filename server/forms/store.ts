@@ -1,3 +1,4 @@
+import { assignFieldKeys } from "./field-identity";
 import { fieldsSchema } from "../../shared/fields";
 import { fieldDefinition } from "../../shared/field-definition";
 import { mkdirSync, readFileSync, writeFileSync, renameSync } from "node:fs";
@@ -115,6 +116,7 @@ export function createFormStore(dataDir: string, root: string) {
     published,
     create(raw: unknown, actorId: string) {
       const draft = readDraft(raw);
+      if (draft.fields) draft.fields = assignFieldKeys(draft.fields);
       if (draft.revision !== 0)
         throw new ApiError(409, "CONFLICT", "New form revision must be zero.");
       const form: FormRecord = {
@@ -136,6 +138,11 @@ export function createFormStore(dataDir: string, root: string) {
           "CONFLICT",
           "A newer form draft exists. Reload before editing.",
         );
+      if (draft.fields)
+        draft.fields = assignFieldKeys(draft.fields, [
+          form.draft.fields ?? [],
+          ...form.versions.map((entry) => entry.fields ?? []),
+        ]);
       form.draft = { ...draft, revision: draft.revision + 1 };
       form.audit.push({
         action: "draft_saved",

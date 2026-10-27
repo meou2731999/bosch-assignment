@@ -43,16 +43,14 @@ export const ConditionFieldSelect = ({
         </option>
         {missing && (
           <option value={value} disabled>
-            {value} (
             {locale === "vi"
               ? "không còn tồn tại trong phạm vi này"
               : "unavailable in this scope"}
-            )
           </option>
         )}
         {candidates.map((field) => (
           <option key={field.key} value={field.key}>
-            {field.label} ({field.key})
+            {field.label}
           </option>
         ))}
       </select>

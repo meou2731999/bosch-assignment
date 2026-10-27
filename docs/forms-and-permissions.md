@@ -93,3 +93,9 @@ Recursive parsing is bounded before descent: field JSON permits at most 24 struc
 Choose **Blank form** under **Starting template** to build a form without IT request fields. The builder starts empty; add at least one valid field before saving. Preview the configured fields, save the draft and publish it through the usual Actions menu.
 
 Blank drafts use `template: "blank"` and require a non-empty `fields` array in the API. Published requests validate against those fields only, including their required flags, bounds and visibility conditions. They do not require IT-specific fields such as request type or reason. Existing IT templates and published versions keep their existing behavior.
+
+## Field identities
+
+The builder hides field keys. Labels are editable; condition selectors show labels. New fields use `tmp_` references only while editing and previewing. When saving a draft, the backend replaces those references with `f_` identities and rewrites nested visibility references in the same operation. The response contains the canonical schema.
+
+The backend rejects duplicate sibling references and missing condition targets. It checks generated keys against the incoming schema, the previous draft and published versions, retrying allocation on collision. Reordering and renaming existing fields preserve keys. Existing explicit keys remain supported for legacy schemas and API clients; matching keys in different scopes or forms are valid. Published versions and stored requests are not rewritten.

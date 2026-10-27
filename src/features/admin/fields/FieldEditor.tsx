@@ -47,7 +47,7 @@ export const FieldEditor = ({
         ? {
             fields: [
               {
-                key: "name",
+                key: `tmp_${crypto.randomUUID().replaceAll("-", "")}`,
                 label: "Name",
                 input: "text" as const,
                 dataType: "string" as const,
@@ -69,14 +69,6 @@ export const FieldEditor = ({
       <legend>
         {t.fields} {index + 1}
       </legend>
-      <label>
-        {t.key}
-        <input
-          className={inputClass}
-          value={field.key}
-          onChange={(event) => onChange({ ...field, key: event.target.value })}
-        />
-      </label>
       <label>
         {t.label}
         <input

@@ -19,7 +19,7 @@ const en = {
   options: "Options (one label=value per line)",
   preview: "Preview form",
   invalid:
-    "Fix field keys, types, bounds and options before previewing or saving.",
+    "Fix field labels, types, bounds and options before previewing or saving.",
   empty: "Add at least one field.",
   fields: "Fields",
   text: "Text",
@@ -56,7 +56,7 @@ const vi: typeof en = {
   integer: "Chỉ số nguyên",
   options: "Lựa chọn (mỗi dòng nhãn=giá trị)",
   preview: "Xem trước biểu mẫu",
-  invalid: "Sửa khóa, kiểu, giới hạn và lựa chọn trước khi xem hoặc lưu.",
+  invalid: "Sửa nhãn, kiểu, giới hạn và lựa chọn trước khi xem hoặc lưu.",
   empty: "Thêm ít nhất một trường.",
   fields: "Các trường",
   text: "Văn bản",

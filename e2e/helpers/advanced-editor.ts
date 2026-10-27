@@ -47,21 +47,21 @@ export async function advancedEditor(page: Page) {
   await expect(
     editor.getByLabel("Operator", { exact: true }).nth(3),
   ).toHaveValue("or");
-  const conditionKeys = editor.getByLabel("Condition key", { exact: true });
+  const conditionKeys = editor.getByLabel("Condition field", { exact: true });
   await expect(conditionKeys).toHaveCount(4);
   await expect(conditionKeys.nth(0).locator("option")).toHaveText([
     "Select a field",
-    "Name (name)",
-    "Needs note (needs)",
+    "Name",
+    "Needs note",
   ]);
   await expect(conditionKeys.nth(1).locator("option")).toHaveText([
     "Select a field",
-    "Enabled (enabled)",
+    "Enabled",
   ]);
   await expect(conditionKeys.nth(2).locator("option")).toHaveText([
     "Select a field",
-    "Title (requestTitle)",
-    "Tags (tags)",
+    "Title",
+    "Tags",
   ]);
   await conditionKeys.nth(0).selectOption("name");
   await expect(conditionKeys.nth(0)).toHaveValue("name");
@@ -72,7 +72,7 @@ export async function advancedEditor(page: Page) {
   await expect(conditionKeys.nth(0)).toHaveValue("");
   await expect(conditionKeys.nth(0).locator("option")).toHaveText([
     "Select a field",
-    "Enabled (enabled)",
+    "Enabled",
   ]);
   await editor.getByLabel("Scope", { exact: true }).nth(0).selectOption("row");
   await conditionKeys.nth(0).selectOption("needs");
@@ -85,9 +85,9 @@ export async function advancedEditor(page: Page) {
     .last()
     .click();
   await editor
-    .getByLabel("Field key", { exact: true })
+    .getByLabel("Field label", { exact: true })
     .last()
-    .fill("temporary");
+    .fill("Temporary field");
   await editor
     .getByRole("button", { name: "Remove field", exact: true })
     .last()

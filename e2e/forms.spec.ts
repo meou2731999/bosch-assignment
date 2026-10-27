@@ -13,6 +13,9 @@ async function createForm(page: Page, name: string) {
     name: "Create form type",
     exact: true,
   });
+  await editor
+    .getByLabel("Starting template", { exact: true })
+    .selectOption("request-v2");
   await editor.getByLabel("Form name", { exact: true }).fill(name);
   await editor
     .getByLabel("Description", { exact: true })

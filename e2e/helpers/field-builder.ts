@@ -5,15 +5,9 @@ export async function login(page: Page, email: string, password: string) {
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
 }
-export async function addField(
-  editor: Locator,
-  key: string,
-  label: string,
-  input = "text",
-) {
+export async function addField(editor: Locator, label: string, input = "text") {
   await editor.getByRole("button", { name: "Add field", exact: true }).click();
   const field = editor.getByRole("group", { name: /^Fields \d+$/ }).last();
-  await field.getByLabel("Field key", { exact: true }).fill(key);
   await field.getByLabel("Field label", { exact: true }).fill(label);
   await field.getByLabel("Input type", { exact: true }).selectOption(input);
   return field;

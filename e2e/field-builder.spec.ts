@@ -20,11 +20,10 @@ test("admin edits and previews fields; requester loads published JSON without fr
     exact: true,
   });
   await editor.getByLabel("Form name", { exact: true }).fill("Dynamic travel");
-  await editor.getByLabel("Use custom fields", { exact: true }).check();
-  const title = await addField(editor, "requestTitle", "Trip title");
+  const title = await addField(editor, "Trip title");
   await title.getByLabel("Required", { exact: true }).check();
   await title.getByLabel("Minimum length", { exact: true }).fill("3");
-  const count = await addField(editor, "days", "Travel days", "number");
+  const count = await addField(editor, "Travel days", "number");
   await count.getByLabel("Required", { exact: true }).check();
   await count.getByLabel("Minimum value", { exact: true }).fill("1");
   await count.getByLabel("Maximum value", { exact: true }).fill("5");
@@ -33,9 +32,9 @@ test("admin edits and previews fields; requester loads published JSON without fr
   await expect(
     editor
       .getByRole("group", { name: "Fields 1", exact: true })
-      .getByLabel("Field key", { exact: true }),
-  ).toHaveValue("days");
-  const unused = await addField(editor, "unused", "Remove me");
+      .getByLabel("Field label", { exact: true }),
+  ).toHaveValue("Travel days");
+  const unused = await addField(editor, "Remove me");
   await unused
     .getByRole("button", { name: "Remove field", exact: true })
     .click();
@@ -92,7 +91,7 @@ test("admin edits and previews fields; requester loads published JSON without fr
     .getByRole("group", { name: "Fields 1", exact: true })
     .getByLabel("Maximum value", { exact: true })
     .fill("2");
-  const email = await addField(edit, "contact", "Contact email", "email");
+  const email = await addField(edit, "Contact email", "email");
   await email.getByLabel("Required", { exact: true }).check();
   await edit
     .getByRole("button", { name: "Save form draft", exact: true })
@@ -127,10 +126,7 @@ test("admin edits and previews fields; requester loads published JSON without fr
   await expect(
     requester.getByRole("status").filter({ hasText: "Request submitted." }),
   ).toBeVisible();
-  await requester
-    .getByRole("button")
-    .filter({ hasText: "Annual meeting" })
-    .click();
+  await requester.getByRole("button").filter({ hasText: "v1" }).click();
   await expect(
     requester.getByLabel("Travel days", { exact: false }),
   ).toHaveValue("4");
