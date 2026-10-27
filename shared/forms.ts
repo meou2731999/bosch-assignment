@@ -2,7 +2,7 @@ import type { BasicField } from "./fields";
 import type { User } from "./model";
 export type FormPermission = "create" | "view" | "review";
 export type FormPermissions = Record<string, FormPermission[]>;
-export type FormTemplate = "request-v1" | "request-v2";
+export type FormTemplate = "request-v1" | "request-v2" | "blank";
 export interface FormDefinition {
   display: "form";
   type: "form";

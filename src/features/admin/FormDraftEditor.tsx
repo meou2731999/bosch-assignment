@@ -26,20 +26,24 @@ export const FormDraftEditor = ({
 }>) => {
   const t = formCopy(locale),
     f = fieldCopy(locale);
+  const [template, setTemplate] = useState<FormTemplate>(
+    existing?.draft.template ?? "request-v2",
+  );
   const [custom, setCustom] = useState(Boolean(existing?.draft.fields));
   const [fields, setFields] = useState<BasicField[]>(
     () => existing?.draft.fields ?? [],
   );
+  const usesFields = template === "blank" || custom;
   const save = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (custom && !fieldsSchema.safeParse(fields).success) return;
+    if (usesFields && !fieldsSchema.safeParse(fields).success) return;
     const data = new FormData(event.currentTarget);
     onSave({
       revision: existing?.draft.revision ?? 0,
       name: String(data.get("name")),
       description: String(data.get("description")),
-      template: String(data.get("template")) as FormTemplate,
-      ...(custom ? { fields } : {}),
+      template,
+      ...(usesFields ? { fields } : {}),
     });
   };
   return (
@@ -73,21 +77,28 @@ export const FormDraftEditor = ({
             <select
               className={inputClass}
               name="template"
-              defaultValue={existing?.draft.template ?? "request-v2"}
+              aria-label={t.template}
+              value={template}
+              onChange={(event) =>
+                setTemplate(event.target.value as FormTemplate)
+              }
             >
+              <option value="blank">{t.blank}</option>
               <option value="request-v1">{t.v1}</option>
               <option value="request-v2">{t.v2}</option>
             </select>
           </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={custom}
-              onChange={(event) => setCustom(event.target.checked)}
-            />
-            {f.custom}
-          </label>
-          {custom && (
+          {template !== "blank" && (
+            <label>
+              <input
+                type="checkbox"
+                checked={custom}
+                onChange={(event) => setCustom(event.target.checked)}
+              />
+              {f.custom}
+            </label>
+          )}
+          {usesFields && (
             <>
               <p>{f.hint}</p>
               <FieldsEditor
@@ -100,7 +111,7 @@ export const FormDraftEditor = ({
           <div className="flex flex-wrap gap-3">
             <Button
               type="submit"
-              disabled={custom && !fieldsSchema.safeParse(fields).success}
+              disabled={usesFields && !fieldsSchema.safeParse(fields).success}
             >
               {t.save}
             </Button>

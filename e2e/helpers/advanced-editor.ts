@@ -47,6 +47,35 @@ export async function advancedEditor(page: Page) {
   await expect(
     editor.getByLabel("Operator", { exact: true }).nth(3),
   ).toHaveValue("or");
+  const conditionKeys = editor.getByLabel("Condition key", { exact: true });
+  await expect(conditionKeys).toHaveCount(4);
+  await expect(conditionKeys.nth(0).locator("option")).toHaveText([
+    "Select a field",
+    "Name (name)",
+    "Needs note (needs)",
+  ]);
+  await expect(conditionKeys.nth(1).locator("option")).toHaveText([
+    "Select a field",
+    "Enabled (enabled)",
+  ]);
+  await expect(conditionKeys.nth(2).locator("option")).toHaveText([
+    "Select a field",
+    "Title (requestTitle)",
+    "Tags (tags)",
+  ]);
+  await conditionKeys.nth(0).selectOption("name");
+  await expect(conditionKeys.nth(0)).toHaveValue("name");
+  await editor
+    .getByLabel("Scope", { exact: true })
+    .nth(0)
+    .selectOption("parent");
+  await expect(conditionKeys.nth(0)).toHaveValue("");
+  await expect(conditionKeys.nth(0).locator("option")).toHaveText([
+    "Select a field",
+    "Enabled (enabled)",
+  ]);
+  await editor.getByLabel("Scope", { exact: true }).nth(0).selectOption("row");
+  await conditionKeys.nth(0).selectOption("needs");
   await editor
     .getByLabel("Field label", { exact: true })
     .nth(7)

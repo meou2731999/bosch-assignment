@@ -6,6 +6,7 @@ const en = {
   name: "Form name",
   description: "Description",
   template: "Starting template",
+  blank: "Blank form",
   v1: "IT request v1",
   v2: "IT request v2 (additional notes)",
   save: "Save form draft",
@@ -26,7 +27,7 @@ const en = {
   grantSave: "Save permissions",
   grantSaved: "Permissions saved. Existing sessions for this user have ended.",
   templateHint:
-    "Use an IT template or configure custom fields, preview and publish a new JSON version.",
+    "Start with a blank form or an IT template, preview and publish a new version.",
   empty: "No form types.",
   cancel: "Cancel",
   confirm: "Publish this draft as a new immutable version for new requests?",
@@ -39,6 +40,7 @@ const vi: typeof en = {
   name: "Tên biểu mẫu",
   description: "Mô tả",
   template: "Mẫu khởi tạo",
+  blank: "Biểu mẫu trống",
   v1: "Yêu cầu IT v1",
   v2: "Yêu cầu IT v2 (ghi chú thêm)",
   save: "Lưu nháp biểu mẫu",
@@ -59,7 +61,7 @@ const vi: typeof en = {
   grantSave: "Lưu quyền",
   grantSaved: "Đã lưu quyền. Các phiên đăng nhập của người dùng đã kết thúc.",
   templateHint:
-    "Dùng mẫu IT hoặc cấu hình trường tùy chỉnh, xem trước và xuất bản phiên bản JSON mới.",
+    "Bắt đầu từ biểu mẫu trống hoặc mẫu IT, xem trước và xuất bản phiên bản mới.",
   empty: "Chưa có loại biểu mẫu.",
   cancel: "Hủy",
   confirm: "Xuất bản bản nháp thành phiên bản mới bất biến cho yêu cầu mới?",

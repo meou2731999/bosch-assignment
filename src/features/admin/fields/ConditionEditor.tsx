@@ -6,21 +6,28 @@ import {
 } from "./condition-controls";
 import type { Locale } from "../../../../shared/model";
 import type { Condition } from "../../../../shared/field-conditions";
+import {
+  ConditionFieldSelect,
+  type ConditionFields,
+} from "./ConditionFieldSelect";
 import { Button } from "../../../components/ui/Button";
 import { inputClass } from "../../auth/AuthScreen";
 export const ConditionEditor = ({
   condition,
+  fields,
   locale,
   onChange,
 }: Readonly<{
   condition?: Condition;
+  fields: ConditionFields;
   locale: Locale;
   onChange: (condition: Condition | undefined) => void;
 }>) => {
   const t = conditionCopy(locale);
+  const newCondition = () => ({ ...leaf, key: "" });
   if (!condition)
     return (
-      <Button variant="secondary" onClick={() => onChange({ ...leaf })}>
+      <Button variant="secondary" onClick={() => onChange(newCondition())}>
         {t.add}
       </Button>
     );
@@ -38,7 +45,7 @@ export const ConditionEditor = ({
     if (!condition || !("conditions" in condition)) return;
     onChange({
       ...condition,
-      conditions: [...condition.conditions, { ...leaf }],
+      conditions: [...condition.conditions, newCondition()],
     });
   };
   const changeTextValue = (value: string) => {
@@ -49,14 +56,21 @@ export const ConditionEditor = ({
     });
   };
   const changeOp = (value: string) => {
-    if (condition)
-      onChange(changeOperator(condition, value as Condition["op"]));
+    if (!condition) return;
+    const next = changeOperator(condition, value as Condition["op"]);
+    if ("key" in next && !("key" in condition)) next.key = "";
+    onChange(next);
   };
   const changeScope = (value: string) => {
     if (condition && "key" in condition) {
       onChange({
         ...condition,
         scope: value as "row" | "parent" | "root",
+        key: fields[value as keyof ConditionFields].some(
+          (field) => field.key === condition.key,
+        )
+          ? condition.key
+          : "",
       });
     }
   };
@@ -93,6 +107,7 @@ export const ConditionEditor = ({
             <ConditionEditor
               key={index + "Editor"}
               condition={child}
+              fields={fields}
               locale={locale}
               onChange={(next) => changeChild(index, next)}
             />
@@ -117,14 +132,12 @@ export const ConditionEditor = ({
                 ))}
               </select>
             </label>
-            <label>
-              {t.key}
-              <input
-                className={inputClass}
-                value={condition.key}
-                onChange={(event) => changeKey(event.target.value)}
-              />
-            </label>
+            <ConditionFieldSelect
+              fields={fields[condition.scope]}
+              value={condition.key}
+              locale={locale}
+              onChange={changeKey}
+            />
             <label>
               {t.type}
               <select

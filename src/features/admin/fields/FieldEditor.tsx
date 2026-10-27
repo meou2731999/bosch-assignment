@@ -8,12 +8,16 @@ import { Button } from "../../../components/ui/Button";
 import { inputClass } from "../../auth/AuthScreen";
 import { fieldCopy } from "./copy";
 import { FieldsEditor } from "./FieldsEditor";
+import type { ConditionFields } from "./ConditionFieldSelect";
 import { ConditionEditor } from "./ConditionEditor";
 import { FieldValidationEditor } from "./FieldValidationEditor";
 export const FieldEditor = ({
   field,
   index,
   count,
+  conditionFields,
+  rootFields,
+  parentFields,
   locale,
   onChange,
   onMove,
@@ -22,6 +26,9 @@ export const FieldEditor = ({
   field: BasicField;
   index: number;
   count: number;
+  conditionFields: ConditionFields;
+  rootFields: BasicField[];
+  parentFields: BasicField[];
   locale: Locale;
   onChange: (field: BasicField) => void;
   onMove: (direction: number) => void;
@@ -139,6 +146,7 @@ export const FieldEditor = ({
         onChange={onChange}
       />
       <ConditionEditor
+        fields={conditionFields}
         locale={locale}
         condition={field.visibility}
         onChange={(visibility) => onChange({ ...field, visibility })}
@@ -146,6 +154,8 @@ export const FieldEditor = ({
       {field.fields && (
         <FieldsEditor
           fields={field.fields}
+          rootFields={rootFields}
+          parentFields={parentFields}
           locale={locale}
           onChange={(fields) => onChange({ ...field, fields })}
         />

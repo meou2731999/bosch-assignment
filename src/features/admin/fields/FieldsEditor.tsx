@@ -11,9 +11,13 @@ const noop = () => {};
 export const FieldsEditor = ({
   fields,
   locale,
+  rootFields,
+  parentFields,
   onChange: onFieldsChange,
 }: Readonly<{
   fields: BasicField[];
+  rootFields?: BasicField[];
+  parentFields?: BasicField[];
   locale: Locale;
   onChange: (fields: BasicField[]) => void;
 }>) => {
@@ -64,6 +68,13 @@ export const FieldsEditor = ({
           field={field}
           index={index}
           count={fields.length}
+          conditionFields={{
+            root: (rootFields ?? fields).filter((item) => item !== field),
+            row: fields.filter((item) => item !== field),
+            parent: (parentFields ?? fields).filter((item) => item !== field),
+          }}
+          rootFields={rootFields ?? fields}
+          parentFields={fields}
           locale={locale}
           onChange={(next) => update(index, next)}
           onMove={(direction) => move(index, direction)}

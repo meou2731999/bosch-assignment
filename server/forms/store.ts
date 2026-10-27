@@ -16,14 +16,27 @@ const draftSchema = z
     revision: z.number().int().nonnegative(),
     name: z.string().trim().min(1).max(120),
     description: z.string().trim().max(1000),
-    template: z.enum(["request-v1", "request-v2"]),
+    template: z.enum(["request-v1", "request-v2", "blank"]),
     fields: fieldsSchema.optional(),
   })
-  .strict();
+  .strict()
+  .refine(
+    (draft) => draft.template !== "blank" || Boolean(draft.fields?.length),
+    {
+      message: "Blank forms require at least one field.",
+      path: ["fields"],
+    },
+  );
 export function createFormStore(dataDir: string, root: string) {
   mkdirSync(dataDir, { recursive: true });
   const file = path.join(dataDir, "forms.json");
   function loadTemplate(template: FormTemplate): FormDefinition {
+    if (template === "blank")
+      throw new ApiError(
+        422,
+        "INVALID",
+        "Blank forms require at least one field.",
+      );
     return JSON.parse(
       readFileSync(
         path.join(root, "forms", `${template.replace("-", ".")}.json`),
