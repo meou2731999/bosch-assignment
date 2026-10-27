@@ -45,6 +45,21 @@ test("unprefixed Tailwind and scoped Bootstrap coexist on desktop and mobile", a
     await expect(
       user.locator(".formio-surface .form-control").first(),
     ).toBeVisible();
+    const checkRadioHeadingSpacing = async () => {
+      const gap = await user
+        .locator(".formio-component-requestType")
+        .evaluate((component) => {
+          const heading = component
+            .querySelector('[ref="label"]')!
+            .getBoundingClientRect();
+          const options = component
+            .querySelector('[role="radiogroup"]')!
+            .getBoundingClientRect();
+          return options.top - heading.bottom;
+        });
+      expect(gap).toBeGreaterThanOrEqual(8);
+    };
+    await checkRadioHeadingSpacing();
     await user.getByRole("button", { name: "Save draft", exact: true }).click();
     const notice = user.getByRole("status").filter({ hasText: "Draft saved." });
     await expect(notice).toBeVisible();
@@ -60,6 +75,7 @@ test("unprefixed Tailwind and scoped Bootstrap coexist on desktop and mobile", a
       fullPage: true,
     });
     await user.setViewportSize({ width: 390, height: 844 });
+    await checkRadioHeadingSpacing();
     const field = user.locator(".formio-surface .form-control").first();
     const bounds = await field.boundingBox();
     expect(bounds!.x).toBeGreaterThanOrEqual(0);

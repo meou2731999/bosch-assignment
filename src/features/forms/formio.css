@@ -49,6 +49,9 @@
   .formio-surface .form-check-input:checked {
     @apply border-brand bg-brand;
   }
+  .formio-surface .formio-component-radio .form-radio {
+    margin-top: 1rem;
+  }
   .formio-surface .form-text {
     @apply text-xs text-muted;
   }
