@@ -1,5 +1,7 @@
 # Staged implementation
 
+The seven stages below record the completed prototype scope. The next phase is planned in [Platform upgrade roadmap](platform-roadmap.md) (27 October 2026): a React-owned schema engine, PostgreSQL/S3/OIDC infrastructure and independent tenants from the first deployment. That roadmap is not yet implemented.
+
 Each stage is implemented and reviewed before continuing.
 
 - [x] 1. Backend accounts, login/session, password changes/reset and session revocation.
