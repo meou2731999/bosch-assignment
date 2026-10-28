@@ -15,7 +15,9 @@ flowchart LR
   API --> S[Local forms, requests and files]
 ```
 
-- `src/app`: navigation, selected request, locale and async state. Local state/refs suffice for the current scope; no global store.
+- `src/app`: application entry, session lifecycle, locale, page selection and shared navigation/layout.
+- `src/pages`: page composition for authentication/password changes, requests, user management and form management. Pages compose feature components; `App.tsx` selects the active page and applies session/admin guards.
+- `src/features/requests/useWorkspace.ts`: request selection, browser history, async loading and unsaved-change guards. Local state/refs suffice for the current scope; no global store.
 - `src/features/admin`: account/form authoring and permissions; `forms`: renderer integration; `requests`: save/review/history; `attachments`: upload/preview.
 - `src/components/ui`: shared buttons/icons, menus, modals, errors and field styles. Admin dialogs preserve failed-save input, trap/restore focus and prevent closing during saves.
 - `shared`: contracts, field parsing, visibility, validation and migration data types.

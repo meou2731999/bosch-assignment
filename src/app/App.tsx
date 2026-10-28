@@ -1,170 +1,70 @@
-import { uiCopy } from "../i18n/ui";
-import { FormsPanel } from "../features/admin/FormsPanel";
-import { useEffect, useState } from "react";
-import type { AccountUser, Locale } from "../../shared/model";
-import { Workspace } from "./Workspace";
-import { AppHeader } from "./AppHeader";
-import { AuthScreen } from "../features/auth/AuthScreen";
-import { authApi } from "../features/auth/api";
-import { authCopy } from "../features/auth/copy";
-import { UsersPanel } from "../features/admin/UsersPanel";
 import { ErrorNotice } from "../components/ui/ErrorNotice";
-import { Button } from "../components/ui/Button";
-import { HttpError, setCsrfToken } from "../lib/http";
+import { authCopy } from "../features/auth/copy";
+import { AuthPage } from "../pages/auth/AuthPage";
+import { FormsPage } from "../pages/forms/FormsPage";
+import { RequestsPage } from "../pages/requests/RequestsPage";
+import { UsersPage } from "../pages/users/UsersPage";
+import { useAppSession } from "./useAppSession";
+import { Modal } from "../components/ui/Modal";
+
 export const App = () => {
-  const [user, setUser] = useState<AccountUser | null>(null);
-  const [locale, setLocale] = useState<Locale>("en");
-  const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<"requests" | "users" | "forms" | "password">(
-    "requests",
-  );
-  const [notice, setNotice] = useState<"changed" | "expired" | "">("");
-  const [error, setError] = useState<Error | null>(null);
-  const [busy, setBusy] = useState(false);
+  const {
+    user,
+    locale,
+    setLocale,
+    loading,
+    view,
+    setView,
+    notice,
+    error,
+    busy,
+    logout,
+    changed,
+    login,
+    refreshUser,
+  } = useAppSession();
   const t = authCopy(locale);
-  useEffect(() => {
-    document.documentElement.lang = locale;
-  }, [locale]);
-  useEffect(() => {
-    let live = true;
-    authApi
-      .session()
-      .then((next) => {
-        if (live) setUser(next);
-      })
-      .catch((error) => {
-        if (
-          live &&
-          !(error instanceof HttpError && error.code === "UNAUTHENTICATED")
-        )
-          setError(error);
-      })
-      .finally(() => {
-        if (live) setLoading(false);
-      });
-    return () => {
-      live = false;
-    };
-  }, []);
-  useEffect(() => {
-    const expired = () => {
-      setUser(null);
-      setView("requests");
-      setNotice("expired");
-    };
-    window.addEventListener("session-expired", expired);
-    return () => window.removeEventListener("session-expired", expired);
-  }, []);
-  const logout = async () => {
-    setBusy(true);
-    setError(null);
-    try {
-      await authApi.logout();
-      setUser(null);
-      setView("requests");
-      setNotice("");
-    } catch (error) {
-      setError(error as Error);
-    } finally {
-      setBusy(false);
-    }
-  };
-  const changed = () => {
-    setCsrfToken("");
-    setUser(null);
-    setView("requests");
-    setNotice("changed");
-  };
-  if (loading) return <output className="p-8">{t.working}</output>;
-  const auth = !user || user.mustChangePassword || view === "password";
-  let content;
-  if (auth)
-    content = (
-      <>
-        <div className="flex flex-wrap items-end justify-end gap-3 p-5">
-          <label>
-            {uiCopy(locale).language}
-            <select
-              className="ui-field"
-              value={locale}
-              onChange={(event) => setLocale(event.target.value as Locale)}
-            >
-              <option value="en">{uiCopy(locale).english}</option>
-              <option value="vi">{uiCopy(locale).vietnamese}</option>
-            </select>
-          </label>
-          {user && (
-            <Button
-              disabled={busy}
-              variant="secondary"
-              onClick={() => void logout()}
-            >
-              {t.logout}
-            </Button>
-          )}
-        </div>
-        <AuthScreen
-          key={`${user?.id ?? "login"}-${view}`}
+  const onLogout = () => void logout();
+  const onRequests = () => setView("requests");
+  const onManage = () => setView("users");
+  const onForms = () => setView("forms");
+  const onPassword = () => setView("password");
+  const closePassword = () => setView("requests");
+
+  const renderPage = () => {
+    if (!user || user.mustChangePassword)
+      return (
+        <AuthPage
+          key={`${user?.id ?? "login"}`}
           locale={locale}
-          user={user ?? undefined}
-          notice={notice ? t[notice] : ""}
-          onLogin={(next) => {
-            setUser(next);
-            setError(null);
-            setNotice("");
-            setView(next.isAdmin ? "users" : "requests");
-          }}
-          onChanged={changed}
-          onBack={
-            user && !user.mustChangePassword
-              ? () => setView("requests")
-              : undefined
-          }
-        />
-      </>
-    );
-  else if ((view === "users" || view === "forms") && user.isAdmin)
-    content = (
-      <>
-        <AppHeader
-          user={user}
-          locale={locale}
-          busy={busy}
-          loading={false}
           setLocale={setLocale}
-          onLogout={() => void logout()}
-          onManage={() => setView("users")}
-          onForms={() => setView("forms")}
-          onPassword={() => setView("password")}
-          activeView={view}
-          onRequests={() => setView("requests")}
+          user={user ?? undefined}
+          busy={busy}
+          notice={notice ? t[notice] : ""}
+          onLogin={login}
+          onChanged={changed}
+          onLogout={onLogout}
         />
-        {view === "forms" ? (
-          <FormsPanel locale={locale} />
-        ) : (
-          <UsersPanel
-            locale={locale}
-            userId={user.id}
-            onSelfChanged={async () => {
-              setUser(await authApi.session());
-            }}
-          />
-        )}
-      </>
-    );
-  else
-    content = (
-      <Workspace
-        key={user.id}
-        user={user}
-        locale={locale}
-        setLocale={setLocale}
-        onLogout={() => void logout()}
-        onManage={() => setView("users")}
-        onForms={() => setView("forms")}
-        onPassword={() => setView("password")}
-      />
-    );
+      );
+
+    const pageProps = {
+      user,
+      locale,
+      setLocale,
+      busy,
+      onLogout,
+      onRequests,
+      onManage,
+      onForms,
+      onPassword,
+    };
+    if (user.isAdmin && view === "users")
+      return <UsersPage {...pageProps} onSelfChanged={refreshUser} />;
+    if (user.isAdmin && view === "forms") return <FormsPage {...pageProps} />;
+    return <RequestsPage key={user.id} {...pageProps} />;
+  };
+
+  if (loading) return <output className="p-8">{t.working}</output>;
   return (
     <div className="min-h-screen bg-canvas font-sans text-ink">
       {error && (
@@ -172,7 +72,27 @@ export const App = () => {
           <ErrorNotice error={error} locale={locale} />
         </div>
       )}
-      {content}
+      {renderPage()}
+      {user && !user.mustChangePassword && view === "password" && (
+        <Modal
+          title={t.changePassword}
+          locale={locale}
+          busy={busy}
+          onClose={closePassword}
+        >
+          <AuthPage
+            locale={locale}
+            setLocale={setLocale}
+            user={user}
+            busy={busy}
+            notice={notice ? t[notice] : ""}
+            onLogin={login}
+            onChanged={changed}
+            onLogout={onLogout}
+            embedded
+          />
+        </Modal>
+      )}
     </div>
   );
 };

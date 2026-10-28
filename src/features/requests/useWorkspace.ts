@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { AccountUser, RequestRecord, Locale } from "../../shared/model";
-import type { FormSummary } from "../../shared/forms";
-import { formsApi } from "../features/forms/api";
-import { api, type Definition } from "../features/requests/api";
-import { copy } from "../i18n";
+import type { AccountUser, RequestRecord, Locale } from "../../../shared/model";
+import type { FormSummary } from "../../../shared/forms";
+import { formsApi } from "../forms/api";
+import { api, type Definition } from "./api";
+import { copy } from "../../i18n";
 const readPage = () => {
   const match = /^\/requests\/([^/]+)$/.exec(window.location.pathname);
   return match ? decodeURIComponent(match[1]) : "list";

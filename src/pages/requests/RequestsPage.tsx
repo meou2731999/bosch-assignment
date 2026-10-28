@@ -1,20 +1,20 @@
-import { errorMessage } from "../i18n/errors";
-import { uiCopy } from "../i18n/ui";
-import { Button } from "../components/ui/Button";
+import { errorMessage } from "../../i18n/errors";
+import { uiCopy } from "../../i18n/ui";
+import { Button } from "../../components/ui/Button";
 import type { ChangeEvent } from "react";
-import { useWorkspace } from "./useWorkspace";
-import { formCopy } from "../features/forms/copy";
+import { useWorkspace } from "../../features/requests/useWorkspace";
+import { formCopy } from "../../features/forms/copy";
 
-import { AppHeader } from "./AppHeader";
-import { RequestList } from "../features/requests/components/RequestList";
+import { AppHeader } from "../../app/AppHeader";
+import { RequestList } from "../../features/requests/components/RequestList";
 
-import { type Locale, type AccountUser } from "../../shared/model";
+import { type Locale, type AccountUser } from "../../../shared/model";
 
-import { copy } from "../i18n";
-import { RequestEditor } from "../features/requests/components/RequestEditor";
-import { Status } from "../features/requests/components/Status";
+import { copy } from "../../i18n";
+import { RequestEditor } from "../../features/requests/components/RequestEditor";
+import { Status } from "../../features/requests/components/Status";
 
-export const Workspace = ({
+export const RequestsPage = ({
   user,
   locale,
   setLocale,

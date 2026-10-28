@@ -46,7 +46,7 @@ export const UsersTable = ({
   };
   return (
     <div className="overflow-x-auto rounded-xl border border-line bg-white">
-      <table className="w-full text-left text-sm [&_td]:border-t [&_td]:border-line [&_td]:p-4 [&_th]:p-4">
+      <table className="w-full text-left text-sm [&_tbody_tr]:hover:bg-sage/40 [&_td]:border-t [&_td]:border-line [&_td]:px-5 [&_td]:py-4 [&_th]:bg-sage [&_th]:px-5 [&_th]:py-4 [&_th]:font-medium [&_th]:text-muted">
         <caption className="sr-only">{t.users}</caption>
         <thead>
           <tr>

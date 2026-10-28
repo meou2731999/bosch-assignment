@@ -12,6 +12,7 @@ import { ErrorNotice } from "../../components/ui/ErrorNotice";
 import { FormDraftEditor } from "./FormDraftEditor";
 import { formsApi } from "../forms/api";
 import { formCopy } from "../forms/copy";
+import { tableClass } from "../../components/ui/field";
 export const FormsPanel = ({ locale }: Readonly<{ locale: Locale }>) => {
   const t = formCopy(locale);
   const [forms, setForms] = useState<FormRecord[]>([]);
@@ -105,28 +106,43 @@ export const FormsPanel = ({ locale }: Readonly<{ locale: Locale }>) => {
       {loading ? (
         <p role="status">{t.working}</p>
       ) : (
-        <ul className="list-none space-y-4 p-0">
-          {forms.map((form) => (
-            <li
-              key={form.id}
-              className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-white p-5"
-            >
-              <div>
-                <h2 className="text-lg">{form.draft.name}</h2>
-                <p>
-                  {t.version}: {form.activeVersion ?? t.unpublished} · {t.draft}
-                  : {form.draft.revision}
-                </p>
-              </div>
-              <ActionDropdown
-                label={uiCopy(locale).actions}
-                context={form.draft.name}
-                disabled={busy}
-                actions={actionsFor(form)}
-              />
-            </li>
-          ))}
-        </ul>
+        <div className="overflow-x-auto rounded-xl border border-line bg-white">
+          <table className={tableClass}>
+            <caption className="sr-only">{t.manage}</caption>
+            <thead>
+              <tr>
+                <th>{t.name}</th>
+                <th>{t.version}</th>
+                <th>{t.draft}</th>
+                <th>{uiCopy(locale).actions}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {forms.map((form) => (
+                <tr key={form.id}>
+                  <td className="font-medium">{form.draft.name}</td>
+                  <td>{form.activeVersion ?? t.unpublished}</td>
+                  <td>{form.draft.revision}</td>
+                  <td className="text-right">
+                    <ActionDropdown
+                      label={uiCopy(locale).actions}
+                      context={form.draft.name}
+                      disabled={busy}
+                      actions={actionsFor(form)}
+                    />
+                  </td>
+                </tr>
+              ))}
+              {!forms.length && (
+                <tr>
+                  <td colSpan={4} className="px-5 py-12 text-center text-muted">
+                    {t.empty}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
       {editing && (
         <Modal

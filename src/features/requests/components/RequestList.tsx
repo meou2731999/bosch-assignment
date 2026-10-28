@@ -4,6 +4,7 @@ import { Button } from "../../../components/ui/Button";
 import type { Locale, RequestRecord } from "../../../../shared/model";
 import { copy } from "../../../i18n";
 import { Status } from "./Status";
+import { tableClass } from "../../../components/ui/field";
 
 export const RequestList = ({
   locale,
@@ -29,28 +30,28 @@ export const RequestList = ({
       className="overflow-hidden rounded-xl border border-line bg-white"
     >
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
+        <table className={tableClass}>
           <caption className="sr-only">{t.allRequests}</caption>
           <thead className="border-b border-line bg-sage text-muted">
             <tr>
-              <th scope="col" className="px-5 py-4">
+              <th scope="col">
                 {t.requestTitle}
               </th>
-              <th scope="col" className="px-5 py-4">
+              <th scope="col">
                 {t.requestStatus}
               </th>
-              <th scope="col" className="px-5 py-4">
+              <th scope="col">
                 {t.version}
               </th>
-              <th scope="col" className="px-5 py-4">
+              <th scope="col">
                 {t.updated}
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-line">
+          <tbody>
             {visible.map((request) => (
-              <tr key={request.id} className="hover:bg-sage/40">
-                <td className="min-w-52 px-5 py-4">
+              <tr key={request.id}>
+                <td className="min-w-52">
                   <Button
                     variant="secondary"
                     onClick={() => navigate(request.id)}
@@ -58,11 +59,11 @@ export const RequestList = ({
                     {String(request.data.requestTitle || t.untitled)}
                   </Button>
                 </td>
-                <td className="whitespace-nowrap px-5 py-4">
+                <td className="whitespace-nowrap">
                   <Status status={request.status} locale={locale} />
                 </td>
-                <td className="px-5 py-4">{request.formVersion}</td>
-                <td className="whitespace-nowrap px-5 py-4">
+                <td>{request.formVersion}</td>
+                <td className="whitespace-nowrap">
                   {new Date(request.updatedAt).toLocaleDateString(
                     uiCopy(locale).dateLocale,
                   )}

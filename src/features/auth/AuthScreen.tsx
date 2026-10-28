@@ -13,6 +13,7 @@ export const AuthScreen = ({
   onLogin,
   onChanged,
   onBack,
+  embedded = false,
 }: Readonly<{
   locale: Locale;
   user?: AccountUser;
@@ -20,6 +21,7 @@ export const AuthScreen = ({
   onLogin: (user: AccountUser) => void;
   onChanged: () => void;
   onBack?: () => void;
+  embedded?: boolean;
 }>) => {
   const t = authCopy(locale);
   const [error, setError] = useState<Error | null>(null);
@@ -52,6 +54,52 @@ export const AuthScreen = ({
     }
   };
   const actionLabel = user ? t.changePassword : t.login;
+  if (embedded && user) {
+    return (
+      <>
+        <p>{t.passwordHint}</p>
+        {notice && <p role="status">{notice}</p>}
+        {error && <ErrorNotice error={error} locale={locale} />}
+        <form onSubmit={(event) => void submit(event)}>
+          <fieldset disabled={busy} className="ui-form-stack border-0 p-0">
+            <label>
+              {t.currentPassword}
+              <input
+                className={inputClass}
+                name="current"
+                type="password"
+                required
+                autoComplete="current-password"
+              />
+            </label>
+            <label>
+              {t.newPassword}
+              <input
+                className={inputClass}
+                name="password"
+                type="password"
+                required
+                minLength={12}
+                maxLength={256}
+                autoComplete="new-password"
+              />
+            </label>
+            <label>
+              {t.confirmPassword}
+              <input
+                className={inputClass}
+                name="confirm"
+                type="password"
+                required
+                autoComplete="new-password"
+              />
+            </label>
+            <Button type="submit">{busy ? t.working : actionLabel}</Button>
+          </fieldset>
+        </form>
+      </>
+    );
+  }
   return (
     <main
       id="main"
