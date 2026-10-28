@@ -123,16 +123,7 @@ export function useDraftHistory({
     }
   }
   return {
-    latest,
-    snapshots,
-    loading,
-    busy,
-    error,
-    preview,
-    refresh,
-    cancel,
-    show,
-    apply,
-    validate,
+    state: { latest, snapshots, loading, busy, error, preview },
+    actions: { refresh, cancel, show, apply, validate },
   };
 }

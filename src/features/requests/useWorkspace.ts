@@ -149,22 +149,26 @@ export function useWorkspace(user: AccountUser, locale: Locale) {
     setNotice(notices[next.status]);
   }
   return {
-    page,
-    forms,
-    requests,
-    record,
-    definition,
-    loading,
-    error,
-    notice,
-    dirty,
-    busy,
-    generation,
-    load,
-    setDirty,
-    setBusy,
-    canLeave,
-    navigate,
-    saved,
+    state: {
+      page,
+      forms,
+      requests,
+      record,
+      definition,
+      loading,
+      error,
+      notice,
+      dirty,
+      busy,
+      generation,
+    },
+    actions: {
+      load,
+      setDirty,
+      setBusy,
+      canLeave,
+      navigate,
+      saved,
+    },
   };
 }

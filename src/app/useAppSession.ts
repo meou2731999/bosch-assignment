@@ -76,18 +76,7 @@ export const useAppSession = () => {
     setUser(await authApi.session());
   };
   return {
-    user,
-    locale,
-    setLocale,
-    loading,
-    view,
-    setView,
-    notice,
-    error,
-    busy,
-    logout,
-    changed,
-    login,
-    refreshUser,
+    state: { user, locale, loading, view, notice, error, busy },
+    actions: { setLocale, setView, logout, changed, login, refreshUser },
   };
 };

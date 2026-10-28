@@ -121,22 +121,19 @@ export function useRequestEditor({
   const idleStatus = dirty ? t.dirty : t.help;
   const saveStatus = saving ? t.saving : idleStatus;
   return {
-    readOnly,
-    dirty,
-    id,
-    initialData,
-    attachments,
-    setAttachments,
-    ready,
-    saving,
-    fail,
-    setFail,
-    error,
-    uploading,
-    onReady,
-    markDirty,
-    onUploading,
-    save,
-    saveStatus,
+    state: {
+      readOnly,
+      dirty,
+      id,
+      initialData,
+      attachments,
+      ready,
+      saving,
+      fail,
+      error,
+      uploading,
+      saveStatus,
+    },
+    actions: { setAttachments, setFail, onReady, markDirty, onUploading, save },
   };
 }

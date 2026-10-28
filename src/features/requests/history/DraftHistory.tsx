@@ -29,19 +29,9 @@ export const DraftHistory = ({
 }>) => {
   const t = historyCopy(locale);
   const [selected, setSelected] = useState("");
-  const {
-    latest,
-    snapshots,
-    loading,
-    busy,
-    error,
-    preview,
-    refresh,
-    cancel,
-    show,
-    apply,
-    validate,
-  } = useDraftHistory({ record, user, onBusy, onSaved });
+  const { state, actions } = useDraftHistory({ record, user, onBusy, onSaved });
+  const { latest, snapshots, loading, busy, error, preview } = state;
+  const { refresh, cancel, show, apply, validate } = actions;
   return (
     <section
       aria-label={t.title}

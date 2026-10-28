@@ -23,25 +23,7 @@ export const RequestEditor = ({
 }: Readonly<RequestEditorProps>) => {
   const t = copy(locale);
   const [historyBusy, setHistoryBusy] = useState(false);
-  const {
-    readOnly,
-    dirty,
-    id,
-    initialData,
-    attachments,
-    setAttachments,
-    ready,
-    saving,
-    fail,
-    setFail,
-    error,
-    uploading,
-    onReady,
-    markDirty,
-    onUploading,
-    save,
-    saveStatus,
-  } = useRequestEditor({
+  const { state, actions } = useRequestEditor({
     user,
     locale,
     definition,
@@ -51,6 +33,21 @@ export const RequestEditor = ({
     onSaved,
     reload,
   });
+  const {
+    readOnly,
+    dirty,
+    id,
+    initialData,
+    attachments,
+    ready,
+    saving,
+    fail,
+    error,
+    uploading,
+    saveStatus,
+  } = state;
+  const { setAttachments, setFail, onReady, markDirty, onUploading, save } =
+    actions;
   const changeAttachments = (next: typeof attachments) => {
     setAttachments(next);
     markDirty();

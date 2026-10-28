@@ -8,21 +8,9 @@ import { useAppSession } from "./useAppSession";
 import { Modal } from "../components/ui/Modal";
 
 export const App = () => {
-  const {
-    user,
-    locale,
-    setLocale,
-    loading,
-    view,
-    setView,
-    notice,
-    error,
-    busy,
-    logout,
-    changed,
-    login,
-    refreshUser,
-  } = useAppSession();
+  const { state, actions } = useAppSession();
+  const { user, locale, loading, view, notice, error, busy } = state;
+  const { setLocale, setView, logout, changed, login, refreshUser } = actions;
   const t = authCopy(locale);
   const onLogout = () => void logout();
   const onRequests = () => setView("requests");

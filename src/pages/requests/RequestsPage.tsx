@@ -33,6 +33,7 @@ export const RequestsPage = ({
 }>) => {
   const t = copy(locale);
   const f = formCopy(locale);
+  const { state, actions } = useWorkspace(user, locale);
   const {
     page,
     forms,
@@ -45,13 +46,8 @@ export const RequestsPage = ({
     dirty,
     busy,
     generation,
-    load,
-    setDirty,
-    setBusy,
-    canLeave,
-    navigate,
-    saved,
-  } = useWorkspace(user, locale);
+  } = state;
+  const { load, setDirty, setBusy, canLeave, navigate, saved } = actions;
   const renderContent = () => {
     if (loading)
       return (
