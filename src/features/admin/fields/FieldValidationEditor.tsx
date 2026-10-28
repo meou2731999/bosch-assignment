@@ -42,7 +42,7 @@ export const FieldValidationEditor = ({
   const changeBound = (key: (typeof bounds)[number], value: string) => {
     onChange({
       ...field,
-      [key]: value === "" ? undefined : Number(value),
+      [key]: Number(value),
     });
   };
   return (
@@ -57,19 +57,22 @@ export const FieldValidationEditor = ({
         />
         {t.required}
       </label>
-      {["string", "number", "array"].includes(field.dataType) &&
-        bounds.map((key) => (
-          <label key={key}>
-            {t[key]}
-            <input
-              className={inputClass}
-              type="number"
-              step={field.dataType === "number" ? "any" : "1"}
-              value={field[key] ?? ""}
-              onChange={(event) => changeBound(key, event.target.value)}
-            />
-          </label>
-        ))}
+      {["string", "number", "array"].includes(field.dataType) && (
+        <div className="ui-field-pair">
+          {bounds.map((key) => (
+            <label key={key}>
+              {t[key]}
+              <input
+                className={inputClass}
+                type="number"
+                step={field.dataType === "number" ? "any" : "1"}
+                value={field[key] ?? ""}
+                onChange={(event) => changeBound(key, event.target.value)}
+              />
+            </label>
+          ))}
+        </div>
+      )}
       {field.dataType === "number" && (
         <label>
           <input

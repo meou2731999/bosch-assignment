@@ -1,5 +1,5 @@
 import { uiCopy } from "../../i18n/ui";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import type {
   FormDraft,
   FormDefinition,
@@ -13,7 +13,7 @@ import { Button } from "../../components/ui/Button";
 import { inputClass } from "../auth/AuthScreen";
 import { formCopy } from "../forms/copy";
 import { fieldCopy } from "./fields/copy";
-import { FormJsonUpload } from "./FormJsonUpload";
+import { FormImportStep } from "./FormImportStep";
 import { FieldsEditor } from "./fields/FieldsEditor";
 export const FormDraftEditor = ({
   existing,
@@ -40,6 +40,11 @@ export const FormDraftEditor = ({
   const [uploaded, setUploaded] = useState<FormDefinition | undefined>(
     existing?.draft.uploadedDefinition,
   );
+  const [step, setStep] = useState(existing ? 2 : 1);
+  const stepHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (step === 2 && !existing) stepHeading.current?.focus();
+  }, [step, existing]);
   const [reading, setReading] = useState(false);
   const [name, setName] = useState(existing?.draft.name ?? "");
   const [description, setDescription] = useState(
@@ -60,6 +65,15 @@ export const FormDraftEditor = ({
     setDescription("");
     setTemplate("blank");
   };
+  const nextStep = () => setStep(2);
+  const skipImport = () => {
+    setFields([]);
+    setUploaded(undefined);
+    setName("");
+    setDescription("");
+    setTemplate("blank");
+    setStep(2);
+  };
   const save = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (reading) return;
@@ -76,92 +90,105 @@ export const FormDraftEditor = ({
   };
   return (
     <section className="space-y-4" aria-label={existing ? t.edit : t.create}>
-      <form onSubmit={save}>
-        <fieldset
-          disabled={busy || reading}
-          className="editor-fields ui-form-stack border-0 p-0"
-        >
-          <FormJsonUpload
-            locale={locale}
-            onImport={importDefinition}
-            onLoading={setReading}
-          />
-          <label>
-            {t.name}
-            <input
-              className={inputClass}
-              name="name"
-              required
-              maxLength={120}
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
-          </label>
-          <label>
-            {t.description}
-            <textarea
-              className={inputClass}
-              name="description"
-              maxLength={1000}
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-            />
-          </label>
-          {!uploaded && (
-            <label>
-              {t.template}
-              <select
-                className={inputClass}
-                name="template"
-                aria-label={t.template}
-                value={template}
-                onChange={(event) =>
-                  setTemplate(event.target.value as FormTemplate)
-                }
-              >
-                <option value="blank">{t.blank}</option>
-                <option value="request-v1">{t.v1}</option>
-                <option value="request-v2">{t.v2}</option>
-              </select>
-            </label>
+      {step === 1 ? (
+        <FormImportStep
+          locale={locale}
+          busy={busy || reading}
+          selectedTitle={uploaded?.title}
+          onImport={importDefinition}
+          onLoading={setReading}
+          onNext={nextStep}
+          onSkip={skipImport}
+          onCancel={onCancel}
+        />
+      ) : (
+        <form onSubmit={save}>
+          {!existing && (
+            <h2 ref={stepHeading} tabIndex={-1} className="mb-4 text-lg">
+              {t.editorStep}
+            </h2>
           )}
-          {!uploaded && template !== "blank" && (
+          <fieldset
+            disabled={busy || reading}
+            className="editor-fields ui-form-stack border-0 p-0"
+          >
             <label>
+              {t.name}
               <input
-                type="checkbox"
-                checked={custom}
-                onChange={(event) => setCustom(event.target.checked)}
+                className={inputClass}
+                name="name"
+                required
+                maxLength={120}
+                value={name}
+                onChange={(event) => setName(event.target.value)}
               />
-              {f.custom}
             </label>
-          )}
-          {usesFields && (
-            <>
-              <p>{f.hint}</p>
-              {uploaded && (
-                <p className="text-muted">{uiCopy(locale).importEditHint}</p>
-              )}
-              <FieldsEditor
-                key={importRevision}
-                fields={fields}
-                locale={locale}
-                onChange={changeFields}
+            <label>
+              {t.description}
+              <textarea
+                className={inputClass}
+                name="description"
+                maxLength={1000}
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
               />
-            </>
-          )}
-          <div className="flex flex-wrap gap-3">
-            <Button
-              type="submit"
-              disabled={usesFields && !fieldsSchema.safeParse(fields).success}
-            >
-              {t.save}
-            </Button>
-            <Button variant="secondary" onClick={onCancel}>
-              {t.cancel}
-            </Button>
-          </div>
-        </fieldset>
-      </form>
+            </label>
+            {!uploaded && (
+              <label>
+                {t.template}
+                <select
+                  className={inputClass}
+                  name="template"
+                  aria-label={t.template}
+                  value={template}
+                  onChange={(event) =>
+                    setTemplate(event.target.value as FormTemplate)
+                  }
+                >
+                  <option value="blank">{t.blank}</option>
+                  <option value="request-v1">{t.v1}</option>
+                  <option value="request-v2">{t.v2}</option>
+                </select>
+              </label>
+            )}
+            {!uploaded && template !== "blank" && (
+              <label>
+                <input
+                  type="checkbox"
+                  checked={custom}
+                  onChange={(event) => setCustom(event.target.checked)}
+                />
+                {f.custom}
+              </label>
+            )}
+            {usesFields && (
+              <>
+                <p>{f.hint}</p>
+                {uploaded && (
+                  <p className="text-muted">{uiCopy(locale).importEditHint}</p>
+                )}
+                <FieldsEditor
+                  key={importRevision}
+                  fields={fields}
+                  locale={locale}
+                  onChange={changeFields}
+                />
+              </>
+            )}
+            <div className="flex flex-wrap gap-3">
+              <Button
+                type="submit"
+                disabled={usesFields && !fieldsSchema.safeParse(fields).success}
+              >
+                {t.save}
+              </Button>
+              <Button variant="secondary" onClick={onCancel}>
+                {t.cancel}
+              </Button>
+            </div>
+          </fieldset>
+        </form>
+      )}
     </section>
   );
 };

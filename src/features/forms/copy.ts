@@ -1,5 +1,12 @@
 import type { Locale } from "../../../shared/model";
 const en = {
+  importStep: "Step 1 of 2: Upload JSON",
+  importStepHint:
+    "Upload a Form.io JSON file, or skip to create a form from scratch.",
+  editorStep: "Step 2 of 2: Edit form",
+  nextStep: "Continue to editor",
+  skipImport: "Skip upload",
+  selectedForm: "Selected form",
   manage: "Manage forms",
   create: "Create form type",
   edit: "Edit form draft",
@@ -34,6 +41,13 @@ const en = {
   working: "Working…",
 };
 const vi: typeof en = {
+  importStep: "Bước 1/2: Tải lên JSON",
+  importStepHint:
+    "Tải lên tệp JSON Form.io hoặc bỏ qua để tạo biểu mẫu từ đầu.",
+  editorStep: "Bước 2/2: Chỉnh sửa biểu mẫu",
+  nextStep: "Tiếp tục chỉnh sửa",
+  skipImport: "Bỏ qua tải lên",
+  selectedForm: "Biểu mẫu đã chọn",
   manage: "Quản lý biểu mẫu",
   create: "Tạo loại biểu mẫu",
   edit: "Sửa nháp biểu mẫu",

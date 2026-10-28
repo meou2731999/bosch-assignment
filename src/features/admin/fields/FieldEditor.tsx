@@ -43,6 +43,9 @@ export const FieldEditor = ({
       input,
       dataType: inputDataType(input),
       required: field.required,
+      ...(["string", "array"].includes(inputDataType(input))
+        ? { minLength: 0 }
+        : {}),
       visibility: field.visibility,
       ...(["object", "repeat", "table"].includes(input)
         ? {
@@ -53,6 +56,7 @@ export const FieldEditor = ({
                 input: "text" as const,
                 dataType: "string" as const,
                 required: false,
+                minLength: 0,
               },
             ],
           }
@@ -82,58 +86,60 @@ export const FieldEditor = ({
           }
         />
       </label>
-      <label>
-        {t.input}
-        <select
-          className={inputClass}
-          aria-label={t.input}
-          value={field.input}
-          onChange={(event) =>
-            changeInput(event.target.value as BasicField["input"])
-          }
-        >
-          {(
-            [
-              "text",
-              "textarea",
-              "email",
-              "number",
-              "checkbox",
-              "date",
-              "select",
-              "multiselect",
-              "object",
-              "repeat",
-              "table",
-            ] as const
-          ).map((input) => (
-            <option key={input} value={input}>
-              {t[input]}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        {t.dataType}
-        <select
-          className={inputClass}
-          aria-label={t.dataType}
-          value={field.dataType}
-          onChange={(event) =>
-            changeInput(
-              inputForType(event.target.value as BasicField["dataType"]),
-            )
-          }
-        >
-          {(["string", "number", "boolean", "object", "array"] as const).map(
-            (type) => (
-              <option key={type} value={type}>
-                {t[type]}
+      <div className="ui-field-pair">
+        <label>
+          {t.input}
+          <select
+            className={inputClass}
+            aria-label={t.input}
+            value={field.input}
+            onChange={(event) =>
+              changeInput(event.target.value as BasicField["input"])
+            }
+          >
+            {(
+              [
+                "text",
+                "textarea",
+                "email",
+                "number",
+                "checkbox",
+                "date",
+                "select",
+                "multiselect",
+                "object",
+                "repeat",
+                "table",
+              ] as const
+            ).map((input) => (
+              <option key={input} value={input}>
+                {t[input]}
               </option>
-            ),
-          )}
-        </select>
-      </label>
+            ))}
+          </select>
+        </label>
+        <label>
+          {t.dataType}
+          <select
+            className={inputClass}
+            aria-label={t.dataType}
+            value={field.dataType}
+            onChange={(event) =>
+              changeInput(
+                inputForType(event.target.value as BasicField["dataType"]),
+              )
+            }
+          >
+            {(["string", "number", "boolean", "object", "array"] as const).map(
+              (type) => (
+                <option key={type} value={type}>
+                  {t[type]}
+                </option>
+              ),
+            )}
+          </select>
+        </label>
+      </div>
       <FieldValidationEditor
         key={field.input}
         field={field}
