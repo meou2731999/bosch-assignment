@@ -8,6 +8,8 @@ export const messages = {
   requests: "Your requests",
   requestTitle: "Request",
   requestStatus: "Status",
+  actions: "Actions",
+  viewDetails: "View details",
   pagination: "Pagination",
   previousPage: "Previous",
   nextPage: "Next",

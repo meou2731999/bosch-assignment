@@ -9,6 +9,8 @@ export const messages: Messages = {
   requests: "Yêu cầu của bạn",
   requestTitle: "Yêu cầu",
   requestStatus: "Trạng thái",
+  actions: "Thao tác",
+  viewDetails: "Xem chi tiết",
   pagination: "Phân trang",
   previousPage: "Trước",
   nextPage: "Tiếp",

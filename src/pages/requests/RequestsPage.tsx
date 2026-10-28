@@ -75,8 +75,12 @@ export const RequestsPage = ({
       return (
         <RequestList
           locale={locale}
+          user={user}
           requests={requests}
           navigate={navigate}
+          onReviewed={saved}
+          onBusy={setBusy}
+          busy={busy || loading}
           emptyMessage={canCreate ? t.empty : f.noCreate}
         />
       );
