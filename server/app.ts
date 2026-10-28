@@ -1,3 +1,4 @@
+import { apiMessages } from "../shared/i18n/api-en";
 import { createAttachmentStore } from "./attachments/store";
 import { registerAttachmentRoutes } from "./attachments/routes";
 import express from "express";
@@ -35,7 +36,7 @@ export function createApp({
   registerRequestRoutes(app, store, files, forms);
   registerAttachmentRoutes(app, store, files, forms);
   app.use("/api", (_req, _res, next) =>
-    next(new ApiError(404, "NOT_FOUND", "API endpoint not found.")),
+    next(new ApiError(404, "NOT_FOUND", apiMessages.apiEndpointNotFound)),
   );
   if (production) {
     app.use(express.static(path.join(root, "dist")));
@@ -59,12 +60,12 @@ export function createApp({
       } else if ((error as { type?: string })?.type === "entity.too.large") {
         res.status(413).json({
           code: "FILE_SIZE",
-          message: "The upload or request body exceeds its size limit.",
+          message: apiMessages.bodySize,
         });
       } else if (error instanceof SyntaxError) {
         res.status(400).json({
           code: "INVALID",
-          message: "The request contains invalid JSON.",
+          message: apiMessages.invalidJson,
         });
       } else {
         console.error(
@@ -73,7 +74,7 @@ export function createApp({
         );
         res.status(500).json({
           code: "INTERNAL",
-          message: "Unable to complete this operation. Please retry.",
+          message: apiMessages.operationFailed,
         });
       }
     },

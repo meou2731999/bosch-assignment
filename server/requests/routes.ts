@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import { registerDraftRoutes } from "./draft-routes";
 import type { FormStore } from "../forms/store";
 import { hasFormPermission } from "../../shared/forms";
@@ -16,7 +17,8 @@ export function registerRequestRoutes(
   app.post("/api/requests/:id/review", (req, res, next) => {
     try {
       const previous = store.get(req.params.id);
-      if (!previous) throw new ApiError(404, "NOT_FOUND", "Request not found.");
+      if (!previous)
+        throw new ApiError(404, "NOT_FOUND", apiMessages.requestNotFound);
       const record = reviewRequest(
         res.locals.user,
         previous,
@@ -40,18 +42,18 @@ export function registerRequestRoutes(
   app.get("/api/requests/:id", (req, res, next) => {
     const record = store.get(req.params.id);
     if (!record || !canRead(res.locals.user, record))
-      return next(new ApiError(404, "NOT_FOUND", "Request not found."));
+      return next(new ApiError(404, "NOT_FOUND", apiMessages.requestNotFound));
     res.json(record);
   });
   app.put("/api/requests/:id", (req, res, next) => {
     try {
       if (!/^[a-zA-Z0-9-]{1,80}$/.test(req.params.id))
-        throw new ApiError(400, "INVALID", "Invalid request ID.");
+        throw new ApiError(400, "INVALID", apiMessages.invalidRequestId);
       if (req.header("x-demo-failure") === "true")
         throw new ApiError(
           503,
           "UNAVAILABLE",
-          "The demo API is temporarily unavailable. Your form has not been saved.",
+          apiMessages.theDemoApiIsTemporarilyUnavailableYourFormHas,
         );
       const previous = store.get(req.params.id);
       const formId = req.body?.formId;
@@ -62,13 +64,13 @@ export function registerRequestRoutes(
         throw new ApiError(
           403,
           "FORBIDDEN",
-          "You cannot create requests for this form.",
+          apiMessages.youCannotCreateRequestsForThisForm,
         );
       if (previous && previous.formId !== formId)
         throw new ApiError(
           409,
           "VERSION",
-          "A request must keep its original form type.",
+          apiMessages.aRequestMustKeepItsOriginalFormType,
         );
       const form = forms.published(formId, previous?.formVersion);
       const record = saveRequest(

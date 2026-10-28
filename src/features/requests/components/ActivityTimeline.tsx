@@ -1,3 +1,4 @@
+import { uiCopy } from "../../../i18n/ui";
 import { historyCopy } from "../history/copy";
 import { USERS, type AuditEvent, type Locale } from "../../../../shared/model";
 import { copy } from "../../../i18n";
@@ -51,9 +52,7 @@ export const ActivityTimeline = ({
               </span>
             </div>
             <time dateTime={event.at}>
-              {new Date(event.at).toLocaleString(
-                locale === "vi" ? "vi-VN" : "en-GB",
-              )}
+              {new Date(event.at).toLocaleString(uiCopy(locale).dateLocale)}
             </time>
           </li>
         ))}

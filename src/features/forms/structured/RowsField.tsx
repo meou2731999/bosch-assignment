@@ -1,3 +1,4 @@
+import { uiCopy } from "../../../i18n/ui";
 import type { BasicField } from "../../../../shared/fields";
 import { isObject } from "../../../../shared/field-values";
 import { Button } from "../../../components/ui/Button";
@@ -17,7 +18,7 @@ export const RowsField = (
       variant="danger"
       onClick={() => onUpdate(value.filter((_, i) => i !== index))}
     >
-      {locale === "vi" ? "Xóa hàng" : "Remove row"}
+      {uiCopy(locale).removeRow}
     </Button>
   );
   const cells = (item: unknown, index: number, fields = field.fields ?? []) => {
@@ -43,7 +44,7 @@ export const RowsField = (
               {field.fields?.map((child) => (
                 <th key={child.key}>{child.label}</th>
               ))}
-              {!readOnly && <th>{locale === "vi" ? "Thao tác" : "Actions"}</th>}
+              {!readOnly && <th>{uiCopy(locale).actions}</th>}
             </tr>
           </thead>
           <tbody>
@@ -72,7 +73,7 @@ export const RowsField = (
           disabled={value.length >= (field.maxLength ?? 100)}
           onClick={() => onUpdate([...value, {}])}
         >
-          {locale === "vi" ? "Thêm hàng" : "Add row"}
+          {uiCopy(locale).addRow}
         </Button>
       )}
     </fieldset>

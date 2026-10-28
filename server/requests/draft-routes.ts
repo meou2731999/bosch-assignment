@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import { z } from "zod";
 import type { Express } from "express";
 import { hasFormPermission } from "../../shared/forms";
@@ -30,12 +31,12 @@ function editable(
     record.ownerId !== user.id ||
     !hasFormPermission(user, record.formId, "create")
   )
-    throw new ApiError(404, "NOT_FOUND", "Draft not found.");
+    throw new ApiError(404, "NOT_FOUND", apiMessages.draftNotFound);
   if (record.status !== "draft")
     throw new ApiError(
       409,
       "LOCKED",
-      "This request has already been submitted.",
+      apiMessages.thisRequestHasAlreadyBeenSubmitted,
     );
   return record;
 }
@@ -44,7 +45,7 @@ function revision(record: RequestRecord, expected: number) {
     throw new ApiError(
       409,
       "CONFLICT",
-      "A newer revision exists. Reload the request before editing.",
+      apiMessages.aNewerRevisionExistsReloadTheRequestBeforeEditing,
     );
 }
 export function registerDraftRoutes(
@@ -74,7 +75,7 @@ export function registerDraftRoutes(
           throw new ApiError(
             422,
             "INVALID",
-            "Supply revision, target and explicit preview confirmation.",
+            apiMessages.supplyRevisionTargetAndExplicitPreviewConfirmation,
           );
         const input = parsed.data;
         revision(record, input.revision);
@@ -89,7 +90,7 @@ export function registerDraftRoutes(
                 .snapshots(record.id)
                 .find((item) => item.revision === snapshotRevision);
         if (operation === "restore" && !snapshot)
-          throw new ApiError(404, "NOT_FOUND", "Snapshot not found.");
+          throw new ApiError(404, "NOT_FOUND", apiMessages.snapshotNotFound);
         const target = forms.published(
           record.formId,
           snapshot?.formVersion ??
@@ -103,7 +104,7 @@ export function registerDraftRoutes(
           throw new ApiError(
             409,
             "VERSION",
-            "Preview the latest published version to upgrade this draft.",
+            apiMessages.previewTheLatestPublishedVersionToUpgradeThisDraft,
           );
         const before = forms.published(record.formId, record.formVersion);
         const edited =

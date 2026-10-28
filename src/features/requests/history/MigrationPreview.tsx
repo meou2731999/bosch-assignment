@@ -1,3 +1,4 @@
+import { translateValidation } from "../../../../shared/i18n/validation";
 import { useCallback, useRef, useState } from "react";
 import type { DraftPreview } from "../../../../shared/draft-history";
 import type { Locale } from "../../../../shared/model";
@@ -121,7 +122,7 @@ export const MigrationPreview = ({
           <ul>
             {Object.entries(preview.submissionErrors).map(([path, message]) => (
               <li key={path}>
-                {path}: {message}
+                {path}: {translateValidation(message, locale)}
               </li>
             ))}
           </ul>

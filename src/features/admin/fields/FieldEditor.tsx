@@ -1,3 +1,4 @@
+import { uiCopy } from "../../../i18n/ui";
 import {
   inputDataType,
   inputForType,
@@ -48,7 +49,7 @@ export const FieldEditor = ({
             fields: [
               {
                 key: `tmp_${crypto.randomUUID().replaceAll("-", "")}`,
-                label: "Name",
+                label: uiCopy(locale).defaultName,
                 input: "text" as const,
                 dataType: "string" as const,
                 required: false,
@@ -57,7 +58,9 @@ export const FieldEditor = ({
           }
         : {}),
       ...(input === "select" || input === "multiselect"
-        ? { options: [{ label: "Option", value: "option" }] }
+        ? {
+            options: [{ label: uiCopy(locale).defaultOption, value: "option" }],
+          }
         : {}),
     });
   };

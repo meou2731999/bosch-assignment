@@ -27,7 +27,7 @@ New accounts must change their initial password and sign in again. Admins manage
 
 ## Upload a form
 
-Upload a `.json` file up to 256 KB containing a title and a Form.io `components` array:
+Use **Download example JSON** beside the upload field to get an editable sample. Upload a `.json` file up to 256 KB containing a title and a Form.io `components` array:
 
 ```json
 {
@@ -46,7 +46,7 @@ Upload a `.json` file up to 256 KB containing a title and a Form.io `components`
 
 Supported components are `textfield` (text/date), `textarea`, `email`, `number`, `checkbox`, `select`, `radio`, `panel`, and `fieldset`. Static choices, required/bounds validation, and simple `conditional` rules are supported. Unsupported properties/components, executable rules, and remote data sources are rejected. This is a supported subset, not a general Form.io export importer.
 
-Upload replaces the editor content only after validation succeeds. Save persists the uploaded definition; publish creates an immutable version. To update an imported form, edit its draft and upload a replacement JSON file. Rendering and server validation use the stored definition and derived field rules, without reading a source template. Existing IT templates remain available for legacy forms.
+Upload replaces the editor content only after validation succeeds. Save persists the uploaded definition; publish creates an immutable version. After upload, fields are editable with the same builder used for blank forms: add, remove, reorder, change types and validation, or preview before saving. You can also upload a replacement file. Until the first field edit, the original Form.io layout is preserved. Once edited, the builder layout is used (panels flatten into fields and radios become selects), retaining validation and visibility rules. Rendering and server validation use the stored definition and derived field rules, without reading a source template. Existing IT templates remain available for legacy forms.
 
 ## Documentation
 

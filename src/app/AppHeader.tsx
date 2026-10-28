@@ -1,3 +1,4 @@
+import { uiCopy } from "../i18n/ui";
 import { AppNavigation } from "./AppNavigation";
 import { type Locale, type AccountUser } from "../../shared/model";
 import { UserMenu } from "./UserMenu";
@@ -39,10 +40,11 @@ export const AppHeader = ({
             className="grid h-11 w-10 place-items-center rounded-[11px_11px_2px_11px] bg-brand text-2xl text-lime-200"
             aria-hidden="true"
           >
-            R
+            {uiCopy(locale).brandMark}
           </span>
           <span>
-            Request Desk<small>{t.tagline}</small>
+            {uiCopy(locale).brand}
+            <small>{t.tagline}</small>
           </span>
         </a>
         <UserMenu

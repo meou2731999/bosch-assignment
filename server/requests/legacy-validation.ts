@@ -1,3 +1,8 @@
+import {
+  validationMessages,
+  validationMessage,
+} from "../../shared/i18n/validation";
+import { apiMessages } from "../../shared/i18n/api-en";
 import { z } from "zod";
 import type { RequestData } from "../../shared/model";
 import type { PublishedForm } from "../../shared/forms";
@@ -49,7 +54,7 @@ export function normalizeData(
     throw new ApiError(
       422,
       "INVALID",
-      "Please check the highlighted values.",
+      apiMessages.pleaseCheckTheHighlightedValues,
       fields,
     );
   }
@@ -59,24 +64,23 @@ export function normalizeData(
 export function validateSubmission(data: RequestData) {
   const fields: Record<string, string> = {};
   if (!data.requestTitle || data.requestTitle.length < 3)
-    fields.requestTitle = "Enter at least 3 characters.";
-  if (!data.requestType) fields.requestType = "Choose a request type.";
+    fields.requestTitle = validationMessage("characters", 3);
+  if (!data.requestType) fields.requestType = validationMessages.requestType;
   if (!data.reason || data.reason.length < 10)
-    fields.reason = "Enter at least 10 characters.";
+    fields.reason = validationMessage("characters", 10);
   if (data.requestType === "equipment") {
-    if (!data.equipment) fields.equipment = "Choose equipment.";
-    if (!data.quantity) fields.quantity = "Enter a quantity from 1 to 25.";
+    if (!data.equipment) fields.equipment = validationMessages.equipment;
+    if (!data.quantity) fields.quantity = validationMessages.quantity;
   }
   if (data.requestType === "software") {
-    if (!data.application) fields.application = "Choose an application.";
-    if (!data.accessDays)
-      fields.accessDays = "Enter access duration from 1 to 365 days.";
+    if (!data.application) fields.application = validationMessages.application;
+    if (!data.accessDays) fields.accessDays = validationMessages.accessDays;
   }
   if (Object.keys(fields).length)
     throw new ApiError(
       422,
       "INVALID",
-      "Complete the required fields before submitting.",
+      apiMessages.completeTheRequiredFieldsBeforeSubmitting,
       fields,
     );
 }

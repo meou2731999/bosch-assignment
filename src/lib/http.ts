@@ -1,3 +1,4 @@
+import { clientErrors } from "../i18n/errors";
 import type { User } from "../../shared/model";
 let csrfToken = "";
 export function setCsrfToken(token: string) {
@@ -32,20 +33,14 @@ export async function request(
       signal: init?.signal ? AbortSignal.any([init.signal, timeout]) : timeout,
     });
   } catch {
-    throw new HttpError(
-      "NETWORK",
-      "Cannot reach the API. Your input is still here; check the connection and retry.",
-    );
+    throw new HttpError("NETWORK", clientErrors.network);
   }
   if (!response.ok) {
     let body;
     try {
       body = await response.json();
     } catch {
-      throw new HttpError(
-        "RESPONSE",
-        "The API returned an unexpected response. Please retry.",
-      );
+      throw new HttpError("RESPONSE", clientErrors.response);
     }
     if (body.code === "UNAUTHENTICATED") {
       const hadSession = Boolean(csrfToken);
@@ -65,9 +60,6 @@ export async function call<T>(
   try {
     return (await response.json()) as T;
   } catch {
-    throw new HttpError(
-      "RESPONSE",
-      "The API returned an unexpected response. Please retry.",
-    );
+    throw new HttpError("RESPONSE", clientErrors.response);
   }
 }

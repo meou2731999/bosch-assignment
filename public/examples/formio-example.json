@@ -1,0 +1,29 @@
+{
+  "display": "form",
+  "type": "form",
+  "title": "Visitor registration",
+  "components": [
+    {
+      "type": "textfield",
+      "key": "visitorName",
+      "label": "Visitor name",
+      "input": true,
+      "validate": { "required": true, "maxLength": 120 }
+    },
+    {
+      "type": "email",
+      "key": "email",
+      "label": "Email",
+      "input": true,
+      "validate": { "required": true }
+    },
+    {
+      "type": "textarea",
+      "key": "notes",
+      "label": "Visit notes",
+      "input": true,
+      "rows": 3,
+      "validate": { "maxLength": 500 }
+    }
+  ]
+}

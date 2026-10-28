@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import { hasFormPermission } from "../../shared/forms";
 import { z } from "zod";
 import type { RequestRecord, User } from "../../shared/model";
@@ -22,33 +23,33 @@ export function reviewRequest(
     throw new ApiError(
       403,
       "FORBIDDEN",
-      "Only reviewers with form permission may review another user’s request.",
+      apiMessages.onlyReviewersWithFormPermissionMayReviewAnotherUser,
     );
   const result = reviewSchema.safeParse(raw);
   if (!result.success)
     throw new ApiError(
       422,
       "INVALID",
-      "Check the decision and comment (maximum 2,000 characters).",
+      apiMessages.checkTheDecisionAndCommentMaximum2000Characters,
     );
   const input = result.data;
   if (record.revision !== input.revision)
     throw new ApiError(
       409,
       "CONFLICT",
-      "A newer revision exists. Reload the request before reviewing.",
+      apiMessages.aNewerRevisionExistsReloadTheRequestBeforeReviewing,
     );
   if (!["submitted", "in_review"].includes(record.status))
     throw new ApiError(
       409,
       "LOCKED",
-      "Only submitted or in-review requests can be approved or rejected.",
+      apiMessages.onlySubmittedOrInReviewRequestsCanBeApproved,
     );
   if (input.decision === "reject" && !input.comment)
     throw new ApiError(
       422,
       "COMMENT_REQUIRED",
-      "A rejection reason is required.",
+      apiMessages.aRejectionReasonIsRequired,
     );
   const status = input.decision === "approve" ? "approved" : "rejected";
   return {

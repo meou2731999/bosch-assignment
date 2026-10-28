@@ -1,3 +1,4 @@
+import { uiCopy } from "../../i18n/ui";
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { Locale } from "../../../shared/model";
@@ -71,7 +72,7 @@ export const Modal = ({
             {title}
           </h2>
           <Button variant="secondary" disabled={busy} onClick={onClose}>
-            {locale === "vi" ? "Đóng" : "Close"}
+            {uiCopy(locale).close}
           </Button>
         </div>
         <div className="min-h-0 space-y-4 overflow-y-auto p-5 md:p-6">

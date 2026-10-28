@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import { assignFieldKeys } from "./field-identity";
 import { readFormDraft } from "./read-draft";
 import { fieldDefinition } from "../../shared/field-definition";
@@ -20,7 +21,7 @@ export function createFormStore(dataDir: string, root: string) {
       throw new ApiError(
         422,
         "INVALID",
-        "Blank forms require at least one field.",
+        apiMessages.blankFormsRequireAtLeastOneField,
       );
     return JSON.parse(
       readFileSync(
@@ -81,7 +82,8 @@ export function createFormStore(dataDir: string, root: string) {
   }
   function get(id: string) {
     const form = records.find((record) => record.id === id);
-    if (!form) throw new ApiError(404, "NOT_FOUND", "Form type not found.");
+    if (!form)
+      throw new ApiError(404, "NOT_FOUND", apiMessages.formTypeNotFound);
     return structuredClone(form);
   }
   function published(id: string, version?: number): PublishedForm {
@@ -89,7 +91,11 @@ export function createFormStore(dataDir: string, root: string) {
     const selected = version ?? form.activeVersion;
     const entry = form.versions.find((item) => item.version === selected);
     if (!entry)
-      throw new ApiError(404, "NOT_FOUND", "Published form version not found.");
+      throw new ApiError(
+        404,
+        "NOT_FOUND",
+        apiMessages.publishedFormVersionNotFound,
+      );
     return entry;
   }
   return {
@@ -100,7 +106,11 @@ export function createFormStore(dataDir: string, root: string) {
       const draft = readFormDraft(raw);
       if (draft.fields) draft.fields = assignFieldKeys(draft.fields);
       if (draft.revision !== 0)
-        throw new ApiError(409, "CONFLICT", "New form revision must be zero.");
+        throw new ApiError(
+          409,
+          "CONFLICT",
+          apiMessages.newFormRevisionMustBeZero,
+        );
       const form: FormRecord = {
         id: randomUUID(),
         activeVersion: null,
@@ -118,7 +128,7 @@ export function createFormStore(dataDir: string, root: string) {
         throw new ApiError(
           409,
           "CONFLICT",
-          "A newer form draft exists. Reload before editing.",
+          apiMessages.aNewerFormDraftExistsReloadBeforeEditing,
         );
       if (draft.fields)
         draft.fields = assignFieldKeys(draft.fields, [
@@ -140,13 +150,17 @@ export function createFormStore(dataDir: string, root: string) {
         .strict()
         .safeParse(raw);
       if (!parsed.success)
-        throw new ApiError(422, "INVALID", "Supply the form draft revision.");
+        throw new ApiError(
+          422,
+          "INVALID",
+          apiMessages.supplyTheFormDraftRevision,
+        );
       const form = get(id);
       if (parsed.data.revision !== form.draft.revision)
         throw new ApiError(
           409,
           "CONFLICT",
-          "A newer form draft exists. Reload before publishing.",
+          apiMessages.aNewerFormDraftExistsReloadBeforePublishing,
         );
       const version =
         Math.max(0, ...form.versions.map((item) => item.version)) + 1;

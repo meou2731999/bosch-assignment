@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import { randomBytes, scrypt as derive, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import { ApiError } from "../http/errors";
@@ -7,7 +8,7 @@ export function validatePassword(password: string) {
     throw new ApiError(
       422,
       "PASSWORD",
-      "Use a password of at least 12 characters and at most 256 bytes.",
+      apiMessages.useAPasswordOfAtLeast12CharactersAnd,
     );
 }
 export async function hashPassword(password: string) {

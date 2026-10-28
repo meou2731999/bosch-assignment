@@ -1,3 +1,4 @@
+import { uiCopy } from "../../i18n/ui";
 import {
   ActionDropdown,
   type DropdownAction,
@@ -118,7 +119,7 @@ export const FormsPanel = ({ locale }: Readonly<{ locale: Locale }>) => {
                 </p>
               </div>
               <ActionDropdown
-                label={locale === "vi" ? "Thao tác" : "Actions"}
+                label={uiCopy(locale).actions}
                 context={form.draft.name}
                 disabled={busy}
                 actions={actionsFor(form)}

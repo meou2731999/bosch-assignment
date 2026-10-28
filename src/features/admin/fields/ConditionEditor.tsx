@@ -1,8 +1,8 @@
+import { conditionCopy } from "./condition-copy";
 import {
   emptyCondition as leaf,
   changeOperator,
   initialValue,
-  conditionCopy,
 } from "./condition-controls";
 import type { Locale } from "../../../../shared/model";
 import type { Condition } from "../../../../shared/field-conditions";
@@ -96,8 +96,10 @@ export const ConditionEditor = ({
           value={condition.op}
           onChange={(event) => changeOp(event.target.value)}
         >
-          {["eq", "neq", "contains", "and", "or"].map((op) => (
-            <option key={op}>{op}</option>
+          {(["eq", "neq", "contains", "and", "or"] as const).map((op) => (
+            <option key={op} value={op}>
+              {t.operators[op]}
+            </option>
           ))}
         </select>
       </label>
@@ -127,8 +129,10 @@ export const ConditionEditor = ({
                 value={condition.scope}
                 onChange={(event) => changeScope(event.target.value)}
               >
-                {["row", "parent", "root"].map((scope) => (
-                  <option key={scope}>{scope}</option>
+                {(["row", "parent", "root"] as const).map((scope) => (
+                  <option key={scope} value={scope}>
+                    {t.scopes[scope]}
+                  </option>
                 ))}
               </select>
             </label>
@@ -146,8 +150,10 @@ export const ConditionEditor = ({
                 value={typeof condition.value}
                 onChange={(event) => changeType(event.target.value)}
               >
-                {["string", "number", "boolean"].map((type) => (
-                  <option key={type}>{type}</option>
+                {(["string", "number", "boolean"] as const).map((type) => (
+                  <option key={type} value={type}>
+                    {t.types[type]}
+                  </option>
                 ))}
               </select>
             </label>

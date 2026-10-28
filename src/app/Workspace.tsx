@@ -1,3 +1,5 @@
+import { errorMessage } from "../i18n/errors";
+import { uiCopy } from "../i18n/ui";
 import { Button } from "../components/ui/Button";
 import type { ChangeEvent } from "react";
 import { useWorkspace } from "./useWorkspace";
@@ -62,7 +64,7 @@ export const Workspace = ({
           className="mb-5 rounded-lg border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-900 [&_p]:my-2 [&_ul]:mb-0"
           role="alert"
         >
-          {error}{" "}
+          {errorMessage(error, locale)}{" "}
           <Button
             variant="secondary"
             onClick={() => void load(record?.id, true)}
@@ -140,7 +142,7 @@ export const Workspace = ({
           <div className="mb-3 flex items-start justify-between gap-5 [&_h1]:mb-0 [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:tracking-tight md:[&_h1]:text-3xl">
             <div>
               <div className="mb-3 text-[10px] font-bold tracking-[0.16em] text-muted">
-                IT SERVICES
+                {uiCopy(locale).services}
               </div>
               <h1>{title}</h1>
             </div>

@@ -1,3 +1,4 @@
+import { uiCopy } from "../i18n/ui";
 import { useEffect, useId, useRef, useState } from "react";
 import type { AccountUser, Locale } from "../../shared/model";
 import { authCopy } from "../features/auth/copy";
@@ -26,7 +27,7 @@ export const UserMenu = ({
   const trigger = useRef<HTMLButtonElement>(null);
   const id = useId();
   const t = authCopy(locale);
-  const label = locale === "vi" ? "Menu người dùng" : "User menu";
+  const label = uiCopy(locale).userMenu;
   useEffect(() => {
     if (!open) return;
     const outside = (event: PointerEvent) => {
@@ -82,8 +83,8 @@ export const UserMenu = ({
               disabled={disabled}
               onChange={(event) => setLocale(event.target.value as Locale)}
             >
-              <option value="en">English</option>
-              <option value="vi">Tiếng Việt</option>
+              <option value="en">{uiCopy(locale).english}</option>
+              <option value="vi">{uiCopy(locale).vietnamese}</option>
             </select>
           </label>
           <Button

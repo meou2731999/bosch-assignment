@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import type { PublishedForm } from "../../shared/forms";
 import { validateFields } from "../../shared/field-validation";
 import { ApiError } from "../http/errors";
@@ -17,7 +18,7 @@ export function validateRequestData(
     throw new ApiError(
       422,
       "INVALID",
-      "Please check the highlighted values.",
+      apiMessages.pleaseCheckTheHighlightedValues,
       checked.errors,
     );
   return checked.data;

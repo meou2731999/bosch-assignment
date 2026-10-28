@@ -1,3 +1,4 @@
+import { uiCopy } from "../i18n/ui";
 import type { Locale } from "../../shared/model";
 import { authCopy } from "../features/auth/copy";
 import { formCopy } from "../features/forms/copy";
@@ -20,7 +21,7 @@ export const AppNavigation = ({
   const t = authCopy(locale);
   return (
     <nav
-      aria-label={locale === "vi" ? "Điều hướng quản trị" : "Admin navigation"}
+      aria-label={uiCopy(locale).adminNavigation}
       className="border-b border-line bg-white"
     >
       <div className="flex gap-3 px-5 py-3 md:px-[5vw]">

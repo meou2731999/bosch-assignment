@@ -1,3 +1,4 @@
+import { clientErrors } from "../../i18n/errors";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Form, type FormType } from "@formio/react";
 import type { FormDefinition } from "../../../shared/forms";
@@ -81,7 +82,7 @@ const FormioForm = ({
             setError(
               cause instanceof Error
                 ? cause
-                : new Error("Unable to initialize the form."),
+                : new Error(clientErrors.initialize),
             );
         });
     },

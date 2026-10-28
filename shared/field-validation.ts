@@ -1,3 +1,4 @@
+import { validationMessages, validationMessage } from "./i18n/validation";
 import { isVisible, type FieldScope } from "./field-conditions";
 import { validateComplex } from "./field-values";
 import { z } from "zod";
@@ -31,7 +32,7 @@ function checkField(
   if (value === undefined || value === null || value === "")
     return {
       errors:
-        submit && field.required ? { [path]: "This field is required." } : {},
+        submit && field.required ? { [path]: validationMessages.required } : {},
     };
   if (["array", "object"].includes(field.dataType))
     return validateComplex(field, value, submit, scope, path);
@@ -44,7 +45,8 @@ function validateValue(
   value: unknown,
   submit: boolean,
 ): string | undefined {
-  if (typeof value !== field.dataType) return `Expected ${field.dataType}.`;
+  if (typeof value !== field.dataType)
+    return validationMessage("expected", field.dataType);
   if (typeof value === "number") return validateNumber(field, value);
   if (typeof value === "boolean") return validateBoolean(field, value, submit);
   if (typeof value === "string") return validateString(field, value, submit);
@@ -52,12 +54,13 @@ function validateValue(
 }
 
 function validateNumber(field: BasicField, value: number): string | undefined {
-  if (!Number.isFinite(value)) return "Enter a finite number.";
-  if (field.integer && !Number.isInteger(value)) return "Enter a whole number.";
+  if (!Number.isFinite(value)) return validationMessages.finite;
+  if (field.integer && !Number.isInteger(value))
+    return validationMessages.integer;
   if (field.min !== undefined && value < field.min)
-    return `Minimum: ${field.min}.`;
+    return validationMessage("min", field.min);
   if (field.max !== undefined && value > field.max)
-    return `Maximum: ${field.max}.`;
+    return validationMessage("max", field.max);
   return undefined;
 }
 
@@ -66,8 +69,7 @@ function validateBoolean(
   value: boolean,
   submit: boolean,
 ): string | undefined {
-  if (submit && field.required && !value)
-    return "This checkbox must be checked.";
+  if (submit && field.required && !value) return validationMessages.checked;
   return undefined;
 }
 
@@ -77,11 +79,11 @@ function validateString(
   submit: boolean,
 ): string | undefined {
   if (submit && field.required && !value.trim())
-    return "This field is required.";
+    return validationMessages.required;
   if (value.length < (field.minLength ?? 0))
-    return `Minimum length: ${field.minLength}.`;
+    return validationMessage("minLength", field.minLength ?? 0);
   if (value.length > (field.maxLength ?? 10000))
-    return `Maximum length: ${field.maxLength ?? 10000}.`;
+    return validationMessage("maxLength", field.maxLength ?? 10000);
   return validateStringFormat(field, value);
 }
 
@@ -90,17 +92,17 @@ function validateStringFormat(
   value: string,
 ): string | undefined {
   if (field.input === "email" && !z.email().safeParse(value).success)
-    return "Enter a valid email address.";
+    return validationMessages.email;
   if (
     field.input === "date" &&
     (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !validDate(value))
   )
-    return "Enter a valid date (YYYY-MM-DD).";
+    return validationMessages.date;
   if (
     field.input === "select" &&
     !field.options?.some((option) => option.value === value)
   )
-    return "Choose a configured option.";
+    return validationMessages.option;
   return undefined;
 }
 

@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import { hasFormPermission } from "../../shared/forms";
 import type { FormStore } from "../forms/store";
 import express, { type Express } from "express";
@@ -19,7 +20,7 @@ export function registerAttachmentRoutes(
       const user = res.locals.user;
       const record = requests.get(req.params.id);
       if (!/^[a-zA-Z0-9-]{1,80}$/.test(req.params.id))
-        return next(new ApiError(400, "INVALID", "Invalid request ID."));
+        return next(new ApiError(400, "INVALID", apiMessages.invalidRequestId));
       const formId = record?.formId ?? req.header("x-form-id");
       if (
         !formId ||
@@ -30,7 +31,7 @@ export function registerAttachmentRoutes(
           new ApiError(
             403,
             "FORBIDDEN",
-            "You cannot attach files to this request.",
+            apiMessages.youCannotAttachFilesToThisRequest,
           ),
         );
       if (
@@ -42,7 +43,7 @@ export function registerAttachmentRoutes(
           new ApiError(
             409,
             "VERSION",
-            "A request must keep its original form type.",
+            apiMessages.aRequestMustKeepItsOriginalFormType,
           ),
         );
       try {
@@ -56,12 +57,16 @@ export function registerAttachmentRoutes(
           new ApiError(
             409,
             "LOCKED",
-            "This request has already been submitted.",
+            apiMessages.thisRequestHasAlreadyBeenSubmitted,
           ),
         );
       if (!req.is("application/octet-stream"))
         return next(
-          new ApiError(415, "FILE_TYPE", "Upload the file as binary content."),
+          new ApiError(
+            415,
+            "FILE_TYPE",
+            apiMessages.uploadTheFileAsBinaryContent,
+          ),
         );
       next();
     },
@@ -72,7 +77,7 @@ export function registerAttachmentRoutes(
         try {
           name = decodeURIComponent(req.header("x-file-name") ?? "");
         } catch {
-          throw new ApiError(422, "FILE_NAME", "Invalid file name.");
+          throw new ApiError(422, "FILE_NAME", apiMessages.invalidFileName);
         }
         res
           .status(201)
@@ -106,7 +111,7 @@ export function registerAttachmentRoutes(
         !(record && linked && canRead(res.locals.user, record)) &&
         !pendingOwner
       )
-        throw new ApiError(404, "NOT_FOUND", "File not found.");
+        throw new ApiError(404, "NOT_FOUND", apiMessages.fileNotFound);
       res.set({
         "Content-Type": file.type,
         "X-Content-Type-Options": "nosniff",

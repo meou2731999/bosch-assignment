@@ -1,5 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { login, publish, prepareRequester } from "./helpers/field-builder";
+import {
+  login,
+  publish,
+  prepareRequester,
+  addField,
+} from "./helpers/field-builder";
 
 test("upload JSON, recover from invalid files, publish and submit the stored form", async ({
   page,
@@ -44,11 +49,12 @@ test("upload JSON, recover from invalid files, publish and submit the stored for
   await expect(editor.getByLabel("Form name", { exact: true })).toHaveValue(
     definition.title,
   );
+  await expect(editor.getByLabel("Field label", { exact: true })).toHaveValue(
+    "Visitor name",
+  );
   await expect(
-    editor
-      .getByRole("region", { name: "Form preview" })
-      .getByLabel("Visitor name", { exact: false }),
-  ).toBeVisible();
+    editor.getByRole("region", { name: "Form preview", exact: true }),
+  ).toHaveCount(0);
   await upload.setInputFiles({
     name: "unsupported.json",
     mimeType: "application/json",
@@ -68,17 +74,55 @@ test("upload JSON, recover from invalid files, publish and submit the stored for
   await row
     .getByRole("menuitem", { name: "Edit form draft", exact: true })
     .click();
+  const edit = page.getByRole("region", {
+    name: "Edit form draft",
+    exact: true,
+  });
+  await expect(edit.getByLabel("Field label", { exact: true })).toHaveValue(
+    "Visitor name",
+  );
+  await edit.getByLabel("Field label", { exact: true }).fill("Full name");
+  const email = await addField(edit, "Contact email", "email");
+  await email.getByLabel("Required", { exact: true }).check();
+  const temporary = await addField(edit, "Remove me");
+  await temporary
+    .getByRole("button", { name: "Remove field", exact: true })
+    .click();
+  await edit.getByRole("button", { name: "Preview form", exact: true }).click();
+  const preview = edit.getByRole("region", {
+    name: "Preview form",
+    exact: true,
+  });
+  await expect(preview.getByLabel("Full name", { exact: false })).toBeVisible();
   await expect(
-    page
-      .getByRole("region", { name: "Form preview" })
-      .getByLabel("Visitor name", { exact: false }),
+    preview.getByLabel("Contact email", { exact: false }),
   ).toBeVisible();
+  await expect(preview.getByLabel("Remove me", { exact: false })).toHaveCount(
+    0,
+  );
+  await edit
+    .getByRole("button", { name: "Save form draft", exact: true })
+    .click();
+  await publish(page, definition.title, 2);
+  await row.getByRole("button", { name: /^Actions:/ }).click();
+  await row
+    .getByRole("menuitem", { name: "Edit form draft", exact: true })
+    .click();
+  await expect(
+    edit.getByLabel("Field label", { exact: true }).nth(0),
+  ).toHaveValue("Full name");
+  await expect(
+    edit.getByLabel("Field label", { exact: true }).nth(1),
+  ).toHaveValue("Contact email");
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
   const context = await browser.newContext({ baseURL });
   try {
     const requester = await context.newPage();
     await prepareRequester(page, requester, definition.title);
-    await requester.getByLabel("Visitor name", { exact: false }).fill("An");
+    await requester.getByLabel("Full name", { exact: false }).fill("An");
+    await requester
+      .getByLabel("Contact email", { exact: false })
+      .fill("an@example.test");
     await requester
       .getByRole("button", { name: "Submit request", exact: true })
       .click();

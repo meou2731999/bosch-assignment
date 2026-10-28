@@ -1,3 +1,4 @@
+import { uiCopy } from "../../../i18n/ui";
 import { Button } from "../../../components/ui/Button";
 import { SelectableCard } from "../../../components/ui/SelectableCard";
 import { PlusIcon } from "../../../components/ui/icons";
@@ -33,7 +34,7 @@ export const RequestList = ({
   return (
     <aside className="min-w-0 pt-1" aria-label={t.requests}>
       <div className="mb-3 text-[10px] font-bold tracking-[0.16em] text-muted">
-        WORKSPACE
+        {uiCopy(locale).workspace}
       </div>
       <div className="mb-3 flex items-baseline justify-between [&_h2]:text-base [&_h2]:font-semibold [&_span]:rounded-full [&_span]:border [&_span]:border-line [&_span]:px-2 [&_span]:text-xs">
         <h2>{seesAll ? t.allRequests : t.requests}</h2>
@@ -69,9 +70,10 @@ export const RequestList = ({
             <strong>{String(r.data.requestTitle || t.untitled)}</strong>
             <small>
               {new Date(r.updatedAt).toLocaleDateString(
-                locale === "vi" ? "vi-VN" : "en-GB",
+                uiCopy(locale).dateLocale,
               )}{" "}
-              · v{r.formVersion}
+              · {uiCopy(locale).versionPrefix}
+              {r.formVersion}
             </small>
           </SelectableCard>
         ))}

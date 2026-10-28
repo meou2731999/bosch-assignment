@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import type { Express, Request } from "express";
 import { z } from "zod";
 import { ApiError } from "../http/errors";
@@ -33,7 +34,7 @@ export function registerAuth(
       !req.is("application/json") ||
       req.header("x-requested-with") !== "RequestDesk"
     )
-      throw new ApiError(403, "CSRF", "Invalid login request.");
+      throw new ApiError(403, "CSRF", apiMessages.invalidLoginRequest);
     const parsed = z
       .object({
         email: z.string().trim().email().max(254),
@@ -41,7 +42,7 @@ export function registerAuth(
       })
       .safeParse(req.body);
     if (!parsed.success)
-      throw new ApiError(422, "INVALID", "Enter your email and password.");
+      throw new ApiError(422, "INVALID", apiMessages.enterYourEmailAndPassword);
     const now = Date.now();
     for (const [key, item] of attempts)
       if (item.expires <= now) attempts.delete(key);
@@ -56,7 +57,7 @@ export function registerAuth(
       throw new ApiError(
         429,
         "RATE_LIMIT",
-        "Too many sign-in attempts. Retry in 15 minutes.",
+        apiMessages.tooManySignInAttemptsRetryIn15Minutes,
       );
     for (const key of keys) {
       const item = attempts.get(key) ?? {
@@ -79,7 +80,11 @@ export function registerAuth(
       current.credentialVersion !== account?.credentialVersion ||
       !account?.passwordHash
     )
-      throw new ApiError(401, "CREDENTIALS", "Invalid email or password.");
+      throw new ApiError(
+        401,
+        "CREDENTIALS",
+        apiMessages.invalidEmailOrPassword,
+      );
     attempts.delete(`email:${email}`);
     sessions.remove(cookieToken(req));
     const session = sessions.create(current.id, current.credentialVersion);
@@ -92,15 +97,19 @@ export function registerAuth(
   app.use("/api", (req, res, next) => {
     const session = sessions.get(cookieToken(req));
     if (!session)
-      return next(new ApiError(401, "UNAUTHENTICATED", "Sign in to continue."));
+      return next(
+        new ApiError(401, "UNAUTHENTICATED", apiMessages.signInToContinue),
+      );
     const user = users.get(session.userId);
     if (!user.active || user.credentialVersion !== session.credentialVersion)
-      return next(new ApiError(401, "UNAUTHENTICATED", "Sign in to continue."));
+      return next(
+        new ApiError(401, "UNAUTHENTICATED", apiMessages.signInToContinue),
+      );
     if (
       !["GET", "HEAD", "OPTIONS"].includes(req.method) &&
       req.header("x-csrf-token") !== session.csrfToken
     )
-      return next(new ApiError(403, "CSRF", "Invalid CSRF token."));
+      return next(new ApiError(403, "CSRF", apiMessages.invalidCsrfToken));
     res.locals.user = user;
     res.locals.session = session;
     next();
@@ -120,15 +129,23 @@ export function registerAuth(
       .object({ currentPassword: z.string().max(256), password: z.string() })
       .safeParse(req.body);
     if (!parsed.success)
-      throw new ApiError(422, "INVALID", "Enter current and new passwords.");
+      throw new ApiError(
+        422,
+        "INVALID",
+        apiMessages.enterCurrentAndNewPasswords,
+      );
     const user = res.locals.user;
     if (
       !user.passwordHash ||
       !(await verifyPassword(parsed.data.currentPassword, user.passwordHash))
     )
-      throw new ApiError(401, "CREDENTIALS", "Current password is incorrect.");
+      throw new ApiError(
+        401,
+        "CREDENTIALS",
+        apiMessages.currentPasswordIsIncorrect,
+      );
     if (parsed.data.currentPassword === parsed.data.password)
-      throw new ApiError(422, "PASSWORD", "Choose a different password.");
+      throw new ApiError(422, "PASSWORD", apiMessages.chooseADifferentPassword);
     await users.password(
       user.id,
       parsed.data.password,
@@ -144,7 +161,7 @@ export function registerAuth(
         new ApiError(
           403,
           "PASSWORD_CHANGE_REQUIRED",
-          "Change your initial password before continuing.",
+          apiMessages.changeYourInitialPasswordBeforeContinuing,
         ),
       );
     next();
@@ -152,7 +169,7 @@ export function registerAuth(
   app.use("/api/admin", (_req, res, next) => {
     if (!res.locals.user.isAdmin)
       return next(
-        new ApiError(403, "FORBIDDEN", "Administrator access required."),
+        new ApiError(403, "FORBIDDEN", apiMessages.administratorAccessRequired),
       );
     next();
   });
@@ -163,7 +180,7 @@ export function registerAuth(
   app.post("/api/admin/users/:id/reset-password", async (req, res) => {
     const parsed = z.object({ password: z.string() }).safeParse(req.body);
     if (!parsed.success)
-      throw new ApiError(422, "INVALID", "Enter a new password.");
+      throw new ApiError(422, "INVALID", apiMessages.enterANewPassword);
     const user = await users.password(
       String(req.params.id),
       parsed.data.password,

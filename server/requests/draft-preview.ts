@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import { createHash } from "node:crypto";
 import type { PublishedForm } from "../../shared/forms";
 import type { RequestRecord } from "../../shared/model";
@@ -55,7 +56,7 @@ export function applyPreview(
     throw new ApiError(
       409,
       "CONFLICT",
-      "The preview has changed. Reload and preview again.",
+      apiMessages.thePreviewHasChangedReloadAndPreviewAgain,
     );
   if (
     preview.operation === "upgrade" &&
@@ -64,7 +65,7 @@ export function applyPreview(
     throw new ApiError(
       422,
       "INVALID",
-      "Correct all values and required fields in the migration preview before upgrading.",
+      apiMessages.correctAllValuesAndRequiredFieldsInTheMigration,
       preview.submissionErrors,
     );
   return {

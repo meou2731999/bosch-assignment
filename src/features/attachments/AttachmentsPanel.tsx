@@ -1,3 +1,4 @@
+import { uiCopy } from "../../i18n/ui";
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import type { Attachment, Locale, User } from "../../../shared/model";
@@ -124,7 +125,7 @@ export const AttachmentsPanel = ({
                 {file.name}
               </strong>
               <small className="text-muted">
-                {Math.ceil(file.size / 1024)} KB
+                {Math.ceil(file.size / 1024)} {uiCopy(locale).kilobytes}
               </small>
               {!file.id && (
                 <p className="mb-0 mt-1 text-xs text-amber-800">

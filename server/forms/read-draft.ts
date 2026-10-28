@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import { z } from "zod";
 import { fieldsSchema } from "../../shared/fields";
 import { importFormDefinition } from "../../shared/form-import";
@@ -19,14 +20,14 @@ const draftSchema = z
       Boolean(draft.fields?.length) ||
       Boolean(draft.uploadedDefinition),
     {
-      message: "Blank forms require at least one field.",
+      message: apiMessages.blankFormsRequireAtLeastOneField,
       path: ["fields"],
     },
   );
 export function readFormDraft(raw: unknown): FormDraft {
   const parsed = draftSchema.safeParse(raw);
   if (!parsed.success)
-    throw new ApiError(422, "INVALID", "Invalid form draft.");
+    throw new ApiError(422, "INVALID", apiMessages.invalidFormDraft);
   const { uploadedDefinition, ...draft } = parsed.data;
   if (uploadedDefinition !== undefined) {
     try {
@@ -41,7 +42,7 @@ export function readFormDraft(raw: unknown): FormDraft {
       throw new ApiError(
         422,
         "INVALID",
-        "Invalid or unsupported Form.io JSON.",
+        apiMessages.invalidOrUnsupportedFormIoJson,
       );
     }
   }

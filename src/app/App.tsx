@@ -1,3 +1,4 @@
+import { uiCopy } from "../i18n/ui";
 import { FormsPanel } from "../features/admin/FormsPanel";
 import { useEffect, useState } from "react";
 import type { AccountUser, Locale } from "../../shared/model";
@@ -87,14 +88,14 @@ export const App = () => {
       <>
         <div className="flex flex-wrap items-end justify-end gap-3 p-5">
           <label>
-            {locale === "vi" ? "Ngôn ngữ" : "Language"}
+            {uiCopy(locale).language}
             <select
               className="ui-field"
               value={locale}
               onChange={(event) => setLocale(event.target.value as Locale)}
             >
-              <option value="en">English</option>
-              <option value="vi">Tiếng Việt</option>
+              <option value="en">{uiCopy(locale).english}</option>
+              <option value="vi">{uiCopy(locale).vietnamese}</option>
             </select>
           </label>
           {user && (

@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import { randomUUID } from "node:crypto";
 import type { BasicField } from "../../shared/fields";
 import type { Condition } from "../../shared/field-conditions";
@@ -34,7 +35,7 @@ export function assignFieldKeys(
     throw new ApiError(
       409,
       "CONFLICT",
-      "Could not allocate a unique field identity. Retry saving.",
+      apiMessages.couldNotAllocateAUniqueFieldIdentityRetrySaving,
     );
   }
   const maps = new Map<BasicField[], KeyMap>();
@@ -64,7 +65,7 @@ export function assignFieldKeys(
       throw new ApiError(
         422,
         "INVALID",
-        "A visibility condition references a missing field.",
+        apiMessages.aVisibilityConditionReferencesAMissingField,
       );
     return { ...value, key };
   }

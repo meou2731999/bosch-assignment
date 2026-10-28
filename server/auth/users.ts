@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 export { publicAccount } from "./account";
 import {
   createSchema,
@@ -56,7 +57,7 @@ export function createUserStore(dataDir: string) {
   }
   function get(id: string) {
     const user = users.find((user) => user.id === id);
-    if (!user) throw new ApiError(404, "NOT_FOUND", "User not found.");
+    if (!user) throw new ApiError(404, "NOT_FOUND", apiMessages.userNotFound);
     return user;
   }
   function update(id: string, patch: Partial<Account>) {
@@ -71,7 +72,7 @@ export function createUserStore(dataDir: string) {
       throw new ApiError(
         409,
         "LAST_ADMIN",
-        "Keep at least one active administrator.",
+        apiMessages.keepAtLeastOneActiveAdministrator,
       );
     persist(users.map((user) => (user.id === id ? next : user)));
     return next;
@@ -84,17 +85,17 @@ export function createUserStore(dataDir: string) {
     async create(raw: unknown, bootstrap = false) {
       const parsed = createSchema.safeParse(raw);
       if (!parsed.success)
-        throw new ApiError(422, "INVALID", "Invalid account details.");
+        throw new ApiError(422, "INVALID", apiMessages.invalidAccountDetails);
       const { password, ...details } = parsed.data;
       const passwordHash = await hashPassword(password);
       if (bootstrap && users.some((user) => user.active && user.isAdmin))
         throw new ApiError(
           409,
           "ADMIN_EXISTS",
-          "An administrator already exists.",
+          apiMessages.anAdministratorAlreadyExists,
         );
       if (users.some((user) => user.email === details.email))
-        throw new ApiError(409, "EMAIL_EXISTS", "Email already exists.");
+        throw new ApiError(409, "EMAIL_EXISTS", apiMessages.emailAlreadyExists);
       const account: Account = {
         ...details,
         formPermissions: {},
@@ -123,7 +124,7 @@ export function createUserStore(dataDir: string) {
         throw new ApiError(
           409,
           "CONFLICT",
-          "Account credentials changed. Sign in again.",
+          apiMessages.accountCredentialsChangedSignInAgain,
         );
       return update(id, {
         passwordHash,
@@ -134,7 +135,7 @@ export function createUserStore(dataDir: string) {
     edit(id: string, raw: unknown) {
       const parsed = editSchema.safeParse(raw);
       if (!parsed.success)
-        throw new ApiError(422, "INVALID", "Invalid account changes.");
+        throw new ApiError(422, "INVALID", apiMessages.invalidAccountChanges);
       const user = get(id);
       if (
         parsed.data.email &&
@@ -142,12 +143,12 @@ export function createUserStore(dataDir: string) {
           (other) => other.id !== id && other.email === parsed.data.email,
         )
       )
-        throw new ApiError(409, "EMAIL_EXISTS", "Email already exists.");
+        throw new ApiError(409, "EMAIL_EXISTS", apiMessages.emailAlreadyExists);
       if (parsed.data.active && !user.passwordHash)
         throw new ApiError(
           409,
           "PASSWORD_REQUIRED",
-          "Set a password before enabling this user.",
+          apiMessages.setAPasswordBeforeEnablingThisUser,
         );
       return update(id, {
         ...parsed.data,
@@ -165,7 +166,7 @@ export function createUserStore(dataDir: string) {
         throw new ApiError(
           409,
           "CONFLICT",
-          "User permissions changed. Reload before saving.",
+          apiMessages.userPermissionsChangedReloadBeforeSaving,
         );
       return update(id, {
         formPermissions: structuredClone(permissions),
@@ -187,7 +188,7 @@ export function createUserStore(dataDir: string) {
         throw new ApiError(
           409,
           "PASSWORD_REQUIRED",
-          "Set a password before enabling this user.",
+          apiMessages.setAPasswordBeforeEnablingThisUser,
         );
       return update(id, {
         active,

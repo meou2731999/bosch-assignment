@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import type { Express } from "express";
 import { z } from "zod";
 import { canAccessForm, hasFormPermission } from "../../shared/forms";
@@ -34,14 +35,14 @@ export function registerFormRoutes(
   });
   app.get("/api/forms/:id/versions/:version", (req, res) => {
     if (!canAccessForm(res.locals.user, String(req.params.id)))
-      throw new ApiError(404, "NOT_FOUND", "Form type not found.");
+      throw new ApiError(404, "NOT_FOUND", apiMessages.formTypeNotFound);
     res.json(
       forms.published(String(req.params.id), Number(req.params.version)),
     );
   });
   app.get("/api/forms/:id", (req, res) => {
     if (!canAccessForm(res.locals.user, String(req.params.id)))
-      throw new ApiError(404, "NOT_FOUND", "Form type not found.");
+      throw new ApiError(404, "NOT_FOUND", apiMessages.formTypeNotFound);
     res.json(forms.published(String(req.params.id)));
   });
   // registerAuth already protects every /api/admin endpoint with the admin check.
@@ -75,10 +76,10 @@ export function registerFormRoutes(
       .strict()
       .safeParse(req.body);
     if (!parsed.success)
-      throw new ApiError(422, "INVALID", "Invalid form permissions.");
+      throw new ApiError(422, "INVALID", apiMessages.invalidFormPermissions);
     const grants = Object.entries(parsed.data.formPermissions);
     if (grants.length > 100)
-      throw new ApiError(422, "INVALID", "Too many form grants.");
+      throw new ApiError(422, "INVALID", apiMessages.tooManyFormGrants);
     for (const [formId] of grants) forms.get(formId);
     const permissions = Object.fromEntries(
       grants.filter(([, values]) => values.length > 0),

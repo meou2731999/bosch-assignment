@@ -1,3 +1,5 @@
+import { errorMessage } from "../../i18n/errors";
+import { translateValidation } from "../../../shared/i18n/validation";
 import { useEffect, useRef } from "react";
 import type { Locale } from "../../../shared/model";
 import { HttpError } from "../../lib/http";
@@ -26,12 +28,12 @@ export const ErrorNotice = ({
       className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900"
     >
       <strong>{t.errorTitle}</strong>
-      <p className="my-2">{error.message}</p>
+      <p className="my-2">{errorMessage(error.message, locale)}</p>
       {error instanceof HttpError && Object.keys(error.fields).length > 0 && (
         <ul>
           {Object.entries(error.fields).map(([field, message]) => (
             <li key={field}>
-              {field}: {message}
+              {field}: {translateValidation(message, locale)}
             </li>
           ))}
         </ul>

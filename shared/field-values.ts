@@ -1,3 +1,4 @@
+import { validationMessages, validationMessage } from "./i18n/validation";
 import type { BasicField } from "./fields";
 import type { FieldScope } from "./field-conditions";
 import { validateFields } from "./field-validation";
@@ -13,7 +14,8 @@ export function validateComplex(
 ) {
   const errors: Record<string, string> = {};
   if (field.input === "object") {
-    if (!isObject(value)) return { errors: { [path]: "Expected object." } };
+    if (!isObject(value))
+      return { errors: { [path]: validationMessages.object } };
     const result = validateFields(
       field.fields ?? [],
       value,
@@ -23,13 +25,17 @@ export function validateComplex(
     );
     return { value: result.data, errors: result.errors };
   }
-  if (!Array.isArray(value)) return { errors: { [path]: "Expected array." } };
+  if (!Array.isArray(value))
+    return { errors: { [path]: validationMessages.array } };
   const minimum = Math.max(
     field.minLength ?? 0,
     submit && field.required ? 1 : 0,
   );
   if (value.length < minimum || value.length > (field.maxLength ?? 100))
-    errors[path] = `Expected ${minimum}–${field.maxLength ?? 100} items.`;
+    errors[path] = validationMessage(
+      "items",
+      `${minimum}–${field.maxLength ?? 100}`,
+    );
   if (field.input === "multiselect") {
     if (
       new Set(value).size !== value.length ||
@@ -39,13 +45,13 @@ export function validateComplex(
           !field.options?.some((option) => option.value === item),
       )
     )
-      errors[path] = "Choose unique configured options.";
+      errors[path] = validationMessages.uniqueOptions;
     return { value, errors };
   }
   const rows = value.slice(0, 100).map((row, index) => {
     const rowPath = `${path}.${index}`;
     if (!isObject(row)) {
-      errors[rowPath] = "Expected object.";
+      errors[rowPath] = validationMessages.object;
       return {};
     }
     const result = validateFields(

@@ -1,3 +1,4 @@
+import { uiCopy } from "../../i18n/ui";
 import { useState, type ChangeEvent } from "react";
 import {
   importFormDefinition,
@@ -15,12 +16,12 @@ export const FormJsonUpload = ({
   onImport: (definition: FormDefinition) => void;
   onLoading: (loading: boolean) => void;
 }>) => {
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
   const upload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
-    setError("");
+    setError(false);
     onLoading(true);
     try {
       if (
@@ -31,11 +32,7 @@ export const FormJsonUpload = ({
       const imported = importFormDefinition(JSON.parse(await file.text()));
       onImport(imported.definition);
     } catch {
-      setError(
-        locale === "vi"
-          ? "Không thể nhập tệp. Chọn JSON Form.io hợp lệ (tối đa 256 KB) với các thành phần được hỗ trợ. Biểu mẫu hiện tại chưa bị thay đổi."
-          : "Could not import file. Choose valid Form.io JSON (up to 256 KB) with supported components. Your current form has not changed.",
-      );
+      setError(true);
     } finally {
       onLoading(false);
     }
@@ -43,7 +40,7 @@ export const FormJsonUpload = ({
   return (
     <div>
       <label>
-        {locale === "vi" ? "Tải lên JSON Form.io" : "Upload Form.io JSON"}
+        {uiCopy(locale).uploadJson}
         <input
           className={inputClass}
           type="file"
@@ -53,11 +50,16 @@ export const FormJsonUpload = ({
         />
       </label>
       <p id="form-json-hint" className="text-muted">
-        {locale === "vi"
-          ? "Hỗ trợ textfield, textarea, email, number, checkbox, select, radio, panel và fieldset; lựa chọn tĩnh và điều kiện đơn giản. Tải lên sẽ thay thế nội dung bản nháp trong trình sửa."
-          : "Supports textfield, textarea, email, number, checkbox, select, radio, panel and fieldset; static choices and simple conditions. Uploading replaces the draft content in this editor."}
+        {uiCopy(locale).importHint}
       </p>
-      {error && <p role="alert">{error}</p>}
+      <a
+        href={`${import.meta.env.BASE_URL}examples/formio-example.json`}
+        download="formio-example.json"
+        className="text-brand underline"
+      >
+        {uiCopy(locale).downloadExample}
+      </a>
+      {error && <p role="alert">{uiCopy(locale).importError}</p>}
     </div>
   );
 };

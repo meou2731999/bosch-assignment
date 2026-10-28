@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import { validateRequestData } from "./validate-data";
 import {
   canAccessForm,
@@ -61,13 +62,17 @@ export function saveRequest(
     !hasFormPermission(user, form.formId, "create") ||
     (previous && previous.ownerId !== user.id)
   ) {
-    throw new ApiError(403, "FORBIDDEN", "You cannot change this request.");
+    throw new ApiError(
+      403,
+      "FORBIDDEN",
+      apiMessages.youCannotChangeThisRequest,
+    );
   }
   if (previous && previous.status !== "draft") {
     throw new ApiError(
       409,
       "LOCKED",
-      "This request has already been submitted.",
+      apiMessages.thisRequestHasAlreadyBeenSubmitted,
     );
   }
   const parsed = saveSchema.safeParse(raw);
@@ -75,21 +80,21 @@ export function saveRequest(
     throw new ApiError(
       422,
       "INVALID",
-      "Invalid request data or attachment metadata.",
+      apiMessages.invalidRequestDataOrAttachmentMetadata,
     );
   const input = parsed.data;
   if (input.revision !== (previous?.revision ?? 0)) {
     throw new ApiError(
       409,
       "CONFLICT",
-      "A newer revision exists. Reload the request before editing.",
+      apiMessages.aNewerRevisionExistsReloadTheRequestBeforeEditing,
     );
   }
   if (input.formId !== form.formId || input.formVersion !== form.version)
     throw new ApiError(
       409,
       "VERSION",
-      "The selected form version is unavailable.",
+      apiMessages.theSelectedFormVersionIsUnavailable,
     );
   if (
     previous &&
@@ -99,7 +104,7 @@ export function saveRequest(
     throw new ApiError(
       409,
       "VERSION",
-      "A saved request must keep its original form version.",
+      apiMessages.aSavedRequestMustKeepItsOriginalFormVersion,
     );
   }
 

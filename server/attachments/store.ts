@@ -1,3 +1,4 @@
+import { apiMessages } from "../../shared/i18n/api-en";
 import { mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
@@ -38,7 +39,7 @@ function detectType(name: string, bytes: Buffer): string {
   throw new ApiError(
     422,
     "FILE_TYPE",
-    "File contents must match a PDF, PNG, JPG or UTF-8 TXT file.",
+    apiMessages.fileContentsMustMatchAPdfPngJpgOr,
   );
 }
 export function createAttachmentStore(dataDir: string) {
@@ -46,7 +47,7 @@ export function createAttachmentStore(dataDir: string) {
   mkdirSync(directory, { recursive: true });
   function get(id: string): StoredFile {
     if (!/^[a-f0-9-]{36}$/.test(id))
-      throw new ApiError(404, "NOT_FOUND", "File not found.");
+      throw new ApiError(404, "NOT_FOUND", apiMessages.fileNotFound);
     try {
       const file: StoredFile = JSON.parse(
         readFileSync(path.join(directory, `${id}.json`), "utf8"),
@@ -54,7 +55,7 @@ export function createAttachmentStore(dataDir: string) {
       return { ...file, formId: file.formId ?? "request" };
     } catch (e) {
       if ((e as NodeJS.ErrnoException).code === "ENOENT")
-        throw new ApiError(404, "NOT_FOUND", "File not found.");
+        throw new ApiError(404, "NOT_FOUND", apiMessages.fileNotFound);
       throw e;
     }
   }
@@ -73,7 +74,7 @@ export function createAttachmentStore(dataDir: string) {
       // Control characters and path separators are deliberately rejected in filenames.
       // eslint-disable-next-line no-control-regex
       if (!name.trim() || name.length > 120 || /[\x00-\x1f\x7f/\\]/.test(name))
-        throw new ApiError(422, "FILE_NAME", "Invalid file name.");
+        throw new ApiError(422, "FILE_NAME", apiMessages.invalidFileName);
       if (
         !Buffer.isBuffer(bytes) ||
         !bytes.length ||
@@ -82,7 +83,7 @@ export function createAttachmentStore(dataDir: string) {
         throw new ApiError(
           422,
           "FILE_SIZE",
-          "Choose a non-empty file up to 5 MB.",
+          apiMessages.chooseANonEmptyFileUpTo5Mb,
         );
       const file: StoredFile = {
         id: randomUUID(),
@@ -112,7 +113,11 @@ export function createAttachmentStore(dataDir: string) {
         return readFileSync(path.join(directory, `${file.id}.bin`));
       } catch (e) {
         if ((e as NodeJS.ErrnoException).code === "ENOENT")
-          throw new ApiError(404, "NOT_FOUND", "File content is unavailable.");
+          throw new ApiError(
+            404,
+            "NOT_FOUND",
+            apiMessages.fileContentIsUnavailable,
+          );
         throw e;
       }
     },
@@ -138,7 +143,7 @@ export function createAttachmentStore(dataDir: string) {
             throw new ApiError(
               422,
               "FILE_MISSING",
-              "Upload the file before attaching it.",
+              apiMessages.uploadTheFileBeforeAttachingIt,
             );
           return legacy;
         }
@@ -151,13 +156,13 @@ export function createAttachmentStore(dataDir: string) {
           throw new ApiError(
             403,
             "FORBIDDEN",
-            "This file belongs to a different request.",
+            apiMessages.thisFileBelongsToADifferentRequest,
           );
         if (seen.has(file.id))
           throw new ApiError(
             422,
             "FILE_DUPLICATE",
-            "The same upload cannot be attached twice.",
+            apiMessages.theSameUploadCannotBeAttachedTwice,
           );
         seen.add(file.id);
         return publicFile(file); // Never trust client-supplied name, size or MIME metadata.

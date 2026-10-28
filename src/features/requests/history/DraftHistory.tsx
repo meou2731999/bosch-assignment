@@ -1,3 +1,4 @@
+import { uiCopy } from "../../../i18n/ui";
 import { useState } from "react";
 import type { RequestRecord, User, Locale } from "../../../../shared/model";
 import { type Definition } from "../api";
@@ -95,10 +96,10 @@ export const DraftHistory = ({
               <option value="">{t.choose}</option>
               {[...snapshots].reverse().map((item) => (
                 <option key={item.revision} value={item.revision}>
-                  r{item.revision} · v{item.formVersion} ·{" "}
-                  {new Date(item.at).toLocaleString(
-                    locale === "vi" ? "vi-VN" : "en-GB",
-                  )}
+                  {uiCopy(locale).revisionPrefix}
+                  {item.revision} · {uiCopy(locale).versionPrefix}
+                  {item.formVersion} ·{" "}
+                  {new Date(item.at).toLocaleString(uiCopy(locale).dateLocale)}
                 </option>
               ))}
             </select>

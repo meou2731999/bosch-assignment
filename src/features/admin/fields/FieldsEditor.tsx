@@ -1,3 +1,4 @@
+import { uiCopy } from "../../../i18n/ui";
 import { useState } from "react";
 import { fieldsSchema, type BasicField } from "../../../../shared/fields";
 import { fieldDefinition } from "../../../../shared/field-definition";
@@ -53,7 +54,7 @@ export const FieldsEditor = ({
       ...fields,
       {
         key: `tmp_${crypto.randomUUID().replaceAll("-", "")}`,
-        label: "New field",
+        label: uiCopy(locale).newField,
         input: "text",
         dataType: "string",
         required: false,

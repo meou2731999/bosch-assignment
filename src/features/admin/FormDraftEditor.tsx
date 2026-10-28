@@ -1,3 +1,4 @@
+import { uiCopy } from "../../i18n/ui";
 import { useState, type FormEvent } from "react";
 import type {
   FormDraft,
@@ -5,6 +6,7 @@ import type {
   FormRecord,
   FormTemplate,
 } from "../../../shared/forms";
+import { importFormDefinition } from "../../../shared/form-import";
 import { fieldsSchema, type BasicField } from "../../../shared/fields";
 import type { Locale } from "../../../shared/model";
 import { Button } from "../../components/ui/Button";
@@ -12,10 +14,7 @@ import { inputClass } from "../auth/AuthScreen";
 import { formCopy } from "../forms/copy";
 import { fieldCopy } from "./fields/copy";
 import { FormJsonUpload } from "./FormJsonUpload";
-import { DynamicForm } from "../forms/DynamicForm";
 import { FieldsEditor } from "./fields/FieldsEditor";
-const emptyData = {};
-const noop = () => {};
 export const FormDraftEditor = ({
   existing,
   locale,
@@ -46,9 +45,17 @@ export const FormDraftEditor = ({
   const [description, setDescription] = useState(
     existing?.draft.description ?? "",
   );
-  const usesFields = !uploaded && (template === "blank" || custom);
+  const [importRevision, setImportRevision] = useState(0);
+  const usesFields = template === "blank" || custom;
+  const changeFields = (next: BasicField[]) => {
+    setFields(next);
+    setUploaded(undefined);
+  };
   const importDefinition = (definition: FormDefinition) => {
-    setUploaded(definition);
+    const imported = importFormDefinition(definition);
+    setFields(imported.fields);
+    setImportRevision((revision) => revision + 1);
+    setUploaded(imported.definition);
     setName(definition.title);
     setDescription("");
     setTemplate("blank");
@@ -63,7 +70,7 @@ export const FormDraftEditor = ({
       name: String(data.get("name")),
       description: String(data.get("description")),
       template,
-      ...(usesFields ? { fields } : {}),
+      ...(usesFields && !uploaded ? { fields } : {}),
       ...(uploaded ? { uploadedDefinition: uploaded } : {}),
     });
   };
@@ -118,22 +125,6 @@ export const FormDraftEditor = ({
               </select>
             </label>
           )}
-          {uploaded && (
-            <section
-              aria-label={
-                locale === "vi" ? "Xem trước biểu mẫu" : "Form preview"
-              }
-            >
-              <DynamicForm
-                definition={uploaded}
-                initialData={emptyData}
-                readOnly={false}
-                locale={locale}
-                onReady={noop}
-                onDirty={noop}
-              />
-            </section>
-          )}
           {!uploaded && template !== "blank" && (
             <label>
               <input
@@ -147,10 +138,14 @@ export const FormDraftEditor = ({
           {usesFields && (
             <>
               <p>{f.hint}</p>
+              {uploaded && (
+                <p className="text-muted">{uiCopy(locale).importEditHint}</p>
+              )}
               <FieldsEditor
+                key={importRevision}
                 fields={fields}
                 locale={locale}
-                onChange={setFields}
+                onChange={changeFields}
               />
             </>
           )}
