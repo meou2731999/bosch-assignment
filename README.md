@@ -19,11 +19,34 @@ New accounts must change their initial password and sign in again. Admins manage
 
 ## Try it
 
-1. Admin creates a **Blank form**, adds at least one field, previews, saves and publishes it.
+1. Admin opens **Manage forms → Create form type → Upload Form.io JSON**, selects a JSON file, reviews the preview, saves and publishes it. Alternatively, build a blank form with the field editor.
 2. Grant **Create requests** to a requester and **Review requests** to a separate reviewer.
 3. Requester fills the form, uploads an optional file, saves a draft and reopens it.
 4. Publish a newer form. New requests use it; existing drafts keep their version until an explicit, validated upgrade.
 5. Submit the request. Reviewer approves or rejects with a reason; final decisions remain locked.
+
+## Upload a form
+
+Upload a `.json` file up to 256 KB containing a title and a Form.io `components` array:
+
+```json
+{
+  "title": "Visitor registration",
+  "components": [
+    {
+      "type": "textfield",
+      "key": "visitorName",
+      "label": "Visitor name",
+      "input": true,
+      "validate": { "required": true }
+    }
+  ]
+}
+```
+
+Supported components are `textfield` (text/date), `textarea`, `email`, `number`, `checkbox`, `select`, `radio`, `panel`, and `fieldset`. Static choices, required/bounds validation, and simple `conditional` rules are supported. Unsupported properties/components, executable rules, and remote data sources are rejected. This is a supported subset, not a general Form.io export importer.
+
+Upload replaces the editor content only after validation succeeds. Save persists the uploaded definition; publish creates an immutable version. To update an imported form, edit its draft and upload a replacement JSON file. Rendering and server validation use the stored definition and derived field rules, without reading a source template. Existing IT templates remain available for legacy forms.
 
 ## Documentation
 

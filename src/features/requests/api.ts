@@ -15,6 +15,7 @@ export interface Definition {
   version: number;
   definition: FormType | FormDefinition;
   fields?: BasicField[];
+  uploadedDefinition?: FormDefinition;
 }
 export const api = {
   review: (user: User, id: string, input: ReviewInput) =>

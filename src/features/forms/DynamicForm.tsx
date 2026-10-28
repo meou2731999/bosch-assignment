@@ -12,6 +12,7 @@ import { formTranslations } from "../../i18n";
 // All renderer-specific integration stays here. Schema/data remain Form.io-shaped.
 export const DynamicForm = (props: Readonly<DynamicFormProps>) => {
   if (
+    !props.useFormio &&
     props.fields?.some(
       (field) =>
         field.visibility || ["array", "object"].includes(field.dataType),
@@ -21,6 +22,7 @@ export const DynamicForm = (props: Readonly<DynamicFormProps>) => {
   return <FormioForm {...props} />;
 };
 type DynamicFormProps = {
+  useFormio?: boolean;
   definition: FormType | FormDefinition;
   initialData: RequestData;
   readOnly: boolean;

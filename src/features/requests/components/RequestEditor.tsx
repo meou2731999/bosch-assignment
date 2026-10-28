@@ -86,6 +86,7 @@ export const RequestEditor = ({
           className="min-w-0 border-0 px-5 pt-6 pb-4 md:px-7"
         >
           <DynamicForm
+            useFormio={Boolean(definition.uploadedDefinition)}
             fields={definition.fields}
             definition={definition.definition}
             initialData={initialData}

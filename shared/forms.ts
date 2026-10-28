@@ -17,6 +17,7 @@ export interface PublishedForm {
   definition: FormDefinition;
   validationProfile: FormTemplate;
   fields?: BasicField[];
+  uploadedDefinition?: FormDefinition;
   publishedAt: string;
   publishedBy: string;
 }
@@ -26,6 +27,7 @@ export interface FormDraft {
   description: string;
   template: FormTemplate;
   fields?: BasicField[];
+  uploadedDefinition?: FormDefinition;
 }
 export interface FormRecord {
   id: string;

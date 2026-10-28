@@ -113,6 +113,7 @@ export function useDraftHistory({
         name: preview.target.name,
         definition: preview.target.definition,
         fields: preview.target.fields,
+        uploadedDefinition: preview.target.uploadedDefinition,
       });
       onBusy(false);
     } catch (cause) {

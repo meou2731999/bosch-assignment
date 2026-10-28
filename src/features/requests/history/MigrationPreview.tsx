@@ -134,6 +134,7 @@ export const MigrationPreview = ({
       <h4>{t.candidate}</h4>
       <fieldset disabled={busy}>
         <DynamicForm
+          useFormio={Boolean(preview.target.uploadedDefinition)}
           definition={preview.target.definition}
           fields={preview.target.fields}
           initialData={preview.data}

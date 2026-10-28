@@ -1,5 +1,5 @@
 import { assignFieldKeys } from "./field-identity";
-import { fieldsSchema } from "../../shared/fields";
+import { readFormDraft } from "./read-draft";
 import { fieldDefinition } from "../../shared/field-definition";
 import { mkdirSync, readFileSync, writeFileSync, renameSync } from "node:fs";
 import path from "node:path";
@@ -12,22 +12,6 @@ import type {
   PublishedForm,
 } from "../../shared/forms";
 import { ApiError } from "../http/errors";
-const draftSchema = z
-  .object({
-    revision: z.number().int().nonnegative(),
-    name: z.string().trim().min(1).max(120),
-    description: z.string().trim().max(1000),
-    template: z.enum(["request-v1", "request-v2", "blank"]),
-    fields: fieldsSchema.optional(),
-  })
-  .strict()
-  .refine(
-    (draft) => draft.template !== "blank" || Boolean(draft.fields?.length),
-    {
-      message: "Blank forms require at least one field.",
-      path: ["fields"],
-    },
-  );
 export function createFormStore(dataDir: string, root: string) {
   mkdirSync(dataDir, { recursive: true });
   const file = path.join(dataDir, "forms.json");
@@ -45,6 +29,10 @@ export function createFormStore(dataDir: string, root: string) {
       ),
     );
   }
+  const draftDefinition = (draft: FormRecord["draft"]) =>
+    draft.fields
+      ? fieldDefinition(draft.name, draft.fields)
+      : loadTemplate(draft.template);
   let records: FormRecord[];
   function persist(next: FormRecord[]) {
     writeFileSync(`${file}.tmp`, JSON.stringify(next, null, 2));
@@ -104,18 +92,12 @@ export function createFormStore(dataDir: string, root: string) {
       throw new ApiError(404, "NOT_FOUND", "Published form version not found.");
     return entry;
   }
-  function readDraft(raw: unknown) {
-    const parsed = draftSchema.safeParse(raw);
-    if (!parsed.success)
-      throw new ApiError(422, "INVALID", "Invalid form draft.");
-    return parsed.data;
-  }
   return {
     all: () => structuredClone(records),
     get,
     published,
     create(raw: unknown, actorId: string) {
-      const draft = readDraft(raw);
+      const draft = readFormDraft(raw);
       if (draft.fields) draft.fields = assignFieldKeys(draft.fields);
       if (draft.revision !== 0)
         throw new ApiError(409, "CONFLICT", "New form revision must be zero.");
@@ -131,7 +113,7 @@ export function createFormStore(dataDir: string, root: string) {
     },
     save(id: string, raw: unknown, actorId: string) {
       const form = get(id);
-      const draft = readDraft(raw);
+      const draft = readFormDraft(raw);
       if (draft.revision !== form.draft.revision)
         throw new ApiError(
           409,
@@ -169,9 +151,9 @@ export function createFormStore(dataDir: string, root: string) {
       const version =
         Math.max(0, ...form.versions.map((item) => item.version)) + 1;
       const at = new Date().toISOString();
-      const definition = form.draft.fields
-        ? fieldDefinition(form.draft.name, form.draft.fields)
-        : loadTemplate(form.draft.template);
+      const definition = form.draft.uploadedDefinition
+        ? structuredClone(form.draft.uploadedDefinition)
+        : draftDefinition(form.draft);
       definition.title = form.draft.name;
       form.versions.push({
         formId: id,
@@ -180,6 +162,9 @@ export function createFormStore(dataDir: string, root: string) {
         description: form.draft.description,
         definition,
         validationProfile: form.draft.template,
+        ...(form.draft.uploadedDefinition
+          ? { uploadedDefinition: structuredClone(definition) }
+          : {}),
         ...(form.draft.fields
           ? { fields: structuredClone(form.draft.fields) }
           : {}),
