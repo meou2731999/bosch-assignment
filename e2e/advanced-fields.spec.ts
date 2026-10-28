@@ -89,7 +89,6 @@ test("advanced editor and request render share nested visibility and API validat
   expect(record.data.details.people).toEqual([{ name: "Alex", needs: true }]);
   expect(record.data.tags).toEqual(["normal"]);
   await requester.reload();
-  await requester.getByRole("button").filter({ hasText: "Override" }).click();
   await expect(requester.getByLabel("Quantity", { exact: false })).toHaveValue(
     "2",
   );

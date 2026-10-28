@@ -99,6 +99,9 @@ test("admin edits and previews fields; requester loads published JSON without fr
     .click();
   await publish(page, "Dynamic travel", 2);
   await requester
+    .getByRole("button", { name: "Back to requests", exact: true })
+    .click();
+  await requester
     .getByRole("button", { name: "New request", exact: true })
     .click();
   await expect(
@@ -127,7 +130,14 @@ test("admin edits and previews fields; requester loads published JSON without fr
   await expect(
     requester.getByRole("status").filter({ hasText: "Request submitted." }),
   ).toBeVisible();
-  await requester.getByRole("button").filter({ hasText: "v1" }).click();
+  await requester
+    .getByRole("button", { name: "Back to requests", exact: true })
+    .click();
+  await requester
+    .getByRole("row")
+    .filter({ has: requester.getByRole("cell", { name: "1", exact: true }) })
+    .getByRole("button")
+    .click();
   await expect(
     requester.getByLabel("Travel days", { exact: false }),
   ).toHaveValue("4");

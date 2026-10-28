@@ -77,6 +77,9 @@ test("admin creates and edits account; user changes password; reset and disable 
     userPage.getByRole("heading", { name: "Sign in" }),
   ).toBeVisible();
   await login(userPage, "browser@example.test", "browser-changed-password");
+  await userPage
+    .getByRole("button", { name: "New request", exact: true })
+    .click();
   await expect(
     userPage.getByRole("heading", { name: "New request" }),
   ).toBeVisible();

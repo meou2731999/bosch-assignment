@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { login } from "./helpers/field-builder";
+import { verifyRequestPages } from "./helpers/request-pages";
 import { actor, software } from "./helpers/request-actors";
 test("conditional fields, locale, unsaved navigation, invalid upload, failed save and revision conflict", async ({
   page,
@@ -42,7 +43,7 @@ test("conditional fields, locale, unsaved navigation, invalid upload, failed sav
     ).toHaveValue("Browser recovery flow");
     user.once("dialog", (dialog) => dialog.dismiss());
     await user
-      .getByRole("button", { name: "New request", exact: true })
+      .getByRole("button", { name: "Back to requests", exact: true })
       .click();
     await expect(
       user.getByLabel("Request title", { exact: false }),
@@ -142,6 +143,7 @@ test("conditional fields, locale, unsaved navigation, invalid upload, failed sav
       path: "test-results/request-recovery.png",
       fullPage: true,
     });
+    await verifyRequestPages(user);
   } finally {
     await requester.context.close();
   }

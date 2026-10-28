@@ -34,6 +34,7 @@ export const Workspace = ({
   const t = copy(locale);
   const f = formCopy(locale);
   const {
+    page,
     forms,
     requests,
     record,
@@ -65,13 +66,19 @@ export const Workspace = ({
           role="alert"
         >
           {errorMessage(error, locale)}{" "}
-          <Button
-            variant="secondary"
-            onClick={() => void load(record?.id, true)}
-          >
+          <Button variant="secondary" onClick={() => void load(page, true)}>
             {t.retry}
           </Button>
         </div>
+      );
+    if (page === "list")
+      return (
+        <RequestList
+          locale={locale}
+          requests={requests}
+          navigate={navigate}
+          emptyMessage={canCreate ? t.empty : f.noCreate}
+        />
       );
     if (definition)
       return (
@@ -89,15 +96,13 @@ export const Workspace = ({
       );
     return (
       <div className="block rounded-xl border border-line bg-white px-7 py-16 text-center text-muted">
-        {forms.some((form) => form.permissions.includes("create")) ||
-        requests.length
-          ? t.selectHint
-          : f.noCreate}
+        {canCreate || requests.length ? t.selectHint : f.noCreate}
       </div>
     );
   };
   const canCreate = forms.some((form) => form.permissions.includes("create"));
-  const defaultTitle = canCreate ? t.newRequest : t.allRequests;
+  const defaultTitle = page === "new" ? t.newRequest : t.allRequests;
+  const editorHint = user.role === "reviewer" ? t.reviewHint : t.introduction;
   const title = record
     ? String(record.data.requestTitle || t.untitled)
     : defaultTitle;
@@ -120,6 +125,7 @@ export const Workspace = ({
         onManage={() => leaveFor(onManage)}
         onForms={() => leaveFor(onForms)}
         onPassword={() => leaveFor(onPassword)}
+        onRequests={() => navigate("list")}
       />
       <div className="flex justify-between gap-3 bg-sage px-5 py-2 text-[10px] font-semibold tracking-wider text-muted md:px-[5vw] [&_span]:font-normal [&_span]:tracking-normal">
         {t.demo}
@@ -127,18 +133,18 @@ export const Workspace = ({
           {user.department} / {t[user.role]}
         </span>
       </div>
-      <div className="mx-auto grid min-h-[75vh] max-w-[1380px] gap-7 px-4 py-8 md:grid-cols-[230px_minmax(0,1fr)] md:gap-10 md:px-[5vw] md:py-10">
-        <RequestList
-          user={user}
-          canCreate={canCreate}
-          locale={locale}
-          requests={requests}
-          selectedId={record?.id}
-          busy={busy}
-          loading={loading}
-          navigate={navigate}
-        />
+      <div className="mx-auto min-h-[75vh] max-w-[1380px] px-4 py-8 md:px-[5vw] md:py-10">
         <main id="main" className="min-w-0">
+          {page !== "list" && (
+            <Button
+              className="mb-5"
+              variant="secondary"
+              disabled={busy || loading}
+              onClick={() => navigate("list")}
+            >
+              {t.backToRequests}
+            </Button>
+          )}
           <div className="mb-3 flex items-start justify-between gap-5 [&_h1]:mb-0 [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:tracking-tight md:[&_h1]:text-3xl">
             <div>
               <div className="mb-3 text-[10px] font-bold tracking-[0.16em] text-muted">
@@ -146,17 +152,22 @@ export const Workspace = ({
               </div>
               <h1>{title}</h1>
             </div>
+            {page === "list" && canCreate && (
+              <Button disabled={busy || loading} onClick={() => navigate()}>
+                {t.newRequest}
+              </Button>
+            )}
             {record && <Status status={record.status} locale={locale} />}
           </div>
           <p className="mb-6 max-w-xl text-sm leading-relaxed text-muted">
-            {user.role === "reviewer" ? t.reviewHint : t.introduction}
+            {page === "list" ? t.selectHint : editorHint}
           </p>
           {notice && !dirty && (
             <output className="mb-5 block rounded-lg border border-green-200 bg-green-50 px-5 py-4 text-sm text-green-900">
               ✓ {t[notice]}
             </output>
           )}
-          {!record && canCreate && (
+          {page === "new" && canCreate && (
             <label className="mb-5 flex flex-wrap items-center gap-3 text-sm">
               {f.select}
               <select

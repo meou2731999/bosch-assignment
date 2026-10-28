@@ -1,5 +1,6 @@
+import { ProcessLine } from "../../components/ui/ProcessLine";
 import { uiCopy } from "../../i18n/ui";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import type {
   FormDraft,
   FormDefinition,
@@ -41,10 +42,7 @@ export const FormDraftEditor = ({
     existing?.draft.uploadedDefinition,
   );
   const [step, setStep] = useState(existing ? 2 : 1);
-  const stepHeading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => {
-    if (step === 2 && !existing) stepHeading.current?.focus();
-  }, [step, existing]);
+
   const [reading, setReading] = useState(false);
   const [name, setName] = useState(existing?.draft.name ?? "");
   const [description, setDescription] = useState(
@@ -90,6 +88,13 @@ export const FormDraftEditor = ({
   };
   return (
     <section className="space-y-4" aria-label={existing ? t.edit : t.create}>
+      {!existing && (
+        <ProcessLine
+          steps={[t.uploadLabel, t.editorLabel]}
+          current={step - 1}
+          label={t.create}
+        />
+      )}
       {step === 1 ? (
         <FormImportStep
           locale={locale}
@@ -103,11 +108,6 @@ export const FormDraftEditor = ({
         />
       ) : (
         <form onSubmit={save}>
-          {!existing && (
-            <h2 ref={stepHeading} tabIndex={-1} className="mb-4 text-lg">
-              {t.editorStep}
-            </h2>
-          )}
           <fieldset
             disabled={busy || reading}
             className="editor-fields ui-form-stack border-0 p-0"

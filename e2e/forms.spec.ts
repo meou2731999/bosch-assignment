@@ -98,6 +98,9 @@ test("admin publishes form types, grants scoped creation and preserves old draft
     userPage.getByRole("heading", { name: "Sign in" }),
   ).toBeVisible();
   await login(userPage, "form-requester@example.test", "form-changed-password");
+  await userPage
+    .getByRole("button", { name: "New request", exact: true })
+    .click();
   const types = userPage.getByLabel("Form type", { exact: true });
   await expect(types.locator("option")).toHaveText(["Procurement"]);
   await userPage
@@ -136,13 +139,21 @@ test("admin publishes form types, grants scoped creation and preserves old draft
     .getByRole("menuitem", { name: "Publish form", exact: true })
     .click();
   await expect(changed).toContainText("Published version: 2");
-  await userPage.reload();
+  await userPage
+    .getByRole("button", { name: "Back to requests", exact: true })
+    .click();
+  await userPage
+    .getByRole("button", { name: "New request", exact: true })
+    .click();
   await expect(types.locator("option")).toHaveText(["Procurement updated"]);
   await expect(
     userPage
       .getByRole("region", { name: "New request", exact: true })
       .getByText("Form version", { exact: false }),
   ).toContainText("2");
+  await userPage
+    .getByRole("button", { name: "Back to requests", exact: true })
+    .click();
   await userPage
     .getByRole("button")
     .filter({ hasText: "Untitled request" })

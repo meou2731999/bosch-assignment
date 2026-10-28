@@ -26,7 +26,7 @@ export const FormImportStep = ({
   const t = formCopy(locale);
   return (
     <fieldset disabled={busy} className="ui-form-stack border-0 p-0">
-      <h2 className="text-lg">{t.importStep}</h2>
+      <h2 className="text-lg">{t.uploadLabel}</h2>
       <p>{t.importStepHint}</p>
       <FormJsonUpload
         locale={locale}

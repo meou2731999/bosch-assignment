@@ -132,7 +132,6 @@ test("all basic inputs render JSON, validate and persist their data types", asyn
       choice: "high",
     });
     await user.reload();
-    await user.getByRole("button").filter({ hasText: "Typed record" }).click();
     await expect(user.getByLabel("Meeting date", { exact: false })).toHaveValue(
       "2028-02-29",
     );

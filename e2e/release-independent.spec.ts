@@ -51,6 +51,9 @@ test("publish and upgrade without frontend release, then submit and review the n
       },
     ]);
     await requester
+      .getByRole("button", { name: "Back to requests", exact: true })
+      .click();
+    await requester
       .getByRole("button", { name: "New request", exact: true })
       .click();
     await expect(
@@ -59,6 +62,9 @@ test("publish and upgrade without frontend release, then submit and review the n
     await expect(
       requester.getByLabel("Contact", { exact: false }),
     ).toBeVisible();
+    await requester
+      .getByRole("button", { name: "Back to requests", exact: true })
+      .click();
     await requester
       .getByRole("button")
       .filter({ hasText: initial.data.requestTitle })

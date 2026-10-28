@@ -96,10 +96,6 @@ test("requester reviews/cancels upgrade, corrects invalid values and restores or
     .click();
   await saveDraft(user);
   await user.reload();
-  await user
-    .getByRole("button")
-    .filter({ hasText: initial.data.requestTitle })
-    .click();
   await history(user)
     .getByLabel("Saved revision", { exact: true })
     .selectOption("1");
@@ -134,10 +130,6 @@ test("requester reviews/cancels upgrade, corrects invalid values and restores or
   await expect(history(user)).toHaveCount(0);
   await setup.publishNext();
   await user.reload();
-  await user
-    .getByRole("button")
-    .filter({ hasText: initial.data.requestTitle })
-    .click();
   await expect(user.getByLabel("Amount", { exact: false })).toHaveValue("5");
   await expect(user.getByLabel("Amount", { exact: false })).toBeDisabled();
   const final = await (

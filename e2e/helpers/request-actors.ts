@@ -64,6 +64,10 @@ export async function actor(
     ).status(),
   ).toBe(204);
   await login(page, email, password);
+  if (role === "requester")
+    await page
+      .getByRole("button", { name: "New request", exact: true })
+      .click();
   return { page, context };
 }
 export async function software(page: Page, title: string) {

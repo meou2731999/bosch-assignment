@@ -40,7 +40,7 @@ export function createApp({
   );
   if (production) {
     app.use(express.static(path.join(root, "dist")));
-    app.get("/", (_req, res) =>
+    app.get(["/", "/requests", "/requests/:id"], (_req, res) =>
       res.sendFile(path.join(root, "dist", "index.html")),
     );
   }

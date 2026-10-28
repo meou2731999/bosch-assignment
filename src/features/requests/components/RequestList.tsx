@@ -1,86 +1,112 @@
+import { useState } from "react";
 import { uiCopy } from "../../../i18n/ui";
 import { Button } from "../../../components/ui/Button";
-import { SelectableCard } from "../../../components/ui/SelectableCard";
-import { PlusIcon } from "../../../components/ui/icons";
-import { hasFormPermission } from "../../../../shared/forms";
-import type { Locale, RequestRecord, User } from "../../../../shared/model";
+import type { Locale, RequestRecord } from "../../../../shared/model";
 import { copy } from "../../../i18n";
 import { Status } from "./Status";
+
 export const RequestList = ({
-  user,
-  canCreate,
   locale,
   requests,
-  selectedId,
-  busy,
-  loading,
   navigate,
+  emptyMessage,
 }: Readonly<{
-  user: User;
-  canCreate: boolean;
   locale: Locale;
+  emptyMessage?: string;
   requests: RequestRecord[];
-  selectedId?: string;
-  busy: boolean;
-  loading: boolean;
-  navigate: (id?: string) => void;
+  navigate: (id: string) => void;
 }>) => {
   const t = copy(locale);
-  const seesAll =
-    Boolean(user.isAdmin) ||
-    Object.keys(user.formPermissions).some((formId) =>
-      hasFormPermission(user, formId, "view"),
-    );
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const totalPages = Math.max(1, Math.ceil(requests.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const start = (currentPage - 1) * pageSize;
+  const visible = requests.slice(start, start + pageSize);
   return (
-    <aside className="min-w-0 pt-1" aria-label={t.requests}>
-      <div className="mb-3 text-[10px] font-bold tracking-[0.16em] text-muted">
-        {uiCopy(locale).workspace}
+    <section
+      aria-label={t.requests}
+      className="overflow-hidden rounded-xl border border-line bg-white"
+    >
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <caption className="sr-only">{t.allRequests}</caption>
+          <thead className="border-b border-line bg-sage text-muted">
+            <tr>
+              <th scope="col" className="px-5 py-4">
+                {t.requestTitle}
+              </th>
+              <th scope="col" className="px-5 py-4">
+                {t.requestStatus}
+              </th>
+              <th scope="col" className="px-5 py-4">
+                {t.version}
+              </th>
+              <th scope="col" className="px-5 py-4">
+                {t.updated}
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-line">
+            {visible.map((request) => (
+              <tr key={request.id} className="hover:bg-sage/40">
+                <td className="min-w-52 px-5 py-4">
+                  <Button
+                    variant="secondary"
+                    onClick={() => navigate(request.id)}
+                  >
+                    {String(request.data.requestTitle || t.untitled)}
+                  </Button>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4">
+                  <Status status={request.status} locale={locale} />
+                </td>
+                <td className="px-5 py-4">{request.formVersion}</td>
+                <td className="whitespace-nowrap px-5 py-4">
+                  {new Date(request.updatedAt).toLocaleDateString(
+                    uiCopy(locale).dateLocale,
+                  )}
+                </td>
+              </tr>
+            ))}
+            {!visible.length && (
+              <tr>
+                <td colSpan={4} className="px-5 py-12 text-center text-muted">
+                  {emptyMessage ?? t.empty}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
-      <div className="mb-3 flex items-baseline justify-between [&_h2]:text-base [&_h2]:font-semibold [&_span]:rounded-full [&_span]:border [&_span]:border-line [&_span]:px-2 [&_span]:text-xs">
-        <h2>{seesAll ? t.allRequests : t.requests}</h2>
-        <span>{requests.length}</span>
-      </div>
-      {canCreate && (
-        <Button
-          startIcon={<PlusIcon />}
-          fullWidth
-          align="start"
-          className="mb-5"
-          disabled={loading || busy}
-          onClick={() => navigate()}
-        >
-          {t.newRequest}
-        </Button>
-      )}
       <nav
-        className="flex gap-2 overflow-x-auto pb-2 md:flex-col"
-        aria-label={t.requests}
+        aria-label={t.pagination}
+        className="flex flex-wrap items-center justify-between gap-4 border-t border-line px-5 py-4"
       >
-        {!loading && !requests.length && (
-          <p className="text-sm leading-relaxed text-muted">{t.empty}</p>
-        )}
-        {requests.map((r) => (
-          <SelectableCard
-            key={r.id}
-            selected={r.id === selectedId}
-            disabled={busy || loading}
-            onClick={() => navigate(r.id)}
+        <span role="status" className="text-sm text-muted">
+          {requests.length ? start + 1 : 0}–
+          {Math.min(start + pageSize, requests.length)} / {requests.length}
+        </span>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="secondary"
+            disabled={currentPage === 1}
+            onClick={() => setPage(currentPage - 1)}
           >
-            <Status status={r.status} locale={locale} />
-            <strong>{String(r.data.requestTitle || t.untitled)}</strong>
-            <small>
-              {new Date(r.updatedAt).toLocaleDateString(
-                uiCopy(locale).dateLocale,
-              )}{" "}
-              · {uiCopy(locale).versionPrefix}
-              {r.formVersion}
-            </small>
-          </SelectableCard>
-        ))}
+            {t.previousPage}
+          </Button>
+          <span className="text-sm">
+            {currentPage} / {totalPages}
+          </span>
+          <Button
+            variant="secondary"
+            disabled={currentPage === totalPages}
+            onClick={() => setPage(currentPage + 1)}
+          >
+            {t.nextPage}
+          </Button>
+        </div>
       </nav>
-      <div className="mt-7 hidden border-t border-line pt-5 text-xs leading-relaxed text-muted md:block [&_span]:mb-2 [&_span]:block [&_span]:text-xl">
-        <span aria-hidden="true">↳</span> {seesAll ? t.selectHint : t.help}
-      </div>
-    </aside>
+    </section>
   );
 };

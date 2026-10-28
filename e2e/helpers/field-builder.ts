@@ -82,4 +82,7 @@ export async function prepareRequester(
     ).status(),
   ).toBe(204);
   await login(userPage, account.email, "builder-changed-password");
+  await userPage
+    .getByRole("button", { name: "New request", exact: true })
+    .click();
 }

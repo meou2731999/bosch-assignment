@@ -20,9 +20,12 @@ test("upload JSON, recover from invalid files, publish and submit the stored for
     name: "Create form type",
     exact: true,
   });
+  await expect(editor.locator('[aria-current="step"]')).toContainText(
+    "Upload JSON",
+  );
   const upload = editor.getByLabel("Upload Form.io JSON", { exact: true });
   await expect(
-    editor.getByRole("heading", { name: "Step 1 of 2: Upload JSON" }),
+    editor.getByRole("heading", { name: "Upload JSON" }),
   ).toBeVisible();
   await expect(
     editor.getByRole("button", { name: "Continue to editor", exact: true }),
@@ -66,6 +69,9 @@ test("upload JSON, recover from invalid files, publish and submit the stored for
     .getByRole("button", { name: "Continue to editor", exact: true })
     .click();
   await expect(upload).toHaveCount(0);
+  await expect(editor.locator('[aria-current="step"]')).toContainText(
+    "Edit form",
+  );
   await expect(editor.getByLabel("Field label", { exact: true })).toHaveValue(
     "Visitor name",
   );

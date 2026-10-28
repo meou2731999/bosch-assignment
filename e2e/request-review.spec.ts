@@ -108,16 +108,15 @@ test("attachments preview/download, submit, reject and approve with read-only au
       review.getByRole("button", { name: "Approve request", exact: true }),
     ).toHaveCount(0);
     await user.reload();
-    await user
-      .getByRole("button")
-      .filter({ hasText: "Browser attachment review" })
-      .click();
     await expect(
       user.getByRole("region", { name: "Activity", exact: true }),
     ).toContainText("Please clarify the business need.");
     await expect(
       user.getByRole("button", { name: "Submit request", exact: true }),
     ).toHaveCount(0);
+    await user
+      .getByRole("button", { name: "Back to requests", exact: true })
+      .click();
     await user
       .getByRole("button", { name: "New request", exact: true })
       .click();
@@ -128,7 +127,9 @@ test("attachments preview/download, submit, reject and approve with read-only au
     await expect(
       user.getByRole("status").filter({ hasText: "Request submitted." }),
     ).toBeVisible();
-    await review.reload();
+    await review
+      .getByRole("button", { name: "Back to requests", exact: true })
+      .click();
     await review
       .getByRole("button")
       .filter({ hasText: "Browser approval flow" })
