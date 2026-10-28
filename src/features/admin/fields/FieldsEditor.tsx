@@ -58,6 +58,7 @@ export const FieldsEditor = ({
         input: "text",
         dataType: "string",
         required: false,
+        minLength: 0,
       },
     ]);
   };

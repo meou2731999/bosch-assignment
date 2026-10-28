@@ -39,10 +39,20 @@ export const FieldValidationEditor = ({
         }),
     });
   };
+  const minimumBound = {
+    minLength: 0,
+    maxLength: 1,
+    min: undefined,
+    max: undefined,
+  };
   const changeBound = (key: (typeof bounds)[number], value: string) => {
+    const minimum = minimumBound[key];
+    if (value !== "" && minimum !== undefined && Number(value) < minimum)
+      return;
+    const emptyValue = key === "minLength" ? 0 : undefined;
     onChange({
       ...field,
-      [key]: Number(value),
+      [key]: value === "" ? emptyValue : Number(value),
     });
   };
   return (
@@ -65,8 +75,9 @@ export const FieldValidationEditor = ({
               <input
                 className={inputClass}
                 type="number"
+                min={minimumBound[key]}
                 step={field.dataType === "number" ? "any" : "1"}
-                value={field[key] ?? ""}
+                value={field[key] ?? (key === "minLength" ? 0 : "")}
                 onChange={(event) => changeBound(key, event.target.value)}
               />
             </label>

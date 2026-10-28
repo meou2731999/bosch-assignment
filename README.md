@@ -19,7 +19,7 @@ New accounts must change their initial password and sign in again. Admins manage
 
 ## Try it
 
-1. Admin opens **Manage forms → Create form type → Upload Form.io JSON**, selects a JSON file, reviews the preview, saves and publishes it. Alternatively, build a blank form with the field editor.
+1. Admin opens **Manage forms → Create form type → Upload Form.io JSON**, selects a JSON file and clicks **Continue to editor**, or chooses **Skip upload**. In step 2, edit and preview fields, then save and publish.
 2. Grant **Create requests** to a requester and **Review requests** to a separate reviewer.
 3. Requester fills the form, uploads an optional file, saves a draft and reopens it.
 4. Publish a newer form. New requests use it; existing drafts keep their version until an explicit, validated upgrade.
@@ -46,7 +46,7 @@ Use **Download example JSON** beside the upload field to get an editable sample.
 
 Supported components are `textfield` (text/date), `textarea`, `email`, `number`, `checkbox`, `select`, `radio`, `panel`, and `fieldset`. Static choices, required/bounds validation, and simple `conditional` rules are supported. Unsupported properties/components, executable rules, and remote data sources are rejected. This is a supported subset, not a general Form.io export importer.
 
-Upload replaces the editor content only after validation succeeds. Save persists the uploaded definition; publish creates an immutable version. After upload, fields are editable with the same builder used for blank forms: add, remove, reorder, change types and validation, or preview before saving. You can also upload a replacement file. Until the first field edit, the original Form.io layout is preserved. Once edited, the builder layout is used (panels flatten into fields and radios become selects), retaining validation and visibility rules. Rendering and server validation use the stored definition and derived field rules, without reading a source template. Existing IT templates remain available for legacy forms.
+Upload replaces the editor content only after validation succeeds. Save persists the uploaded definition; publish creates an immutable version. After upload, fields are editable with the same builder used for blank forms: add, remove, reorder, change types and validation, or preview before saving. The upload control appears only in step 1 when creating a form. Existing drafts open directly in the editor. Until the first field edit, the original Form.io layout is preserved. Once edited, the builder layout is used (panels flatten into fields and radios become selects), retaining validation and visibility rules. Rendering and server validation use the stored definition and derived field rules, without reading a source template. Existing IT templates remain available for legacy forms.
 
 ## Documentation
 

@@ -19,6 +19,22 @@ async function checkFields(root: Locator) {
   for (const gap of stacks)
     expect(Number.parseFloat(gap)).toBeGreaterThanOrEqual(20);
 }
+async function checkPairs(root: Locator) {
+  for (const [first, second] of [
+    ["Input type", "Data type"],
+    ["Minimum length", "Maximum length"],
+  ]) {
+    const left = await root.getByLabel(first, { exact: true }).boundingBox();
+    const right = await root.getByLabel(second, { exact: true }).boundingBox();
+    expect(left).not.toBeNull();
+    expect(right).not.toBeNull();
+    expect(Math.abs(left!.y - right!.y)).toBeLessThanOrEqual(1);
+    expect(right!.x).toBeGreaterThan(left!.x + left!.width);
+  }
+  await expect(root.getByLabel("Minimum length", { exact: true })).toHaveValue(
+    "0",
+  );
+}
 async function checkActions(control: Locator, action: Locator) {
   await action.scrollIntoViewIfNeeded();
   const field = await control.boundingBox(),
@@ -90,9 +106,14 @@ test("form spacing stays consistent across auth, account dialogs and the field e
   await page
     .getByRole("button", { name: "Create form type", exact: true })
     .click();
+  await page.getByRole("button", { name: "Skip upload", exact: true }).click();
   dialog = page.getByRole("dialog");
   await checkFields(dialog);
   await dialog.getByRole("button", { name: "Add field", exact: true }).click();
+  await checkPairs(dialog);
+  await dialog.screenshot({
+    path: "test-results/form-editor-pairs-desktop.png",
+  });
   await dialog
     .getByRole("button", { name: "Add visibility condition", exact: true })
     .click();
@@ -102,6 +123,11 @@ test("form spacing stays consistent across auth, account dialogs and the field e
   await condition.screenshot({ path: "test-results/spacing-condition.png" });
   await page.setViewportSize({ width: 390, height: 650 });
   await checkFields(dialog);
+  await checkPairs(dialog);
+  await expect(dialog.locator('input[type="file"]')).toHaveCount(0);
+  await dialog.screenshot({
+    path: "test-results/form-editor-pairs-mobile.png",
+  });
   await condition.screenshot({
     path: "test-results/spacing-condition-mobile.png",
   });

@@ -21,6 +21,12 @@ test("upload JSON, recover from invalid files, publish and submit the stored for
     exact: true,
   });
   const upload = editor.getByLabel("Upload Form.io JSON", { exact: true });
+  await expect(
+    editor.getByRole("heading", { name: "Step 1 of 2: Upload JSON" }),
+  ).toBeVisible();
+  await expect(
+    editor.getByRole("button", { name: "Continue to editor", exact: true }),
+  ).toBeDisabled();
   await upload.setInputFiles({
     name: "broken.json",
     mimeType: "application/json",
@@ -46,15 +52,8 @@ test("upload JSON, recover from invalid files, publish and submit the stored for
     mimeType: "application/json",
     buffer: Buffer.from(JSON.stringify(definition)),
   });
-  await expect(editor.getByLabel("Form name", { exact: true })).toHaveValue(
-    definition.title,
-  );
-  await expect(editor.getByLabel("Field label", { exact: true })).toHaveValue(
-    "Visitor name",
-  );
-  await expect(
-    editor.getByRole("region", { name: "Form preview", exact: true }),
-  ).toHaveCount(0);
+  await expect(editor.getByRole("status")).toContainText(definition.title);
+  await expect(editor.getByLabel("Form name", { exact: true })).toHaveCount(0);
   await upload.setInputFiles({
     name: "unsupported.json",
     mimeType: "application/json",
@@ -63,6 +62,16 @@ test("upload JSON, recover from invalid files, publish and submit the stored for
     ),
   });
   await expect(editor.getByRole("alert")).toContainText("Could not import");
+  await editor
+    .getByRole("button", { name: "Continue to editor", exact: true })
+    .click();
+  await expect(upload).toHaveCount(0);
+  await expect(editor.getByLabel("Field label", { exact: true })).toHaveValue(
+    "Visitor name",
+  );
+  await expect(
+    editor.getByLabel("Minimum length", { exact: true }),
+  ).toHaveValue("0");
   await expect(editor.getByLabel("Form name", { exact: true })).toHaveValue(
     definition.title,
   );

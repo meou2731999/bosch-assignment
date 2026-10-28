@@ -16,6 +16,7 @@ test("create, preview, reopen and submit a blank form without IT template fields
   await page
     .getByRole("button", { name: "Create form type", exact: true })
     .click();
+  await page.getByRole("button", { name: "Skip upload", exact: true }).click();
   const editor = page.getByRole("region", {
     name: "Create form type",
     exact: true,

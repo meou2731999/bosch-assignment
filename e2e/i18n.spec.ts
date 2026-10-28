@@ -35,6 +35,9 @@ test("Vietnamese form builder localizes uploads, conditions, defaults and errors
     editor.getByRole("alert").filter({ hasText: "Không thể nhập tệp" }),
   ).toBeVisible();
   await editor
+    .getByRole("button", { name: "Bỏ qua tải lên", exact: true })
+    .click();
+  await editor
     .getByRole("button", { name: "Thêm trường", exact: true })
     .click();
   await expect(editor.getByLabel("Nhãn trường", { exact: true })).toHaveValue(
