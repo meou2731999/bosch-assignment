@@ -75,12 +75,7 @@ export const App = () => {
     setView("requests");
     setNotice("changed");
   };
-  if (loading)
-    return (
-      <p role="status" className="p-8">
-        {t.working}
-      </p>
-    );
+  if (loading) return <output className="p-8">{t.working}</output>;
   const auth = !user || user.mustChangePassword || view === "password";
   let content;
   if (auth)
