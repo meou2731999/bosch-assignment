@@ -1,30 +1,66 @@
-# Final handoff - step 7
+# Operation, verification and acceptance
 
-11 October 2026. All seven implementation stages are complete locally. See [verification](verification.md) for measured checks and [implementation plan](implementation-plan.md) for stage history.
+Setup: [README](../README.md). Technical policy: [architecture](architecture.md). Rehearsal: [presentation script](presentation-notes.vi.md).
 
-## Setup and operation
+## Local operation and recovery
 
-1. Install Node 24, run `npm ci --include=dev`, supply `ADMIN_EMAIL` / `ADMIN_PASSWORD` through the environment and run `npm run bootstrap:admin`.
-2. Start `npm run dev` and open port 5173, or run `npm run build` then `npm start` on port 3001. Use the same `DATA_DIR` for bootstrap/server; `.env` is not loaded automatically.
-3. Create/publish forms and explicitly grant create/view/review. New accounts change their initial password and sign in again. Administrative status does not imply create/review rights.
-4. Use [demo script](demo-script.md) and [schema-only evidence](release-independent-schema.md) for review. Run checks with disposable test data; browser tests never use `.data`.
+Use Node 24; bootstrap/server must share `DATA_DIR` (default `.data`). `.env` is not auto-loaded. Dev web/API ports are 5173/3001; the built app uses 3001. Bootstrap refuses an existing active admin. New accounts need a password change and explicit form grants; grant/reset/account edits revoke sessions.
 
-## Storage, backup and recovery
+Keep `.data` private and out of Git. Stop the API before backing up/restoring the entire directory, including users, forms, requests/snapshots and file metadata/bytes. Never restore request JSON without its referenced schemas/files. Keep the previous backup when changing app versions; there is no automatic cross-version downgrade. Restart clears sessions.
 
-`.data` holds users, forms, requests/snapshots and file metadata/bytes. Keep the directory private and out of Git. Stop the API before copying/restoring the entire data directory; do not restore only request JSON while losing referenced schemas/files. Sessions are in memory, so all users sign in again after restart. Keep the previous data backup when changing application versions. There is no automatic cross-version database downgrade or distributed backup protocol.
+Failed saves retain browser input. Unknown network outcomes require reconciling the stored revision before retry. Conflicts require explicit reload and fresh previews. Missing historical files/schemas block restore. Current publication recovery is a corrected new publication; active-pointer rollback UI is not implemented.
 
-A conflict requires explicit request reload and a fresh preview. A missing historical version or file blocks restore without writing a new revision. Failed saves preserve browser input; an unknown network outcome must be reconciled by reload/revision rather than assuming failure. Publication affects new requests only; the UI does not expose an active-version rollback endpoint. Retain immutable historical versions and use an explicit corrected publication for future requests.
+## Verification baseline
 
-## CI
+Executed **28 October 2026**, macOS, Node **24.19.0**, npm **12.0.2**:
 
-`.github/workflows/check.yml` targets GitHub Actions on push to main, pull requests and manual dispatch. It installs locked development dependencies on Node 24/Ubuntu 24.04, runs `npm run check`, installs Chromium/system dependencies and runs the complete headless browser suite. A read-only token, cancellation per branch, job/test timeouts, forbidden focused tests and 14-day browser artifacts are configured. No automatic deploy or secrets are required.
+- `npm test`: **84 tests / 23 files passed**.
+- `npm run build`: TypeScript and production build passed.
+- `CI=true npm run test:e2e`: **16/16 headless Chromium scenarios passed** (46.4 seconds).
+- Lint and repository format checks passed. `docs/` is excluded by Prettier; document links/layout are checked separately.
+- Proposal PDF: four pages. Presentation: 15 editable English slides with Vietnamese notes, visually reviewed.
 
-The workflow follows [Playwright CI guidance](https://playwright.dev/docs/ci) and official [setup-node](https://github.com/actions/setup-node), [checkout](https://github.com/actions/checkout), [upload-artifact](https://github.com/actions/upload-artifact) actions. This checkout has no Git remote, so hosted execution cannot be asserted. Push the reviewed repository to GitHub to obtain actual CI run evidence; local headed/headless results are separate.
+These are the preceding code-verification results, not fresh test execution for the documentation consolidation. No application behavior changed during consolidation.
 
-## Review and acceptance
+Coverage includes auth/CSRF/revocation, permission bypasses, publication/pinning, blank forms/stable field IDs, basic/nested fields and visibility, file bytes/access, snapshots/restarts/failed writes, upgrade/restore/conflicts, admin dialogs, menu focus, EN/VI and CSS/mobile spacing.
 
-Review permission boundaries, supported schema limits, legacy compatibility, strict invalid-value upgrade policy, hidden/removed-value changes and file/snapshot retention. Every authored JS/TS file is limited to 200 lines by ESLint. Production bundle/CSS warnings remain visible.
+Vite 7.3.7 output: JS **2,219.53 kB / 646.64 kB gzip**, CSS **387.07 kB / 48.07 kB gzip**. The JS chunk-size warning remains; no Bootstrap charset warning appeared. Browser startup emitted a `NO_COLOR`/`FORCE_COLOR` environment warning. Sizes are observations, not accepted performance budgets.
 
-Customer SSO/database/workflow, scanning/quarantine/retention, distributed transactions/sessions, load/performance budgets, complete accessibility/cross-browser verification, independent candidate rehearsal and business UAT/sign-off remain pending. Local tests and local SonarJS rules do not establish production readiness or a SonarQube server Quality Gate.
+## Reproduce and retain evidence
 
-Current source, lockfile, CI, automated tests, README, contracts, architecture, proposal PDF, demo/runbook and evidence instructions are included. Rebuild the four-page PDF with `uv run --with reportlab python scripts/build-proposal.py`; the script reads `docs/proposal.md` and requires only the optional document dependency, not an application runtime dependency. AI-assisted work and unrecorded independent candidate review remain disclosed. No real customer data or credentials belong in the handoff.
+```sh
+npm ci --include=dev
+npm run check
+npx playwright install chromium
+CI=true npm run test:e2e
+npx playwright show-report --host 127.0.0.1
+```
+
+For visible rehearsal: `npm run test:e2e:headed`; optionally prefix `E2E_SLOW_MO=500`. Slow mode allows three minutes per test and thirty minutes per suite. These modes were not rerun in the recorded refresh. Playwright builds the frontend, starts an isolated API on port 3107 and uses disposable accounts/data, never `.data`.
+
+`e2e/release-independent.spec.ts` publishes a new supported JSON field, loads it in the same requester document, keeps a v1 draft pinned, upgrades to v2, submits and approves. The report attachment **release-independent-schema-evidence** records matching built/served SHA-256 hashes and unchanged `performance.timeOrigin`. This proves the tested configuration change needs no frontend build/deployment, not that arbitrary future inputs/operators/integrations do.
+
+`playwright-report/` and `test-results/` contain HTML, screenshots and failure traces. They are ignored and overwritten on subsequent runs; copy evidence for a named review. PDF attachment tests check the preview container/download, not browser PDF rendering fidelity.
+
+The GitHub remote is `meou2731999/bosch-assignment`. `.github/workflows/check.yml` runs Node 24/Ubuntu 24.04 checks and Chromium on main pushes, PRs and manual dispatch, retaining artifacts for 14 days. Hosted run status was not checked; no deploy is configured.
+
+## Acceptance and risk gates
+
+Customer UAT has not occurred. Agree process/field rules, scoped roles, translation/publication owners, file policy and measurable outcomes before a versioned sandbox trial. Representative users should cover:
+
+1. Active form discovery, conditional validation, incomplete draft save/reload and EN/VI.
+2. Own/other-user access, grant revocation, forbidden self-review and direct API bypass.
+3. Real file upload/preview/download, size/type/signature rejection and historical references.
+4. New publication, pinned old requests, upgrade/cancel/restore and stale revisions.
+5. Submit, rejection reason, immutable final decisions and audit.
+6. Blank form identity preservation, keyboard focus, mobile layout and failure recovery.
+
+Record build, role, input, expected/actual result, evidence and defect owner. Unauthorized access, data loss or a core journey failure blocks acceptance. Exit requires all critical journeys passing, no open critical/high defects, accepted lower-severity issues with owners/dates, reviewed rollback/runbook and named business sign-off on the exact build/scope.
+
+Production risks still include single-process storage/sessions, tenant isolation, unsafe files, incompatible schema changes and duplicate external delivery. The [roadmap](platform-roadmap.md) assigns gates for transactions, identity, scanning, migration and recovery. Full Firefox/WebKit, screen-reader, load, provider integration, dependency/security audit and SonarQube server Quality Gate are not claimed. Local checks do not certify production readiness; candidate review/rehearsal remains unrecorded.
+
+## Maintain the documents
+
+Keep runtime contracts in architecture.md, executed results here, planned scope in platform-roadmap.md and audience material in proposal.md/presentation-notes.vi.md. Avoid copying test counts into additional guides.
+
+Rebuild the proposal with `uv run --with reportlab python scripts/build-proposal.py`. Slide text updates live in `presentation.json`; `scripts/build-presentation.mjs` reads them and the Vietnamese notes, using the optional Artifact Tool runtime described in its header. The v3 deck is a build template only; v4 is the current presentation. Render and inspect changed artifacts before delivery. Document tools are separate from application dependencies.

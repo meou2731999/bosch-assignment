@@ -35,7 +35,7 @@ def footer(canvas, doc):
     canvas.line(44, 43, width - 44, 43)
     canvas.setFillColor(MUTED)
     canvas.setFont("Helvetica", 8)
-    canvas.drawString(44, 29, "REQUEST DESK / AI-ASSISTED ASSESSMENT / 11 OCT 2026")
+    canvas.drawString(44, 29, "REQUEST DESK / AI-ASSISTED ASSESSMENT / 28 OCT 2026")
     canvas.drawRightString(width - 44, 29, str(doc.page))
     canvas.restoreState()
 
