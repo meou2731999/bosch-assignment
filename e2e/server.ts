@@ -15,10 +15,11 @@ await createUserStore(dataDir).create(
   },
   true,
 );
-const server = createApp({ dataDir, production: true }).listen(
-  3107,
-  "127.0.0.1",
-);
+const server = createApp({
+  dataDir,
+  production: true,
+  loginIpAttemptLimit: 500,
+}).listen(3107, "127.0.0.1");
 function close() {
   server.close(() => {
     rmSync(dataDir, { recursive: true, force: true });

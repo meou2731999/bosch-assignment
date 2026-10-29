@@ -14,14 +14,14 @@ export async function addField(editor: Locator, label: string, input = "text") {
 }
 export async function publish(page: Page, name: string, version: number) {
   const row = page
-    .getByRole("listitem")
-    .filter({ has: page.getByRole("heading", { name, exact: true }) });
+    .getByRole("row")
+    .filter({ has: page.getByRole("cell", { name, exact: true }) });
   page.once("dialog", (dialog) => dialog.accept());
   await row.getByRole("button", { name: /^Actions:/ }).click();
   await row
     .getByRole("menuitem", { name: "Publish form", exact: true })
     .click();
-  await expect(row).toContainText(`Published version: ${version}`);
+  await expect(row.getByRole("cell").nth(1)).toHaveText(String(version));
   return row;
 }
 export async function prepareRequester(

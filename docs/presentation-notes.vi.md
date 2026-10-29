@@ -1,6 +1,6 @@
 # Nội dung thuyết trình Request Desk
 
-Bản ngày 28/10/2026, đi cùng presentation v4 gồm 15 slide tiếng Anh. Lời nói dưới đây bằng tiếng Việt, có thể điều chỉnh cách xưng hô. Thời lượng gợi ý: 18–20 phút trình bày, 10–15 phút demo, sau đó Q&A. Nội dung từng slide cũng được nhúng vào Speaker Notes của PowerPoint.
+Bản ngày 28/10/2026, đi cùng presentation v6 gồm 15 slide tiếng Anh. Lời nói dưới đây bằng tiếng Việt, có thể điều chỉnh cách xưng hô. Thời lượng gợi ý: 18–20 phút trình bày, 10–15 phút demo, sau đó Q&A. Nội dung từng slide cũng được nhúng vào Speaker Notes của PowerPoint.
 
 ## Slide 01 — Request Desk (45 giây)
 
@@ -22,7 +22,7 @@ Nguồn: docs/proposal.md, docs/handoff.md.
 
 ## Slide 03 — Current scope and selected direction (1 phút 15 giây)
 
-Phạm vi đang có là một ứng dụng React/Express độc lập để chạy local. Backend có session thật, lưu JSON và lưu file thật. Form IT cũ có nhánh equipment/software; ngoài ra admin có thể tạo blank form cho một quy trình khác.
+Phạm vi đang có là một ứng dụng React/Express độc lập để chạy local. Backend có session thật, lưu JSON và lưu file thật. Admin có thể nhập một phần JSON Form.io được hỗ trợ, dùng template IT cũ hoặc tạo blank form; request được xem trong bảng có phân trang.
 
 Hướng phát triển đã chọn là tự sở hữu schema engine bằng React, dùng PostgreSQL, OIDC và object storage tương thích S3, đồng thời hỗ trợ tenant độc lập từ lần triển khai đầu. Đây là roadmap, chưa phải trạng thái hiện tại của code.
 
@@ -34,9 +34,9 @@ Nguồn: server/app.ts, docs/platform-roadmap.md.
 
 Luồng bắt đầu ở admin: tạo form, xem preview, lưu draft rồi publish. Admin cấp quyền create cho requester và quyền review cho reviewer trên đúng form. Tài khoản mới phải đổi mật khẩu rồi đăng nhập lại.
 
-Requester chọn form, nhập dữ liệu và có thể lưu một bản nháp chưa đủ field bắt buộc. Tuy nhiên giá trị đã nhập vẫn phải đúng kiểu và giới hạn. Sau khi mở lại, hệ thống khôi phục dữ liệu, schema version và attachment. Khi submit, tất cả field bắt buộc đang hiển thị phải hợp lệ và request trở thành read-only.
+Requester chọn form, nhập dữ liệu và có thể lưu một bản nháp chưa đủ field bắt buộc. Bảng request cho phép mở chi tiết theo hàng, phân trang và giữ route để dùng back/forward. Tuy nhiên giá trị đã nhập vẫn phải đúng kiểu và giới hạn. Sau khi mở lại, hệ thống khôi phục dữ liệu, schema version và attachment. Khi submit, tất cả field bắt buộc đang hiển thị phải hợp lệ và request trở thành read-only.
 
-Reviewer có quyền trên form được đọc dữ liệu/file và approve hoặc reject yêu cầu của người khác. Reject bắt buộc có lý do. Quyết định cuối không mở lại để sửa; correction/resubmit là phần roadmap. File hiện hỗ trợ PDF, PNG, JPEG và TXT, tối đa ba file, mỗi file 5 MiB; quét malware chưa có.
+Reviewer có quyền trên form được đọc dữ liệu/file và approve hoặc reject yêu cầu của người khác, từ màn chi tiết hoặc menu hàng trong danh sách. Reject tại màn chi tiết bắt buộc có lý do. Quyết định cuối không mở lại để sửa; correction/resubmit là phần roadmap. File hiện hỗ trợ PDF, PNG, JPEG và TXT, tối đa ba file, mỗi file 5 MiB; quét malware chưa có.
 
 Nguồn: server/requests/service.ts, server/requests/review.ts, server/attachments/routes.ts.
 
@@ -54,7 +54,7 @@ Nguồn: src/app, src/features/forms/DynamicForm.tsx, shared/field-validation.ts
 
 ## Slide 06 — Authoring and renderer decisions (1 phút 30 giây)
 
-Editor chỉ cho phép các field và rule có kiểu rõ ràng, không nhận JavaScript tùy ý từ người tạo form. Có bảy input cơ bản, cùng multi-select, object, repeat và table. Visibility hỗ trợ AND/OR và điều kiện tham chiếu root, row hoặc parent.
+Editor chỉ cho phép các field và rule có kiểu rõ ràng, không nhận JavaScript tùy ý từ người tạo form. Admin có thể upload JSON Form.io tối đa 256 KB, xác thực trước khi thay nội dung editor, rồi tiếp tục chỉnh field và preview trong bước kế tiếp. Import chỉ hỗ trợ một tập component/validation/conditional; component lạ, rule thực thi và nguồn dữ liệu từ xa bị từ chối. Có bảy input cơ bản, cùng multi-select, object, repeat và table. Visibility hỗ trợ AND/OR và điều kiện tham chiếu root, row hoặc parent.
 
 Blank form giúp tạo quy trình không có field IT mặc định. Người dùng chỉnh label thay vì key kỹ thuật. Field mới có reference tạm khi đang edit; backend cấp ID ổn định lúc save và viết lại reference trong condition. Đổi label hoặc thứ tự không làm mất liên kết với dữ liệu đã lưu.
 
@@ -88,7 +88,7 @@ Nguồn: server/auth/sessions.ts, server/requests/service.ts, shared/fields.ts, 
 
 ## Slide 09 — Frontend boundaries and usability (1 phút)
 
-UI đã tách Button, MenuItem, Modal, ErrorNotice và styling field dùng chung. Các màn hình feature chủ yếu ghép control và xử lý nghiệp vụ, giảm việc lặp CSS hoặc khác hành vi giữa các màn hình.
+UI đã tách Button, MenuItem, Modal, ErrorNotice và styling field dùng chung. Quản lý form và danh sách request dùng bảng có hành động theo hàng; request list phân trang 10 mục. Các màn hình feature chủ yếu ghép control và xử lý nghiệp vụ, giảm việc lặp CSS hoặc khác hành vi giữa các màn hình.
 
 Modal quản trị có focus handling, hỗ trợ Escape và giữ input khi save lỗi; lúc đang save thì không cho đóng. Menu tài khoản chứa đổi ngôn ngữ, mật khẩu và logout. Chuyển EN/VI giữ dữ liệu đang nhập; điều hướng khỏi dữ liệu chưa lưu có cảnh báo.
 
@@ -98,11 +98,11 @@ Nguồn: src/components/ui, src/app/UserMenu.tsx, tooling/scoped-vendor.ts, docs
 
 ## Slide 10 — Local evidence and limits (1 phút 15 giây)
 
-Lần chạy ngày 28/10/2026 có 84 unit/API test trong 23 file và 16 kịch bản Chromium headless đều pass. TypeScript và production build cũng pass. Số liệu hiện tại thay thế các con số 77/80 và 11/15 ở bản tài liệu cũ.
+Lần chạy ngày 28/10/2026 có 93 unit/API test trong 25 file và 19 kịch bản Chromium headless đều pass. TypeScript, production build, lint và format cũng pass. E2E bao gồm upload JSON, bảng request phân trang, điều hướng browser history và duyệt trực tiếp từ menu hàng. Số liệu cần được thay bằng kết quả mới nhất sau mỗi lần chạy.
 
 Test quan trọng cho schema-only change đo hash bundle trước/sau khi publish và kiểm tra document của requester không đổi. Sau đó test đi hết luồng upgrade, submit và approve. Vì vậy có bằng chứng rằng thay đổi cấu hình được hỗ trợ không cần frontend release, trong phạm vi scenario đã kiểm tra.
 
-Repo có GitHub remote và workflow CI, nhưng lần cập nhật này không kiểm tra kết quả hosted CI. Bundle JavaScript khoảng 2.22 MB minified, còn warning kích thước. Chưa có load test, đầy đủ cross-browser/screen-reader hay UAT thật.
+Repo có GitHub remote và workflow CI, nhưng lần cập nhật này không kiểm tra kết quả hosted CI. Bundle JavaScript khoảng 2.25 MB minified, còn warning kích thước. Chưa có load test, đầy đủ cross-browser/screen-reader hay UAT thật.
 
 Codex đã hỗ trợ soạn code, test và tài liệu. Việc review độc lập của ứng viên chưa được ghi nhận; khi trình bày cần mô tả đúng phần mình đã đọc, thử và hiểu, không tự nhận những hoạt động chưa thực hiện.
 

@@ -24,8 +24,8 @@ export async function advancedEditor(page: Page) {
   expect(created.status()).toBe(201);
   const form = await created.json();
   await page.getByRole("button", { name: "Manage forms", exact: true }).click();
-  const row = page.getByRole("listitem").filter({
-    has: page.getByRole("heading", {
+  const row = page.getByRole("row").filter({
+    has: page.getByRole("cell", {
       name: "Advanced collections",
       exact: true,
     }),

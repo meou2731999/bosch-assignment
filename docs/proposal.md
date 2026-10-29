@@ -8,7 +8,8 @@ Request Desk brings configurable forms, saved requests and review history into o
 
 - Session login, scrypt passwords, CSRF checks, forced password change, account reset and session revocation.
 - Admin account/form management and server-enforced create/view/review grants per form. Admin read access does not imply create/review rights.
-- Blank or template-based authoring, preview, immutable publication and backend-issued stable field identities.
+- Blank/template authoring and a validated two-step Form.io JSON import flow, followed by editing/preview, immutable publication and backend-issued stable field identities. The importer supports a defined subset and rejects unsupported components, executable rules and remote data.
+- Paginated request table with browser-history navigation, row actions and eligible inline review actions.
 - Seven basic inputs plus multi-select, objects, repeating groups/tables and nested AND/OR visibility with root/row/parent scopes.
 - Draft save/reload, validated submission, local attachment bytes and authorized preview/download, approval/rejection and audit.
 - Confirmed draft upgrades, exact historical snapshot restoration and optimistic revision conflicts.
@@ -24,7 +25,7 @@ React owns product state, locale and HTTP operations. **DynamicForm / FormHandle
 
 ## Authoring and publication
 
-Blank forms require at least one field. The editor hides technical keys; draft save replaces temporary references with stable backend field IDs and rewrites conditions. Renaming or reordering preserves existing IDs. Published definitions remain immutable. Publishing advances the active version for new requests; saved requests load their pinned version.
+Blank forms require at least one field. The JSON importer validates input before replacing editor content and supports only a documented subset of Form.io components. The editor hides technical keys; draft save replaces temporary references with stable backend field IDs and rewrites conditions. Renaming or reordering preserves existing IDs. Published definitions remain immutable. Publishing advances the active version for new requests; saved requests load their pinned version.
 
 Supported fields, labels, constraints and conditions can change through JSON without a frontend release. New input kinds, rule operators and domain integrations require code. The generated Form.io definition alone does not express all custom visibility semantics. Retain the authoritative fields configuration and compatibility tests.
 
@@ -42,14 +43,14 @@ JSON persistence, sessions and throttling are single-process. Attachment bytes a
 
 # Selected next phase: standalone platform
 
-The selected direction is a React-owned schema engine with PostgreSQL, S3-compatible object storage, OIDC and independent tenants from the first deployment. Use a modular monolith plus a durable worker. This replaces the earlier assumption that an existing product would supply every backend service. **G0–G9 remain planned, not delivered.**
+The selected direction is a React-owned schema engine with PostgreSQL, S3-compatible object storage, OIDC and independent tenants from the first deployment. Use a modular monolith plus a durable worker. This replaces the earlier assumption that an existing product would supply every backend service. **G0-G9 remain planned, not delivered.**
 
 ## Delivery sequence and gates
 
-- G0–G1: establish baseline/contracts and unify engine semantics while preserving legacy schemas and historical behavior.
-- G2–G4: transactional persistence, shared sessions, tenant membership/policies and controlled publication with approval, activation and rollback.
-- G5–G7: typed rules/calculations/lookups, versioned workflow with correction and multiple approvals, reliable outbox actions and notifications.
-- G8–G9: scanning/object lifecycle, snapshot-aware retention, independent audit export, operational telemetry, performance and acceptance evidence.
+- G0-G1: establish baseline/contracts and unify engine semantics while preserving legacy schemas and historical behavior.
+- G2-G4: transactional persistence, shared sessions, tenant membership/policies and controlled publication with approval, activation and rollback.
+- G5-G7: typed rules/calculations/lookups, versioned workflow with correction and multiple approvals, reliable outbox actions and notifications.
+- G8-G9: scanning/object lifecycle, snapshot-aware retention, independent audit export, operational telemetry, performance and acceptance evidence.
 
 Each stage needs bounded changes, tests and review. The first production pilot must satisfy tenant isolation, verified migration, scan gates and backup/restore drills. Provider choice, target load, retention and RPO/RTO still need owners and decisions. An outbox provides retryable delivery; downstream idempotency/reconciliation is still required.
 
@@ -63,7 +64,7 @@ The solution engineer owns boundaries and evidence; frontend engineers own autho
 
 # Evidence, demonstration and acceptance
 
-The 28 October 2026 local run passed **84 unit/API tests across 23 files** and **16 headless Chromium scenarios**. TypeScript and the Vite production build passed. Lint/format results and exact reproduction commands are recorded in docs/handoff.md. Hosted CI status, headed browser execution, customer UAT and production integrations were not verified by those runs.
+The latest local run passed **93 unit/API tests across 25 files** and **19 headless Chromium scenarios**. TypeScript and the Vite production build passed. Lint/format results and exact reproduction commands are recorded in docs/handoff.md. Hosted CI status, headed browser execution, customer UAT and production integrations were not verified by those runs.
 
 ## Bounded schema-only release evidence
 
@@ -71,11 +72,11 @@ The integrated browser scenario publishes a new supported field, discovers it in
 
 ## Demonstration and handoff
 
-Show blank-form authoring and grants, requester save/reload and file preview, a new publication, explicit upgrade/restore and final review. Use the v4 presentation and Vietnamese speaker notes, then the live-demo script. The source includes tests, lockfile, CI workflow, contracts, architecture, operational runbook and the planned platform roadmap. The GitHub remote is configured; a workflow file alone does not prove a hosted run succeeded.
+Show JSON import or blank-form authoring and grants, requester save/reload and file preview, a new publication, explicit upgrade/restore and final review. Use the v6 presentation and Vietnamese speaker notes, then the live-demo script. The source includes tests, lockfile, CI workflow, contracts, architecture, operational runbook and the planned platform roadmap. The GitHub remote is configured; a workflow file alone does not prove a hosted run succeeded.
 
 ## Acceptance and remaining risks
 
-Local checks cover access boundaries, schema safety, persistence, upgrades/restores, retry/conflicts and desktop/mobile UI behavior. JavaScript is 2,219.53 kB minified / 646.64 kB gzip; CSS is 387.07 kB / 48.07 kB gzip. A chunk-size warning remains. These sizes are observations, not accepted performance budgets.
+Local checks cover access boundaries, schema safety, persistence, upgrades/restores, retry/conflicts, JSON import, request pagination and desktop/mobile UI behavior. JavaScript is 2,249.39 kB minified / 655.04 kB gzip; CSS is 388.35 kB / 48.28 kB gzip. A chunk-size warning remains. These sizes are observations, not accepted performance budgets.
 
 Customer UAT requires agreed business rules, representative users, a versioned sandbox and evidence for every critical journey. No critical/high defects may remain; accepted lesser issues need owners/dates, and a named business owner signs the exact scope/build. Platform UAT additionally needs tenant isolation, migration recovery, scan controls and reliable workflow delivery. Full cross-browser, screen-reader, load and real provider checks remain pending.
 

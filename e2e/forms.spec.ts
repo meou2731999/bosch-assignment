@@ -23,15 +23,15 @@ async function createForm(page: Page, name: string) {
     .fill("Browser form test");
   await editor.getByRole("button", { name: "Save form draft" }).click();
   const row = page
-    .getByRole("listitem")
-    .filter({ has: page.getByRole("heading", { name, exact: true }) });
+    .getByRole("row")
+    .filter({ has: page.getByRole("cell", { name, exact: true }) });
   await expect(row).toContainText("Not published");
   page.once("dialog", (dialog) => dialog.accept());
   await row.getByRole("button", { name: /^Actions:/ }).click();
   await row
     .getByRole("menuitem", { name: "Publish form", exact: true })
     .click();
-  await expect(row).toContainText("Published version: 1");
+  await expect(row.getByRole("cell").nth(1)).toHaveText("1");
 }
 test("admin publishes form types, grants scoped creation and preserves old draft version", async ({
   page,
@@ -110,8 +110,8 @@ test("admin publishes form types, grants scoped creation and preserves old draft
     userPage.getByRole("status").filter({ hasText: "Draft saved." }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Manage forms", exact: true }).click();
-  const form = page.getByRole("listitem").filter({
-    has: page.getByRole("heading", { name: "Procurement", exact: true }),
+  const form = page.getByRole("row").filter({
+    has: page.getByRole("cell", { name: "Procurement", exact: true }),
   });
   await form.getByRole("button", { name: /^Actions:/ }).click();
   await form
@@ -127,18 +127,15 @@ test("admin publishes form types, grants scoped creation and preserves old draft
   await edit
     .getByRole("button", { name: "Save form draft", exact: true })
     .click();
-  const changed = page.getByRole("listitem").filter({
-    has: page.getByRole("heading", {
-      name: "Procurement updated",
-      exact: true,
-    }),
+  const changed = page.getByRole("row").filter({
+    has: page.getByRole("cell", { name: "Procurement updated", exact: true }),
   });
   page.once("dialog", (dialog) => dialog.accept());
   await changed.getByRole("button", { name: /^Actions:/ }).click();
   await changed
     .getByRole("menuitem", { name: "Publish form", exact: true })
     .click();
-  await expect(changed).toContainText("Published version: 2");
+  await expect(changed.getByRole("cell").nth(1)).toHaveText("2");
   await userPage
     .getByRole("button", { name: "Back to requests", exact: true })
     .click();
@@ -155,8 +152,13 @@ test("admin publishes form types, grants scoped creation and preserves old draft
     .getByRole("button", { name: "Back to requests", exact: true })
     .click();
   await userPage
-    .getByRole("button")
-    .filter({ hasText: "Untitled request" })
+    .getByRole("row")
+    .filter({
+      has: userPage.getByRole("cell", {
+        name: "Untitled request",
+        exact: true,
+      }),
+    })
     .click();
   await expect(
     userPage

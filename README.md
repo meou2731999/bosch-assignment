@@ -54,7 +54,7 @@ Upload replaces the editor content only after validation succeeds. Save persists
 - [Operation and verification](docs/handoff.md): tests, evidence, backup/recovery and acceptance gates.
 - [Platform roadmap](docs/platform-roadmap.md): planned G0–G9 work and estimation boundaries.
 - [Proposal](docs/proposal.md) / [PDF](docs/solution-proposal.pdf): concise solution and delivery narrative.
-- [Presentation script](docs/presentation-notes.vi.md) / [PowerPoint](output/presentation/Request-Desk-Solution-Presentation-v4.pptx): English slides, Vietnamese narration, demo and Q&A.
+- [Presentation script](docs/presentation-notes.vi.md) / [PowerPoint](output/presentation/Request-Desk-Solution-Presentation-v6.pptx): English slides, Vietnamese narration, demo and Q&A.
 
 Run `npm run check` for lint, formatting, unit/API tests and build. Run `npx playwright install chromium` then `npm run test:e2e` for isolated browser tests. Current results and limitations live only in the operation guide.
 

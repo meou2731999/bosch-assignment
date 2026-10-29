@@ -148,6 +148,15 @@ export function useWorkspace(user: AccountUser, locale: Locale) {
     } as const;
     setNotice(notices[next.status]);
   }
+  function reviewed(next: RequestRecord) {
+    setRequests((current) => [
+      next,
+      ...current.filter((request) => request.id !== next.id),
+    ]);
+    setNotice(
+      next.status === "approved" ? "approvedMessage" : "rejectedMessage",
+    );
+  }
   return {
     state: {
       page,
@@ -169,6 +178,7 @@ export function useWorkspace(user: AccountUser, locale: Locale) {
       canLeave,
       navigate,
       saved,
+      reviewed,
     },
   };
 }

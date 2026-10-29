@@ -51,6 +51,36 @@ for (const [before, after] of Object.entries(config.replacements)) {
     throw new Error(`Expected one source shape: ${before}`);
   presentation.resolve(matches[0].id).text.replace(before, after);
 }
+const imageInspection = await presentation.inspect({
+  kind: "image",
+  maxChars: 12000,
+});
+const imageRecords = imageInspection.ndjson
+  .split("\n")
+  .filter(Boolean)
+  .map((line) => JSON.parse(line));
+const requestTableRecord = imageRecords.find((image) => image.slideIndex === 3);
+if (!requestTableRecord)
+  throw new Error("Expected the request-journey screenshot on slide 4");
+const requestTableImage = presentation.resolve(requestTableRecord.id);
+const originalFrame = requestTableImage.frame;
+const originalCrop = requestTableImage.crop;
+const originalFit = requestTableImage.fit;
+requestTableImage.replace({
+  blob: new Uint8Array(
+    await fs.readFile(
+      path.join(root, "test-results/request-table-current.png"),
+    ),
+  ),
+  contentType: "image/png",
+  alt: "Current request table with inline review actions",
+});
+requestTableImage.frame = {
+  ...originalFrame,
+  height: originalFrame.width * (9 / 16),
+};
+if (originalCrop) requestTableImage.crop = originalCrop;
+if (originalFit) requestTableImage.fit = originalFit;
 // Keep the source design. Its green cover needs a light page number.
 const pageNumber = shapes.find((shape) => shape.text === "01 / 15");
 presentation.resolve(pageNumber.id).text.style = {
@@ -115,6 +145,6 @@ const result = await finalizePresentation({
     referenceSha256: sourceHash,
   },
   verifyArtifactToolImport: true,
-  receiptPath: path.join(staging, "presentation.validation.json"),
+  receiptPath: path.join(staging, "presentation.validation-v6.json"),
 });
 console.log(JSON.stringify(result));

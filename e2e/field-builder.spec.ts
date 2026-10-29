@@ -135,8 +135,11 @@ test("admin edits and previews fields; requester loads published JSON without fr
     .click();
   await requester
     .getByRole("row")
-    .filter({ has: requester.getByRole("cell", { name: "1", exact: true }) })
-    .getByRole("button")
+    .filter({
+      has: requester.getByRole("cell", { name: "1", exact: true }),
+    })
+    .getByRole("cell")
+    .first()
     .click();
   await expect(
     requester.getByLabel("Travel days", { exact: false }),

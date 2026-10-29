@@ -16,6 +16,7 @@ export function createApp({
   dataDir = path.join(root, ".data"),
   production = false,
   secureCookies = false,
+  loginIpAttemptLimit = 50,
 } = {}) {
   const forms = createFormStore(dataDir, root);
   const users = createUserStore(dataDir);
@@ -31,7 +32,7 @@ export function createApp({
   app.get("/api/health", (_req, res) =>
     res.json({ status: "ok", authentication: "session" }),
   );
-  registerAuth(app, users, secureCookies);
+  registerAuth(app, users, secureCookies, loginIpAttemptLimit);
   registerFormRoutes(app, forms, users);
   registerRequestRoutes(app, store, files, forms);
   registerAttachmentRoutes(app, store, files, forms);

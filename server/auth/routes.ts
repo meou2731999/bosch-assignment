@@ -18,6 +18,7 @@ export function registerAuth(
   app: Express,
   users: UserStore,
   secureCookies: boolean,
+  loginIpAttemptLimit = 50,
 ) {
   const sessions = createSessionStore();
   const cookieOptions = {
@@ -51,7 +52,8 @@ export function registerAuth(
     if (
       keys.some(
         (key) =>
-          (attempts.get(key)?.count ?? 0) >= (key.startsWith("ip:") ? 50 : 10),
+          (attempts.get(key)?.count ?? 0) >=
+          (key.startsWith("ip:") ? loginIpAttemptLimit : 10),
       )
     )
       throw new ApiError(

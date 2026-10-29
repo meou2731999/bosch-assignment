@@ -3,10 +3,11 @@ import { randomUUID } from "node:crypto";
 
 export async function verifyRequestPages(user: Page) {
   user.removeAllListeners("dialog");
-  await expect(user).toHaveURL(/\/requests\/[\da-f-]+$/);
-  await user
-    .getByRole("button", { name: "Back to requests", exact: true })
-    .click();
+  if (/\/requests\/[\da-f-]+$/.test(user.url()))
+    await user
+      .getByRole("button", { name: "Back to requests", exact: true })
+      .click();
+  await expect(user).toHaveURL(/\/requests$/);
   await expect(user.getByRole("table")).toBeVisible();
   const session = await (await user.request.get("/api/auth/session")).json();
   for (let index = 1; index <= 11; index++) {
@@ -41,8 +42,8 @@ export async function verifyRequestPages(user: Page) {
     path: "test-results/request-table-desktop.png",
     fullPage: true,
   });
-  const title = await rows.first().getByRole("button").innerText();
-  await rows.first().getByRole("button").click();
+  const title = await rows.first().getByRole("cell").first().innerText();
+  await rows.first().getByRole("cell").first().click();
   await expect(user).toHaveURL(/\/requests\/[\da-f-]+$/);
   await expect(user.getByRole("table")).toHaveCount(0);
   await expect(user.getByLabel("Request title", { exact: false })).toHaveValue(

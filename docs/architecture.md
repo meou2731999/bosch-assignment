@@ -18,6 +18,7 @@ flowchart LR
 - `src/app`: application entry, session lifecycle, locale, page selection and shared navigation/layout.
 - `src/pages`: page composition for authentication/password changes, requests, user management and form management. Pages compose feature components; `App.tsx` selects the active page and applies session/admin guards.
 - `src/features/requests/useWorkspace.ts`: request selection, browser history, async loading and unsaved-change guards. Local state/refs suffice for the current scope; no global store.
+- Requests open in a paginated table (10 rows per page); clicking a row opens its detail route, while the row menu exposes details and eligible review actions. Browser back/forward keeps the selected request and unsaved-change guard.
 - `src/features/admin`: account/form authoring and permissions; `forms`: renderer integration; `requests`: save/review/history; `attachments`: upload/preview.
 - `src/components/ui`: shared buttons/icons, menus, modals, errors and field styles. Admin dialogs preserve failed-save input, trap/restore focus and prevent closing during saves.
 - `shared`: contracts, field parsing, visibility, validation and migration data types.
@@ -46,7 +47,7 @@ Auth endpoints: `POST /api/auth/login`, `GET /api/auth/session`, `POST /api/auth
 
 ## Form authoring and publication
 
-Admin chooses a legacy IT template or **Blank form**, configures fields, previews, saves a draft and publishes. Blank forms require at least one field. Publishing creates an immutable version and immediately advances the active pointer; new requests load it while saved requests use their pinned version. Publication approval and separate activation/rollback are future work.
+Admin can create from a legacy IT template or **Blank form**, or import a supported subset of Form.io JSON through a two-step upload/editor flow. Import is validated before it replaces editor content; unsupported components and executable/remote rules are rejected. The editor allows field edits and preview, then saves a draft and publishes. Blank forms require at least one field. Publishing creates an immutable version and immediately advances the active pointer; new requests load it while saved requests use their pinned version. Publication approval and separate activation/rollback are future work.
 
 The editor hides technical keys. New `tmp_` references become backend-issued `f_` identities on draft save; nested condition references are rewritten together. Rename/reorder keeps existing IDs. Existing explicit API/legacy keys remain valid. Duplicate sibling keys and missing condition targets are rejected; allocation checks draft/published history for collisions.
 

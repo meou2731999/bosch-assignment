@@ -47,7 +47,8 @@ export const RequestsPage = ({
     busy,
     generation,
   } = state;
-  const { load, setDirty, setBusy, canLeave, navigate, saved } = actions;
+  const { load, setDirty, setBusy, canLeave, navigate, saved, reviewed } =
+    actions;
   const renderContent = () => {
     if (loading)
       return (
@@ -74,7 +75,7 @@ export const RequestsPage = ({
           user={user}
           requests={requests}
           navigate={navigate}
-          onReviewed={saved}
+          onReviewed={reviewed}
           onBusy={setBusy}
           busy={busy || loading}
           emptyMessage={canCreate ? t.empty : f.noCreate}

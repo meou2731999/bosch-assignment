@@ -76,8 +76,13 @@ test("attachments preview/download, submit, reject and approve with read-only au
     ).toBeVisible();
     await review.reload();
     await review
-      .getByRole("button")
-      .filter({ hasText: "Browser attachment review" })
+      .getByRole("row")
+      .filter({
+        has: review.getByRole("cell", {
+          name: "Browser attachment review",
+          exact: true,
+        }),
+      })
       .click();
     await expect(
       review.getByRole("button", { name: "Save draft", exact: true }),
@@ -131,8 +136,13 @@ test("attachments preview/download, submit, reject and approve with read-only au
       .getByRole("button", { name: "Back to requests", exact: true })
       .click();
     await review
-      .getByRole("button")
-      .filter({ hasText: "Browser approval flow" })
+      .getByRole("row")
+      .filter({
+        has: review.getByRole("cell", {
+          name: "Browser approval flow",
+          exact: true,
+        }),
+      })
       .click();
     await review
       .getByLabel("Review comment", { exact: true })

@@ -66,8 +66,13 @@ test("publish and upgrade without frontend release, then submit and review the n
       .getByRole("button", { name: "Back to requests", exact: true })
       .click();
     await requester
-      .getByRole("button")
-      .filter({ hasText: initial.data.requestTitle })
+      .getByRole("row")
+      .filter({
+        has: requester.getByRole("cell", {
+          name: initial.data.requestTitle,
+          exact: true,
+        }),
+      })
       .click();
     await expect(
       requester.getByLabel("Handoff reference", { exact: false }),
@@ -100,8 +105,13 @@ test("publish and upgrade without frontend release, then submit and review the n
     });
     await reviewer.page.reload();
     await reviewer.page
-      .getByRole("button")
-      .filter({ hasText: initial.data.requestTitle })
+      .getByRole("row")
+      .filter({
+        has: reviewer.page.getByRole("cell", {
+          name: initial.data.requestTitle,
+          exact: true,
+        }),
+      })
       .click();
     await expect(
       reviewer.page.getByLabel("Handoff reference", { exact: false }),

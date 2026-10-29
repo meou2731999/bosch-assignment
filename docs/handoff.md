@@ -14,17 +14,17 @@ Failed saves retain browser input. Unknown network outcomes require reconciling 
 
 Executed **28 October 2026**, macOS, Node **24.19.0**, npm **12.0.2**:
 
-- `npm test`: **84 tests / 23 files passed**.
+- `npm test`: **93 tests / 25 files passed**.
 - `npm run build`: TypeScript and production build passed.
-- `CI=true npm run test:e2e`: **16/16 headless Chromium scenarios passed** (46.4 seconds).
+- `CI=true npm run test:e2e`: **19/19 headless Chromium scenarios passed**.
 - Lint and repository format checks passed. `docs/` is excluded by Prettier; document links/layout are checked separately.
 - Proposal PDF: four pages. Presentation: 15 editable English slides with Vietnamese notes, visually reviewed.
 
-These are the preceding code-verification results, not fresh test execution for the documentation consolidation. No application behavior changed during consolidation.
+The latest refresh also checks validated Form.io JSON import, paginated request history, browser back/forward navigation, and inline review from the request table.
 
-Coverage includes auth/CSRF/revocation, permission bypasses, publication/pinning, blank forms/stable field IDs, basic/nested fields and visibility, file bytes/access, snapshots/restarts/failed writes, upgrade/restore/conflicts, admin dialogs, menu focus, EN/VI and CSS/mobile spacing.
+Coverage includes auth/CSRF/revocation, permission bypasses, publication/pinning, blank forms/stable field IDs, supported JSON import, basic/nested fields and visibility, file bytes/access, snapshots/restarts/failed writes, upgrade/restore/conflicts, paginated request navigation and inline review, admin dialogs, menu focus, EN/VI and CSS/mobile spacing.
 
-Vite 7.3.7 output: JS **2,219.53 kB / 646.64 kB gzip**, CSS **387.07 kB / 48.07 kB gzip**. The JS chunk-size warning remains; no Bootstrap charset warning appeared. Browser startup emitted a `NO_COLOR`/`FORCE_COLOR` environment warning. Sizes are observations, not accepted performance budgets.
+Vite 7.3.7 output: JS **2,249.39 kB / 655.04 kB gzip**, CSS **388.35 kB / 48.28 kB gzip**. The JS chunk-size warning remains; no Bootstrap charset warning appeared. Browser startup emitted a `NO_COLOR`/`FORCE_COLOR` environment warning. Sizes are observations, not accepted performance budgets.
 
 ## Reproduce and retain evidence
 
@@ -38,7 +38,7 @@ npx playwright show-report --host 127.0.0.1
 
 For visible rehearsal: `npm run test:e2e:headed`; optionally prefix `E2E_SLOW_MO=500`. Slow mode allows three minutes per test and thirty minutes per suite. These modes were not rerun in the recorded refresh. Playwright builds the frontend, starts an isolated API on port 3107 and uses disposable accounts/data, never `.data`.
 
-`e2e/release-independent.spec.ts` publishes a new supported JSON field, loads it in the same requester document, keeps a v1 draft pinned, upgrades to v2, submits and approves. The report attachment **release-independent-schema-evidence** records matching built/served SHA-256 hashes and unchanged `performance.timeOrigin`. This proves the tested configuration change needs no frontend build/deployment, not that arbitrary future inputs/operators/integrations do.
+`e2e/release-independent.spec.ts` publishes a new supported JSON field, loads it in the same requester document, keeps a v1 draft pinned, upgrades to v2, submits and approves. The report attachment **release-independent-schema-evidence** records matching built/served SHA-256 hashes and unchanged `performance.timeOrigin`. This proves the tested configuration change needs no frontend build/deployment, not that arbitrary future inputs/operators/integrations do. The shared E2E server raises the per-IP login limit to 500 to avoid accumulating unrelated test logins; application and API tests retain the default limit of 50.
 
 `playwright-report/` and `test-results/` contain HTML, screenshots and failure traces. They are ignored and overwritten on subsequent runs; copy evidence for a named review. PDF attachment tests check the preview container/download, not browser PDF rendering fidelity.
 
@@ -63,4 +63,4 @@ Production risks still include single-process storage/sessions, tenant isolation
 
 Keep runtime contracts in architecture.md, executed results here, planned scope in platform-roadmap.md and audience material in proposal.md/presentation-notes.vi.md. Avoid copying test counts into additional guides.
 
-Rebuild the proposal with `uv run --with reportlab python scripts/build-proposal.py`. Slide text updates live in `presentation.json`; `scripts/build-presentation.mjs` reads them and the Vietnamese notes, using the optional Artifact Tool runtime described in its header. The v3 deck is a build template only; v4 is the current presentation. Render and inspect changed artifacts before delivery. Document tools are separate from application dependencies.
+Rebuild the proposal with `uv run --with reportlab python scripts/build-proposal.py`. Slide text updates live in `presentation.json`; `scripts/build-presentation.mjs` reads them and the Vietnamese notes, using the optional Artifact Tool runtime described in its header. The v3 deck is a build template; the current reviewed deck is v6. Render and inspect changed artifacts before delivery. Document tools are separate from application dependencies.

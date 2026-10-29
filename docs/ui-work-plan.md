@@ -1,4 +1,8 @@
-# UI work plan and focused file map
+# UI work record and focused file map
+
+## Completed on 28 October 2026
+
+The account, form and request workflows now use dedicated pages. The request list and form management use responsive tables with row actions; the request list paginates at 10 items and supports row navigation and eligible inline review. The form creation flow supports validated JSON upload or a blank/template starting point. Shared field spacing and admin dialog behavior remain centralized.
 
 ## Scope
 2. Use the Manage users table treatment (white rounded bordered container, sage header, consistent cell padding/dividers, row hover, right-aligned actions) for **All requests** and **Manage forms**.
@@ -16,4 +20,5 @@
 | Shared UI styles | `src/components/ui/field.css` | `src/styles/index.css`, `src/components/ui/Button.tsx` |
 
 ## Verification
-Run the focused lint/build checks after edits. Add or run tests only when explicitly requested.
+
+Browser coverage lives in `e2e/forms.spec.ts`, `e2e/form-upload.spec.ts`, `e2e/request-errors.spec.ts`, and `e2e/request-review.spec.ts`. The last recorded run is documented in [handoff.md](handoff.md).
